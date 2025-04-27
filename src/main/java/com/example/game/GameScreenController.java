@@ -1,5 +1,7 @@
 package com.example.game;
 
+import com.example.main.Application;
+import com.example.map.Tile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;

@@ -3,6 +3,14 @@ module com.example.game {
 	requires javafx.fxml;
 
 
-	opens com.example.game to javafx.fxml;
+    exports com.example.entity;
+    opens com.example.entity to javafx.fxml;
+	exports com.example.map;
+	opens com.example.map to javafx.fxml;
+	exports com.example.main;
+	opens com.example.main to javafx.fxml;
 	exports com.example.game;
+	opens com.example.game to javafx.fxml;
+	exports com.example.utils;
+	opens com.example.utils to javafx.fxml;
 }

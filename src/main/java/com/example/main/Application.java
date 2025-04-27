@@ -1,5 +1,6 @@
-package com.example.game;
+package com.example.main;
 
+import com.example.game.GameModel;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -14,7 +15,7 @@ public class Application extends javafx.application.Application
 	public void start( Stage stage ) throws IOException
 	{
 		gameModel = new GameModel();
-		FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("gameScreenView.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("/com/example/gameScreenView.fxml"));
 		Scene scene = new Scene(fxmlLoader.load(), 640, 420);
 		stage.setTitle("Hello!");
 		stage.setScene(scene);
