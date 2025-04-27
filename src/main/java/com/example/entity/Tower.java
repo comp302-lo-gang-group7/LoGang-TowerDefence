@@ -1,5 +1,8 @@
-package com.example.game;
+package com.example.entity;
 
+import com.example.utils.Damageable;
+import com.example.utils.HP;
+import com.example.map.Tile;
 import javafx.scene.image.Image;
 
 public abstract class Tower extends Tile implements Damageable

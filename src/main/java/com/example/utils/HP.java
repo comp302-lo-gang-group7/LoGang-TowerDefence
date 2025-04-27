@@ -1,4 +1,4 @@
-package com.example.game;
+package com.example.utils;
 
 public class HP
 {
