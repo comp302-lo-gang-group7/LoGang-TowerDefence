@@ -10,12 +10,10 @@ import java.io.IOException;
 
 public class Main extends javafx.application.Application
 {
-	public static GameModel gameModel;
 	public static ViewManager viewManager;
 
 	@Override
 	public void start(Stage stage) throws IOException {
-		gameModel = new GameModel();
 		viewManager = new ViewManager(stage);
 		viewManager.switchTo("/com/example/fxml/home_page.fxml");
 	}
