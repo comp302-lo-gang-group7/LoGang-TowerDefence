@@ -1,5 +1,9 @@
-package com.example.game;
+package com.example.controllers;
 
+import com.example.game.GameDataEvent;
+import com.example.game.GameEvent;
+import com.example.game.GameEventListener;
+import com.example.game.GameModel;
 import com.example.main.Main;
 import com.example.map.Tile;
 import javafx.fxml.FXML;
