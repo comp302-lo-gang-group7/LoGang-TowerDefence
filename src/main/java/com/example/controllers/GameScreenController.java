@@ -1,6 +1,10 @@
-package com.example.game;
+package com.example.controllers;
 
-import com.example.main.Application;
+import com.example.game.GameDataEvent;
+import com.example.game.GameEvent;
+import com.example.game.GameEventListener;
+import com.example.game.GameModel;
+import com.example.main.Main;
 import com.example.map.Tile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,7 +23,7 @@ public class GameScreenController implements GameEventListener
 	@FXML
 	public void initialize()
 	{
-		gameModel = Application.gameModel;
+		gameModel = Main.gameModel;
 		if ( gameModel == null )
 		{
 			throw new RuntimeException("Game Model is not initialized");
