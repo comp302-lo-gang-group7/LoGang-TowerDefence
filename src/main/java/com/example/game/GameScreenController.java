@@ -1,6 +1,6 @@
 package com.example.game;
 
-import com.example.main.Application;
+import com.example.main.Main;
 import com.example.map.Tile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,7 +19,7 @@ public class GameScreenController implements GameEventListener
 	@FXML
 	public void initialize()
 	{
-		gameModel = Application.gameModel;
+		gameModel = Main.gameModel;
 		if ( gameModel == null )
 		{
 			throw new RuntimeException("Game Model is not initialized");
