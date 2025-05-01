@@ -18,7 +18,6 @@ public class ViewManager {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = fxmlLoader.load();
-            System.out.println("A");
             stage.setScene(new Scene(root));
             stage.show();
         } catch (IOException e) {

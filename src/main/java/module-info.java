@@ -13,4 +13,6 @@ module com.example.game {
 	opens com.example.game to javafx.fxml;
 	exports com.example.utils;
 	opens com.example.utils to javafx.fxml;
+	exports com.example.controllers;
+	opens com.example.controllers to javafx.fxml;
 }
