@@ -1,17 +1,24 @@
 package com.example.map;
 
-import javafx.scene.image.Image;
+import com.example.ui.SpriteProvider;
+import com.example.ui.Sprite;
 
-public class Tile
+public class Tile implements SpriteProvider
 {
 	private final int x, y;
-	private final Image sprite;
+	private final Sprite sprite = new Sprite();
 
-	public Tile( int x, int y, Image sprite )
+	public Tile ( int x, int y )
 	{
 		this.x = x;
 		this.y = y;
-		this.sprite = sprite;
+	}
+
+	public Tile( int x, int y, String spritePath )
+	{
+		this.x = x;
+		this.y = y;
+		sprite.setImagePath(spritePath);
 	}
 
 	public int getX()
@@ -24,11 +31,8 @@ public class Tile
 		return y;
 	}
 
-	public Image getSprite() throws NullPointerException
+	public Sprite getSprite()
 	{
-		if (sprite == null)
-			throw new NullPointerException("Sprite is not set");
-		else
-			return sprite;
+		return sprite;
 	}
 }

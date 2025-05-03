@@ -7,6 +7,8 @@ import com.example.entity.Tower;
 import com.example.map.BlankTile;
 import com.example.map.EmptyLotTile;
 import com.example.map.GameMap;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
 
 
@@ -23,6 +25,8 @@ public class GameModel
 
 	private final HashSet<GameEventListener> listeners;
 
+	public StringProperty debugMessage = new SimpleStringProperty();
+
 	public enum TowerType
 	{
 		ARCHER,
@@ -30,24 +34,17 @@ public class GameModel
 		ARTILLERY
 	}
 
-	private final Image archerSprite, blankTileSprite, emptyLotSprite;
-
-	public GameModel() throws FileNotFoundException
+	public GameModel()
 	{
-		archerSprite = new Image(new FileInputStream("src/main/resources/tower_archer.png"));
-		blankTileSprite = new Image(new FileInputStream("src/main/resources/blank_tile.png"));
-		emptyLotSprite = new Image(new FileInputStream("src/main/resources/empty_lot.png"));
-
-		map = new GameMap(3, 3);
+		map = new GameMap(10, 10);
 
 		for ( int y = 0; y < map.getHeight(); y++ )
 		{
 			for ( int x = 0; x < map.getWidth(); x++ )
 			{
-				map.setTile(x, y, new BlankTile(x, y, blankTileSprite));
+				map.setTile(x, y, new EmptyLotTile(x, y, "/empty_lot.png"));
 			}
 		}
-		map.setTile(0, 0, new EmptyLotTile(0, 0, emptyLotSprite));
 		towers = new ArrayList<>();
 		listeners = new HashSet<>();
 	}
@@ -59,17 +56,17 @@ public class GameModel
 		{
 			case ARCHER:
 			{
-				tower = new ArcherTower(x, y, archerSprite, 10, 10);
+				tower = new ArcherTower(x, y, 10, 10, "/com/example/assets/towers/Tower_archer256.png");
 				break;
 			}
 			case MAGE:
 			{
-				tower = new MageTower(x, y, archerSprite, 5, 30);
+				tower = new MageTower(x, y, 5, 30, "/com/example/assets/towers/Tower_spell256.png");
 				break;
 			}
 			case ARTILLERY:
 			{
-				tower = new ArtilleryTower(x, y, archerSprite, 7, 50);
+				tower = new ArtilleryTower(x, y, 7, 50, "/com/example/assets/towers/tower_bomb256.png");
 				break;
 			}
 			default:
@@ -78,8 +75,9 @@ public class GameModel
 		towers.add(tower);
 		map.setTile(x, y, tower);
 
-		postEvent(new GameDataEvent<>(GameEvent.GameEventType.MESSAGE, "Tower created"));
-		postEvent(new GameDataEvent<>(GameEvent.GameEventType.REPAINT, tower));
+		debugMessage.set(String.format("%s tower placed at (%d, %d)", type.name(), x, y));
+//		postEvent(new GameDataEvent<>(GameEvent.GameEventType.MESSAGE,
+//				String.format("%s tower placed at (%d, %d)", type.name(), x, y)));
 	}
 
 	public void addListener(GameEventListener listener)

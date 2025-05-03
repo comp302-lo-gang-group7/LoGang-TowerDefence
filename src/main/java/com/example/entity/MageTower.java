@@ -4,8 +4,8 @@ import javafx.scene.image.Image;
 
 public class MageTower extends Tower
 {
-	public MageTower( int x, int y, Image sprite, int baseHp, int baseDamage )
+	public MageTower( int x, int y, int baseHp, int baseDamage, String spritePath )
 	{
-		super(x, y, sprite, baseHp, baseDamage);
+		super(x, y, baseHp, baseDamage, spritePath);
 	}
 }

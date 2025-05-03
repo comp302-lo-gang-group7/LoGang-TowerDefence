@@ -4,8 +4,7 @@ import com.example.game.GameDataEvent;
 import com.example.game.GameEvent;
 import com.example.game.GameEventListener;
 import com.example.game.GameModel;
-import com.example.main.Main;
-import com.example.map.Tile;
+import com.example.ui.SpriteView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -15,43 +14,38 @@ public class GameScreenController implements GameEventListener
 {
 	public GridPane imageGrid;
 	private GameModel gameModel;
-	private ImageView[][] tilesGrid;
+	private SpriteView[][] tileGrid;
 
 	@FXML
-	private Label welcomeText;
+	private Label debugText;
 
 	@FXML
 	public void initialize()
 	{
-		gameModel = Main.gameModel;
-		if ( gameModel == null )
-		{
-			throw new RuntimeException("Game Model is not initialized");
-		}
+		gameModel = new GameModel();
 
-		tilesGrid = new ImageView[gameModel.map.getHeight()][gameModel.map.getWidth()];
-		for ( int y = 0; y < tilesGrid.length; y++ )
+		tileGrid = new SpriteView[gameModel.map.getHeight()][gameModel.map.getWidth()];
+		for ( int y = 0; y < tileGrid.length; y++ )
 		{
-			for ( int x = 0; x < tilesGrid[y].length; x++ )
+			for ( int x = 0; x < tileGrid[y].length; x++ )
 			{
-				ImageView tileImage = new ImageView();
-				tileImage.setFitHeight(100);
-				tileImage.setFitWidth(100);
+				SpriteView spriteView = new SpriteView();
+				ImageView tileImage = spriteView.getImageView();
+				tileImage.setFitHeight(50);
+				tileImage.setFitWidth(50);
 				tileImage.setPreserveRatio(true);
-				tileImage.setImage(gameModel.map.getTile(x, y).getSprite());
 				final int tileY = y, tileX = x;
 				tileImage.setOnMouseClicked(_ -> gameModel.onTileClicked(tileX, tileY));
+
+				spriteView.spriteProviderProperty().bindBidirectional(gameModel.map.getTileProperty(x, y));
+
 				imageGrid.add(tileImage, y, x);
-				tilesGrid[y][x] = tileImage;
+				tileGrid[y][x] = spriteView;
 			}
 		}
 
+		debugText.textProperty().bindBidirectional(gameModel.debugMessage);
 		gameModel.addListener(this);
-	}
-
-	public void repaintTile( Tile tile )
-	{
-		tilesGrid[tile.getY()][tile.getX()].setImage(tile.getSprite());
 	}
 
 	@Override
@@ -59,8 +53,7 @@ public class GameScreenController implements GameEventListener
 	{
 		switch (event.type)
 		{
-			case MESSAGE -> welcomeText.setText(((GameDataEvent<String>)event).data);
-			case REPAINT -> repaintTile(((GameDataEvent<Tile>)event).data);
+			case MESSAGE -> debugText.setText(((GameDataEvent<String>)event).data);
 		}
 	}
 }
