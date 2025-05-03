@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.MainMenuController" prefWidth="600.0" prefHeight="426.0">
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.MainMenuController" prefWidth="640.0" prefHeight="426.0">
    <children>
-      <ImageView fitWidth="600.0" fitHeight="426.0">
+      <ImageView fitWidth="640.0" fitHeight="450.0">
          <image>
             <Image url="@../assets/background.jpg" />
          </image>
@@ -15,6 +15,7 @@
       <VBox alignment="CENTER" spacing="10.0">
          <Button text="Start New Game" onAction="#goToNewGamePage" prefWidth="150.0"/>
          <Button text="Load Game" onAction="#goToLoadGamePage" prefWidth="150.0"/>
+         <Button text="Map Editor" onAction="#goToMapEditorPage" prefWidth="150.0"/>
          <Button text="Settings" onAction="#goToSettings" prefWidth="150.0"/>
          <Button text="Quit" onAction="#terminateApplication" prefWidth="150.0"/>
       </VBox>

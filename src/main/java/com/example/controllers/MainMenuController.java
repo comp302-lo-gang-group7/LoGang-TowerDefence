@@ -20,6 +20,11 @@ public class MainMenuController extends Controller {
     }
 
     @FXML
+    public void goToMapEditorPage() {
+        Main.getViewManager().switchTo("/com/example/fxml/map_editor_page.fxml");
+    }
+
+    @FXML
     public void goToSettings() { Main.getViewManager().switchTo("/com/example/fxml/settings.fxml"); }
 
     @FXML

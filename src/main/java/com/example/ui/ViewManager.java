@@ -25,6 +25,7 @@ public class ViewManager {
             Parent root = fxmlLoader.load();
             this.scene = new Scene(root); // Set initial scene in view manager.
 
+            // This is a check for the 01.png cursor image in /assets/ui. In case the image resource is not found, we default to a normal cursor.
             InputStream stream = getClass().getResourceAsStream("/com/example/assets/ui/01.png");
             if (stream != null) {
                 Image image = new Image(stream);
@@ -60,6 +61,17 @@ public class ViewManager {
             e.printStackTrace();
         }
     }
+
+    /**
+     * This method allows different parts of the project to resize the window.
+     * @param width
+     * @param height
+     */
+    public void resizeWindow(int width, int height) {
+        stage.setWidth(width);
+        stage.setHeight(height);
+    }
+
 
     public void terminateApplication() {
         // NOTE: WE NEED TO HAVE SOME CLEANUP STEP HERE DOWN THE LINE

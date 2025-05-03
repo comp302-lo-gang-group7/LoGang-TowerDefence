@@ -10,9 +10,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
 
-<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" fx:controller="com.example.controllers.LoadGameController">
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           prefWidth="640.0" prefHeight="450.0"  fx:controller="com.example.controllers.LoadGameController">
    <children>
-      <ImageView fitHeight="400.0" fitWidth="600.0">
+      <ImageView fitHeight="450.0" fitWidth="640.0">
          <image>
             <Image url="@../assets/background.jpg" />
          </image>
