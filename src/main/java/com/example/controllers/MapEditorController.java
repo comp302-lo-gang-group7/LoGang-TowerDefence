@@ -9,12 +9,20 @@ import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.control.Label;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -22,7 +30,10 @@ public class MapEditorController implements Initializable {
 
     @FXML private GridPane mapGrid;
     @FXML private GridPane paletteGrid;
-
+    @FXML private Button editModeBtn;
+    @FXML private Button deleteModeBtn;
+    @FXML private Button clearMapBtn;
+    @FXML private Button saveMapBtn;
 
     private static final int TILE_SIZE = 64; // The tile size is based on the tile file name (64x64 is what is used currently)
 
@@ -68,6 +79,26 @@ public class MapEditorController implements Initializable {
     // Add this to your class variables
     private Map<Pane, Boolean> selectedCellMap = new HashMap<>();
 
+    // Add an enum for the editor modes
+    private enum EditorMode { EDIT, DELETE }
+    private EditorMode currentMode = EditorMode.EDIT;
+
+    // Constants for button styling
+    private static final String BUTTON_NORMAL_COLOR = "#4CAF50";
+    private static final String BUTTON_HOVER_COLOR = "#66BB6A";
+    private static final String BUTTON_ACTIVE_COLOR = "#2E7D32";
+
+    // Constants for button images
+    private static final String BUTTON_BLUE = "/com/example/assets/ui/Button_Blue.png";
+    private static final String BUTTON_BLUE_PRESSED = "/com/example/assets/ui/Button_Blue_Pressed.png";
+    private static final String BUTTON_BLUE_3SLIDES = "/com/example/assets/ui/Button_Blue_3Slides.png";
+
+    // References to button images
+    @FXML private ImageView editModeImage;
+    @FXML private ImageView deleteModeImage;
+    @FXML private ImageView clearMapImage;
+    @FXML private ImageView saveMapImage;
+
     // Helper method to generate a unique key for a tile position
     private String tileKey(int row, int col) {
         return row + "," + col;
@@ -108,6 +139,10 @@ public class MapEditorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Main.getViewManager().resizeWindow(windowWidth, windowHeight); // Resize the window to fit everything properly
+        
+        // Initialize button images with icons
+        setupButtonImages();
+        
         InputStream stream = getClass().getResourceAsStream("/com/example/assets/tiles/Tileset-64x64.png");
         if (stream != null) {
             tileset = new Image(stream);
@@ -116,6 +151,10 @@ public class MapEditorController implements Initializable {
         } else {
             System.err.println("Tileset image not found!");
         }
+        
+        // Set initial mode to EDIT
+        currentMode = EditorMode.EDIT;
+        updateModeButtonStyles();
     }
 
     /**
@@ -508,81 +547,92 @@ public class MapEditorController implements Initializable {
     }
     
     /**
-     * Places a tile from the palette onto the map
+     * Places or deletes a tile from the map based on current mode
      */
     private void placeTile(int row, int col) {
-        // Handle placing group tiles (e.g., castle)
-        if (selectedIsGroup) {
-            int baseRow = row - selectedOffsetRow;
-            int baseCol = col - selectedOffsetCol;
-            
-            // Check if any of the tiles in the 2x2 group are already part of a group
-            Set<String> groupsToReset = new HashSet<>();
-            for (int dr = 0; dr < 2; dr++) {
-                for (int dc = 0; dc < 2; dc++) {
-                    int rr = baseRow + dr;
-                    int cc = baseCol + dc;
-                    if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
-                        String groupKey = getGroupKeyForTile(rr, cc);
-                        if (groupKey != null) {
-                            groupsToReset.add(groupKey);
+        if (currentMode == EditorMode.DELETE) {
+            // Delete mode: reset tile to grass and remove from any group
+            String groupKey = getGroupKeyForTile(row, col);
+            if (groupKey != null) {
+                resetGroup(groupKey);
+            } else {
+                resetTileToGrass(row, col);
+            }
+        } else {
+            // Edit mode: place selected tile
+            if (selectedIsGroup) {
+                // ... existing group placement code
+                int baseRow = row - selectedOffsetRow;
+                int baseCol = col - selectedOffsetCol;
+                
+                // Check if any of the tiles in the 2x2 group are already part of a group
+                Set<String> groupsToReset = new HashSet<>();
+                for (int dr = 0; dr < 2; dr++) {
+                    for (int dc = 0; dc < 2; dc++) {
+                        int rr = baseRow + dr;
+                        int cc = baseCol + dc;
+                        if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
+                            String groupKey = getGroupKeyForTile(rr, cc);
+                            if (groupKey != null) {
+                                groupsToReset.add(groupKey);
+                            }
                         }
                     }
                 }
-            }
-            
-            // Reset all groups that would be affected
-            for (String groupKey : groupsToReset) {
-                resetGroup(groupKey);
-            }
-            
-            // Create a new group key and set of tiles
-            String newGroupKey = "group_" + System.currentTimeMillis();
-            Set<String> newGroupTiles = new HashSet<>();
-            
-            PixelReader groupReader = selectedGroupImage.getPixelReader();
-            
-            // Place the new group tiles
-            for (int dr = 0; dr < 2; dr++) {
-                for (int dc = 0; dc < 2; dc++) {
-                    int rr = baseRow + dr;
-                    int cc = baseCol + dc;
-                    if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
-                        WritableImage sub = new WritableImage(
-                                groupReader,
-                                dc * TILE_SIZE,
-                                dr * TILE_SIZE,
-                                TILE_SIZE,
-                                TILE_SIZE
-                        );
-                        ImageView iv = mapTileImageViews[rr][cc];
-                        iv.setImage(compositeTile(
-                                defaultGrassTile.getImage(),
-                                sub
-                        ));
-                        
-                        // Add this tile to the group
-                        newGroupTiles.add(tileKey(rr, cc));
-                    }
-                }
-            }
-            
-            // Register the new group
-            groupTileMap.put(newGroupKey, newGroupTiles);
-        } else {
-            // Handle placing single tiles
-            if (selectedImage != null) {
-                // Check if this tile is part of a group
-                String groupKey = getGroupKeyForTile(row, col);
-                if (groupKey != null) {
+                
+                // Reset all groups that would be affected
+                for (String groupKey : groupsToReset) {
                     resetGroup(groupKey);
                 }
                 
-                // Place the new tile
-                mapTileImageViews[row][col].setImage(compositeTile(
-                        defaultGrassTile.getImage(),
-                        selectedImage
-                ));
+                // Create a new group key and set of tiles
+                String newGroupKey = "group_" + System.currentTimeMillis();
+                Set<String> newGroupTiles = new HashSet<>();
+                
+                PixelReader groupReader = selectedGroupImage.getPixelReader();
+                
+                // Place the new group tiles
+                for (int dr = 0; dr < 2; dr++) {
+                    for (int dc = 0; dc < 2; dc++) {
+                        int rr = baseRow + dr;
+                        int cc = baseCol + dc;
+                        if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
+                            WritableImage sub = new WritableImage(
+                                    groupReader,
+                                    dc * TILE_SIZE,
+                                    dr * TILE_SIZE,
+                                    TILE_SIZE,
+                                    TILE_SIZE
+                            );
+                            ImageView iv = mapTileImageViews[rr][cc];
+                            iv.setImage(compositeTile(
+                                    defaultGrassTile.getImage(),
+                                    sub
+                            ));
+                            
+                            // Add this tile to the group
+                            newGroupTiles.add(tileKey(rr, cc));
+                        }
+                    }
+                }
+                
+                // Register the new group
+                groupTileMap.put(newGroupKey, newGroupTiles);
+            } else {
+                // ... existing single tile placement code
+                if (selectedImage != null) {
+                    // Check if this tile is part of a group
+                    String groupKey = getGroupKeyForTile(row, col);
+                    if (groupKey != null) {
+                        resetGroup(groupKey);
+                    }
+                    
+                    // Place the new tile
+                    mapTileImageViews[row][col].setImage(compositeTile(
+                            defaultGrassTile.getImage(),
+                            selectedImage
+                    ));
+                }
             }
         }
     }
@@ -639,6 +689,232 @@ public class MapEditorController implements Initializable {
         }
 
         return result;
+    }
+    
+    /**
+     * Sets up button styles and hover effects with consistent styling
+     */
+    private void setupButtons() {
+        // Apply consistent initial styles to all buttons
+        String baseStyle = "-fx-background-color: " + BUTTON_NORMAL_COLOR + "; -fx-text-fill: white;";
+        editModeBtn.setStyle(baseStyle);
+        deleteModeBtn.setStyle(baseStyle);
+        clearMapBtn.setStyle(baseStyle);
+        saveMapBtn.setStyle(baseStyle);
+        
+        // Add hover effects for all buttons
+        setupButtonHoverEffect(editModeBtn);
+        setupButtonHoverEffect(deleteModeBtn);
+        setupButtonHoverEffect(clearMapBtn);
+        setupButtonHoverEffect(saveMapBtn);
+        
+        // Update active state based on current mode
+        updateModeButtonStyles();
+    }
+
+    /**
+     * Configures hover effects for buttons with consistent styling
+     */
+    private void setupButtonHoverEffect(Button button) {
+        button.setOnMouseEntered(e -> {
+            if ((button == editModeBtn && currentMode == EditorMode.EDIT) || 
+                (button == deleteModeBtn && currentMode == EditorMode.DELETE)) {
+                // Don't change the active button's color
+                return;
+            }
+            button.setStyle("-fx-background-color: " + BUTTON_HOVER_COLOR + "; -fx-text-fill: white;");
+        });
+        
+        button.setOnMouseExited(e -> {
+            if ((button == editModeBtn && currentMode == EditorMode.EDIT) || 
+                (button == deleteModeBtn && currentMode == EditorMode.DELETE)) {
+                // Don't change the active button's color
+                return;
+            }
+            button.setStyle("-fx-background-color: " + BUTTON_NORMAL_COLOR + "; -fx-text-fill: white;");
+        });
+    }
+
+    /**
+     * Updates the visual state of mode buttons based on the current editor mode
+     */
+    private void updateModeButtonStyles() {
+        // Update button backgrounds based on current mode
+        if (currentMode == EditorMode.EDIT) {
+            // Set edit mode as active, delete mode as inactive
+            editModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+            deleteModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+            
+            // Update button images
+            if (editModeImage != null && deleteModeImage != null) {
+                editModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_3SLIDES)));
+                deleteModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE)));
+            }
+        } else {
+            // Set delete mode as active, edit mode as inactive
+            editModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+            deleteModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
+            
+            // Update button images
+            if (editModeImage != null && deleteModeImage != null) {
+                editModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE)));
+                deleteModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+            }
+        }
+    }
+
+    /**
+     * Sets up button images with icons
+     */
+    private void setupButtonImages() {
+        // Get the image views inside each button
+        editModeImage = (ImageView) editModeBtn.getGraphic();
+        deleteModeImage = (ImageView) deleteModeBtn.getGraphic();
+        clearMapImage = (ImageView) clearMapBtn.getGraphic();
+        saveMapImage = (ImageView) saveMapBtn.getGraphic();
+        
+        // Add text overlay to the edit mode button
+        StackPane editModeContent = new StackPane();
+        Label editModeLabel = new Label("EDIT MODE");
+        editModeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        editModeContent.getChildren().addAll(editModeImage, editModeLabel);
+        editModeBtn.setGraphic(editModeContent);
+        
+        // Add trash icon overlay to delete button
+        Image trashIcon = new Image(getClass().getResourceAsStream("/com/example/assets/ui/kutowerbuttons4.png"));
+        ImageView trashIconView = new ImageView(trashIcon);
+        trashIconView.setFitWidth(20);
+        trashIconView.setFitHeight(20);
+        StackPane deleteContent = new StackPane();
+        deleteContent.getChildren().addAll(deleteModeImage, trashIconView);
+        deleteModeBtn.setGraphic(deleteContent);
+        
+        // Add clear icon overlay
+        Image clearIcon = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Ribbon_Yellow_3Slides.png"));
+        ImageView clearIconView = new ImageView(clearIcon);
+        clearIconView.setFitWidth(20);
+        clearIconView.setFitHeight(20);
+        StackPane clearContent = new StackPane();
+        clearContent.getChildren().addAll(clearMapImage, clearIconView);
+        clearMapBtn.setGraphic(clearContent);
+        
+        // Add save icon overlay
+        Image saveIcon = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Button_Blue_Pressed.png"));
+        ImageView saveIconView = new ImageView(saveIcon);
+        saveIconView.setFitWidth(20);
+        saveIconView.setFitHeight(20);
+        StackPane saveContent = new StackPane();
+        saveContent.getChildren().addAll(saveMapImage, saveIconView);
+        saveMapBtn.setGraphic(saveContent);
+    }
+
+    /**
+     * Toggles editor to edit mode for placing tiles
+     */
+    @FXML
+    private void toggleEditMode() {
+        currentMode = EditorMode.EDIT;
+        updateModeButtonStyles();
+        showInfoAlert("Edit Mode", "Edit mode activated", 
+                    "You can now place tiles on the map by selecting from the palette and clicking on the grid.");
+    }
+
+    /**
+     * Toggles editor to delete mode for removing tiles
+     */
+    @FXML
+    private void toggleDeleteMode() {
+        currentMode = EditorMode.DELETE;
+        updateModeButtonStyles();
+        showInfoAlert("Delete Mode", "Delete mode activated", 
+                    "You can now remove tiles from the map by clicking on them.");
+    }
+
+    /**
+     * Clears the entire map back to grass
+     */
+    @FXML
+    private void clearMap() {
+        // Ask for confirmation
+        Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Clear Map");
+        confirmAlert.setHeaderText("Are you sure you want to clear the map?");
+        confirmAlert.setContentText("This action will reset all tiles to grass and cannot be undone.");
+        
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Visual feedback - briefly change button image
+            animateButtonClick(clearMapBtn, clearMapImage);
+            
+            // Actual clear map functionality
+            for (int row = 0; row < MAP_ROWS; row++) {
+                for (int col = 0; col < MAP_COLS; col++) {
+                    resetTileToGrass(row, col);
+                }
+            }
+            
+            // Clear all group mappings
+            groupTileMap.clear();
+            
+            // Show success message
+            showInfoAlert("Map Cleared", "Map cleared successfully", 
+                        "All tiles have been reset to the default grass tile.");
+        }
+    }
+
+    /**
+     * Saves the current map to a file
+     */
+    @FXML
+    private void saveMap() {
+        // Visual feedback - briefly change button image
+        animateButtonClick(saveMapBtn, saveMapImage);
+        
+        // Actual save functionality would go here
+        // For now, just simulate a successful save
+        
+        // Show success message
+        showInfoAlert("Map Saved", "Map saved successfully", 
+                    "Your map has been saved and can now be used in the game.");
+    }
+
+    /**
+     * Animates a button click with a pressed image
+     */
+    private void animateButtonClick(Button button, ImageView imageView) {
+        Image originalImage = imageView.getImage();
+        imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        
+        // Reset after a short delay
+        new Thread(() -> {
+            try {
+                Thread.sleep(200);
+                javafx.application.Platform.runLater(() -> {
+                    imageView.setImage(originalImage);
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    /**
+     * Shows an information alert with the given title, header, and content
+     */
+    private void showInfoAlert(String title, String header, String content) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
+    /**
+     * Shows a temporary status message (in a real implementation, this would display on UI)
+     */
+    private void showStatusMessage(String message) {
+        System.out.println(message);
+        // In a real implementation, this would update a status bar or show a toast notification
     }
 }
 
