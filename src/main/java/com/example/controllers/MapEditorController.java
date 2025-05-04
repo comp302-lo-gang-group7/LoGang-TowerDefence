@@ -65,6 +65,9 @@ public class MapEditorController implements Initializable {
     private int dragSourceCol = -1;
     private Image draggedImage = null;
 
+    // Add this to your class variables
+    private Map<Pane, Boolean> selectedCellMap = new HashMap<>();
+
     // Helper method to generate a unique key for a tile position
     private String tileKey(int row, int col) {
         return row + "," + col;
@@ -143,34 +146,63 @@ public class MapEditorController implements Initializable {
 
                 Pane paletteCell = new Pane(tileView);
                 paletteCell.setPrefSize(TILE_SIZE, TILE_SIZE);
-                paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #555; -fx-border-width: 1;");
-
-                // Apply hover styles directly to the pane for better responsiveness
-                paletteCell.setOnMouseEntered(e -> {
-                    if (selectedTileView != tileView) {
-                        paletteCell.setStyle("-fx-background-color: #b8e0b3; -fx-border-color: #66ccff; -fx-border-width: 2;");
-                    }
-                });
                 
-                paletteCell.setOnMouseExited(e -> {
-                    if (selectedTileView != tileView) {
-                        paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;");
-                    }
-                });
+                // Different style for road tiles (rows 0-2) vs structures
+                String bgColor = (row < 3) ? "#a5d3a5" : "#9ed199";
+                paletteCell.setStyle("-fx-background-color: " + bgColor + "; -fx-border-color: #555; -fx-border-width: 1;");
 
                 final int r = row;
                 final int c = col;
                 
-                // Make the entire pane clickable, not just the image
-                paletteCell.setOnMouseClicked(e -> {
-                    selectTile(r, c, tileView, tileImage, reader, paletteCell);
-                    e.consume(); // Prevent event bubbling
+                // Apply hover styles with different colors for roads vs structures
+                paletteCell.setOnMouseEntered(e -> {
+                    // Check if this cell is selected using our map
+                    Boolean isSelected = selectedCellMap.get(paletteCell);
+                    
+                    if (isSelected != null && isSelected) {
+                        // This cell is selected, maintain selection style
+                        String selBorderColor = (r < 3) ? "#ff7700" : "#ff9900";
+                        String selBgColor = (r < 3) ? "#a5d3a5" : "#9ed199";
+                        paletteCell.setStyle("-fx-background-color: " + selBgColor + 
+                                           "; -fx-border-color: " + selBorderColor + 
+                                           "; -fx-border-width: 3;");
+                    } else {
+                        // Not selected, show hover style
+                        String hoverColor = (r < 3) ? "#c0e3bc" : "#b8e0b3";
+                        paletteCell.setStyle("-fx-background-color: " + hoverColor + 
+                                           "; -fx-border-color: #66ccff; -fx-border-width: 2;");
+                    }
                 });
                 
-                // Also keep the ImageView clickable to ensure we catch all clicks
+                paletteCell.setOnMouseExited(e -> {
+                    // Check if this cell is selected using our map
+                    Boolean isSelected = selectedCellMap.get(paletteCell);
+                    
+                    if (isSelected != null && isSelected) {
+                        // This cell is selected, maintain selection style
+                        String selBorderColor = (r < 3) ? "#ff7700" : "#ff9900";
+                        String selBgColor = (r < 3) ? "#a5d3a5" : "#9ed199";
+                        paletteCell.setStyle("-fx-background-color: " + selBgColor + 
+                                           "; -fx-border-color: " + selBorderColor + 
+                                           "; -fx-border-width: 3;");
+                    } else {
+                        // Not selected, return to normal style
+                        String origColor = (r < 3) ? "#a5d3a5" : "#9ed199";
+                        paletteCell.setStyle("-fx-background-color: " + origColor + 
+                                           "; -fx-border-color: #666; -fx-border-width: 1;");
+                    }
+                });
+                
+                // Make the entire pane clickable
+                paletteCell.setOnMouseClicked(e -> {
+                    selectTile(r, c, tileView, tileImage, reader, paletteCell);
+                    e.consume();
+                });
+                
+                // Also keep the ImageView clickable for better responsiveness
                 tileView.setOnMouseClicked(e -> {
                     selectTile(r, c, tileView, tileImage, reader, paletteCell);
-                    e.consume(); // Prevent event bubbling
+                    e.consume();
                 });
 
                 // Mark the default grass tile (row 1, col 1)
@@ -183,7 +215,7 @@ public class MapEditorController implements Initializable {
         }
     }
 
-    // Extract tile selection logic to a separate method for reusability
+    // Enhanced selection method with better visual feedback for both road and structure tiles
     private void selectTile(int row, int col, ImageView tileView, Image tileImage, PixelReader reader, Pane paletteCell) {
         // Handle castle/group tile selection (bottom two rows, first two columns)
         if (row >= PALETTE_ROWS - 2 && col < 2) {
@@ -196,23 +228,38 @@ public class MapEditorController implements Initializable {
             selectedImage = tileImage;
         }
 
-        // Reset previous selection styling
+        // Reset previous selection styling and state
         if (selectedTileView != null) {
             Pane previousParent = (Pane) selectedTileView.getParent();
-            previousParent.setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;");
+            int prevRow = GridPane.getRowIndex(previousParent) != null ? GridPane.getRowIndex(previousParent) : 0;
+            String bgColor = (prevRow < 3) ? "#a5d3a5" : "#9ed199"; 
+            previousParent.setStyle("-fx-background-color: " + bgColor + "; -fx-border-color: #666; -fx-border-width: 1;");
+            
+            // Clear previous selection from map
+            selectedCellMap.put(previousParent, false);
         }
 
-        // Apply selection styling
-        paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #ff9900; -fx-border-width: 3;");
+        // Apply selection styling - brighter orange for roads to make them more visible
+        String borderColor = (row < 3) ? "#ff7700" : "#ff9900";
+        String bgColor = (row < 3) ? "#a5d3a5" : "#9ed199";
+        
+        // Apply the style directly
+        paletteCell.setStyle("-fx-background-color: " + bgColor + "; -fx-border-color: " + borderColor + "; -fx-border-width: 3;");
+        
+        // Save reference to the currently selected tile
         selectedTileView = tileView;
         
-        // Add a subtle animation or visual feedback for better responsiveness
-        javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(
-            javafx.util.Duration.millis(100), tileView);
-        ft.setFromValue(0.8);
-        ft.setToValue(1.0);
-        ft.setCycleCount(1);
-        ft.play();
+        // Mark this cell as selected in our map
+        selectedCellMap.put(paletteCell, true);
+        
+        // Use a scale animation that doesn't interfere with the border
+        javafx.animation.ScaleTransition st = new javafx.animation.ScaleTransition(
+            javafx.util.Duration.millis(150), tileView);
+        st.setFromX(0.9);
+        st.setFromY(0.9);
+        st.setToX(1.0);
+        st.setToY(1.0);
+        st.play();
     }
 
     /**
