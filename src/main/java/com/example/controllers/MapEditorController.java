@@ -137,35 +137,41 @@ public class MapEditorController implements Initializable {
                 ImageView tileView = new ImageView(tileImage);
                 tileView.setFitWidth(TILE_SIZE);
                 tileView.setFitHeight(TILE_SIZE);
+                
+                // Make the image view fill the entire cell
+                tileView.setPreserveRatio(false);
 
                 Pane paletteCell = new Pane(tileView);
                 paletteCell.setPrefSize(TILE_SIZE, TILE_SIZE);
                 paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #555; -fx-border-width: 1;");
 
-                paletteCell.setOnMouseEntered(e -> paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #66ccff; -fx-border-width: 2;"));
-                paletteCell.setOnMouseExited(e -> paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;"));
+                // Apply hover styles directly to the pane for better responsiveness
+                paletteCell.setOnMouseEntered(e -> {
+                    if (selectedTileView != tileView) {
+                        paletteCell.setStyle("-fx-background-color: #b8e0b3; -fx-border-color: #66ccff; -fx-border-width: 2;");
+                    }
+                });
+                
+                paletteCell.setOnMouseExited(e -> {
+                    if (selectedTileView != tileView) {
+                        paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;");
+                    }
+                });
 
                 final int r = row;
                 final int c = col;
-                tileView.setOnMouseClicked(e -> {
-                    if (r >= PALETTE_ROWS - 2 && c < 2) {
-                        selectedIsGroup = true;
-                        selectedOffsetRow = r - (PALETTE_ROWS - 2);
-                        selectedOffsetCol = c;
-                        selectedGroupImage = new WritableImage(reader,0,(PALETTE_ROWS - 2) * TILE_SIZE,TILE_SIZE * 2,TILE_SIZE * 2);
-                    } else {
-                        selectedIsGroup = false;
-                        selectedImage = tileImage;
-                    }
-
-
-                    if (selectedTileView != null) {
-                        ((Pane) selectedTileView.getParent()).setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;");
-                    }
-                    ((Pane) tileView.getParent()).setStyle("-fx-background-color: #9ed199; -fx-border-color: #ff9900; -fx-border-width: 3;");
-                    selectedTileView = tileView;
+                
+                // Make the entire pane clickable, not just the image
+                paletteCell.setOnMouseClicked(e -> {
+                    selectTile(r, c, tileView, tileImage, reader, paletteCell);
+                    e.consume(); // Prevent event bubbling
                 });
-
+                
+                // Also keep the ImageView clickable to ensure we catch all clicks
+                tileView.setOnMouseClicked(e -> {
+                    selectTile(r, c, tileView, tileImage, reader, paletteCell);
+                    e.consume(); // Prevent event bubbling
+                });
 
                 // Mark the default grass tile (row 1, col 1)
                 if (row == 1 && col == 1) {
@@ -175,6 +181,38 @@ public class MapEditorController implements Initializable {
                 paletteGrid.add(paletteCell, col, row);
             }
         }
+    }
+
+    // Extract tile selection logic to a separate method for reusability
+    private void selectTile(int row, int col, ImageView tileView, Image tileImage, PixelReader reader, Pane paletteCell) {
+        // Handle castle/group tile selection (bottom two rows, first two columns)
+        if (row >= PALETTE_ROWS - 2 && col < 2) {
+            selectedIsGroup = true;
+            selectedOffsetRow = row - (PALETTE_ROWS - 2);
+            selectedOffsetCol = col;
+            selectedGroupImage = new WritableImage(reader, 0, (PALETTE_ROWS - 2) * TILE_SIZE, TILE_SIZE * 2, TILE_SIZE * 2);
+        } else {
+            selectedIsGroup = false;
+            selectedImage = tileImage;
+        }
+
+        // Reset previous selection styling
+        if (selectedTileView != null) {
+            Pane previousParent = (Pane) selectedTileView.getParent();
+            previousParent.setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;");
+        }
+
+        // Apply selection styling
+        paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #ff9900; -fx-border-width: 3;");
+        selectedTileView = tileView;
+        
+        // Add a subtle animation or visual feedback for better responsiveness
+        javafx.animation.FadeTransition ft = new javafx.animation.FadeTransition(
+            javafx.util.Duration.millis(100), tileView);
+        ft.setFromValue(0.8);
+        ft.setToValue(1.0);
+        ft.setCycleCount(1);
+        ft.play();
     }
 
     /**
