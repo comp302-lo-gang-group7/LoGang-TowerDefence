@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            fx:controller="com.example.controllers.MapEditorController">
+
+    <!-- This is a center grid where the map is actually created -->
+    <center>
+        <ScrollPane fitToWidth="false" fitToHeight="false" pannable="true">
+            <GridPane fx:id="mapGrid" gridLinesVisible="true">
+                <!-- This is populated in the controller -->
+            </GridPane>
+        </ScrollPane>
+    </center>
+
+    <!-- This is the side grid where the tiles are selected, in addition to tools etc.. -->
+    <right>
+        <ScrollPane fitToWidth="true" fitToHeight="true">
+            <VBox alignment="CENTER">
+                <GridPane fx:id="paletteGrid" gridLinesVisible="true">
+                </GridPane>
+            </VBox>
+        </ScrollPane>
+    </right>
+</BorderPane>

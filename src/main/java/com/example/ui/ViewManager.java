@@ -61,7 +61,7 @@ public class ViewManager {
                 GameScreenController gameScreenController = fxmlLoader.getController();
                 scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
             }
-
+          
             // Load a new fxml onto the scene
             stage.setScene(ViewManager.getScene());
             stage.show();
