@@ -4,20 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
-    allow:
-      - dependency-type: "all"
-    ignore: []
     groups:
       javafx:
         patterns:
           - "org.openjfx:*"
-      junit:
-        patterns:
-          - "org.junit.jupiter:*"
-      maven-plugins:
-        patterns:
-          - "org.apache.maven.plugins:*"
-    labels:
-      - "dependencies"
-      - "maven"
