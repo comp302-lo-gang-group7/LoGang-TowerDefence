@@ -44,6 +44,11 @@ public class MapEditorController implements Initializable {
     private Image selectedImage;
     private ImageView selectedTileView;
 
+    private boolean selectedIsGroup = false;
+    private int selectedOffsetRow = 0, selectedOffsetCol = 0;
+    private Image selectedGroupImage;
+    private ImageView[][] mapTileImageViews = new ImageView[MAP_ROWS][MAP_COLS];
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Main.getViewManager().resizeWindow(windowWidth, windowHeight); // Resize the window to fit everything properly
@@ -72,10 +77,10 @@ public class MapEditorController implements Initializable {
      */
     private void createTilePalette() {
         PixelReader reader = tileset.getPixelReader();
-
         for (int row = 0; row < PALETTE_ROWS; row++) {
             for (int col = 0; col < PALETTE_COLS; col++) {
                 WritableImage tileImage = new WritableImage(reader, col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
                 ImageView tileView = new ImageView(tileImage);
                 tileView.setFitWidth(TILE_SIZE);
                 tileView.setFitHeight(TILE_SIZE);
@@ -87,19 +92,27 @@ public class MapEditorController implements Initializable {
                 paletteCell.setOnMouseEntered(e -> paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #66ccff; -fx-border-width: 2;"));
                 paletteCell.setOnMouseExited(e -> paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #666; -fx-border-width: 1;"));
 
+                final int r = row;
+                final int c = col;
                 tileView.setOnMouseClicked(e -> {
-                    selectedImage = tileImage;
-                    System.out.println("Chose image!");
-
-                    // Remove previous highlight
-                    if (selectedTileView != null) {
-                        ((Pane) selectedTileView.getParent()).setStyle("-fx-background-color: #9ed199; -fx-border-color: #555; -fx-border-width: 1;");
+                    if (r >= PALETTE_ROWS - 2 && c < 2) {
+                        selectedIsGroup = true;
+                        selectedOffsetRow = r - (PALETTE_ROWS - 2);
+                        selectedOffsetCol = c;
+                        selectedGroupImage = new WritableImage(reader,0,(PALETTE_ROWS - 2) * TILE_SIZE,TILE_SIZE * 2,TILE_SIZE * 2);
+                    } else {
+                        selectedIsGroup = false;
+                        selectedImage = tileImage;
                     }
 
-                    // Highlight new selection
-                    paletteCell.setStyle("-fx-background-color: #9ed199; -fx-border-color: #ff9900; -fx-border-width: 2;");
+
+                    if (selectedTileView != null) {
+                        ((Pane) selectedTileView.getParent()).setStyle("-fx-border-color: #666;");
+                    }
+                    ((Pane) tileView.getParent()).setStyle("-fx-border-color: #ff9900; -fx-border-width: 3;");
                     selectedTileView = tileView;
                 });
+
 
                 // Mark the default grass tile (row 1, col 1)
                 if (row == 1 && col == 1) {
@@ -135,6 +148,8 @@ public class MapEditorController implements Initializable {
                 imageView.setFitWidth(TILE_SIZE);
                 imageView.setFitHeight(TILE_SIZE);
 
+                mapTileImageViews[row][col]= imageView;
+
                 Pane cell = new Pane(imageView);
                 cell.setPrefSize(TILE_SIZE, TILE_SIZE);
                 cell.setStyle("-fx-border-color: #666; -fx-border-width: 1; -fx-background-color: transparent;");
@@ -142,13 +157,44 @@ public class MapEditorController implements Initializable {
                 cell.setOnMouseEntered(e -> cell.setStyle("-fx-border-color: #66ccff; -fx-border-width: 2;"));
                 cell.setOnMouseExited(e -> cell.setStyle("-fx-border-color: #666; -fx-border-width: 1;"));
 
+                final int R = row, C = col;
                 cell.setOnMouseClicked(e -> {
-                    if (selectedImage != null) {
-                        Image composed = compositeTile(defaultGrassTile.getImage(), selectedImage);
-                        imageView.setImage(composed);
-                        System.out.println("Set image!");
+                    if (selectedIsGroup) {
+
+                        PixelReader groupReader = selectedGroupImage.getPixelReader();
+                        int baseRow = R - selectedOffsetRow;
+                        int baseCol = C - selectedOffsetCol;
+
+                        for (int dr = 0; dr < 2; dr++) {
+                            for (int dc = 0; dc < 2; dc++) {
+                                int rr = baseRow + dr;
+                                int cc = baseCol + dc;
+                                if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
+
+                                    WritableImage sub = new WritableImage(
+                                            groupReader,
+                                            dc * TILE_SIZE,
+                                            dr * TILE_SIZE,
+                                            TILE_SIZE,
+                                            TILE_SIZE
+                                    );
+                                    ImageView iv = mapTileImageViews[rr][cc];
+                                    // composite on grass
+                                    iv.setImage(compositeTile(
+                                            defaultGrassTile.getImage(),
+                                            sub
+                                    ));
+                                }
+                            }
+                        }
                     } else {
-                        System.out.println("No image!");
+
+                        if (selectedImage != null) {
+                            imageView.setImage(compositeTile(
+                                    defaultGrassTile.getImage(),
+                                    selectedImage
+                            ));
+                        }
                     }
                 });
 
@@ -213,3 +259,4 @@ public class MapEditorController implements Initializable {
 
 
 }
+
