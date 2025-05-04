@@ -22,6 +22,8 @@ import javafx.scene.control.ButtonBar;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -40,6 +42,7 @@ public class MapEditorController implements Initializable {
     @FXML private Button deleteModeBtn;
     @FXML private Button clearMapBtn;
     @FXML private Button saveMapBtn;
+    @FXML private ComboBox<String> mapSelectionCombo;
 
     private static final int TILE_SIZE = 64; // The tile size is based on the tile file name (64x64 is what is used currently)
 
@@ -161,6 +164,50 @@ public class MapEditorController implements Initializable {
         // Set initial mode to EDIT
         currentMode = EditorMode.EDIT;
         updateModeButtonStyles();
+
+        // Populate the map selection dropdown with example maps
+        mapSelectionCombo.getItems().addAll(
+            "Forest Path",
+            "Castle Defense",
+            "River Crossing",
+            "Mountain Pass",
+            "Desert Ambush",
+            "Jungle Trail"
+        );
+
+        // Add custom styling for the dropdown
+        mapSelectionCombo.setStyle("-fx-background-color: #555555; -fx-text-fill: white;");
+
+        // Add custom cell factory to style the items in the dropdown
+        mapSelectionCombo.setCellFactory(param -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (item != null && !empty) {
+                    setText(item);
+                    setStyle("-fx-background-color: #333333; -fx-text-fill: white;");
+                } else {
+                    setText(null);
+                }
+            }
+        });
+
+        // Style the dropdown button
+        mapSelectionCombo.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (item != null && !empty) {
+                    setText(item);
+                    setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+                } else {
+                    setText("Choose a map...");
+                    setStyle("-fx-text-fill: #CCCCCC; -fx-font-style: italic;");
+                }
+            }
+        });
     }
 
     /**
@@ -913,13 +960,42 @@ public class MapEditorController implements Initializable {
         DialogPane dialogPane = dialog.getDialogPane();
         
         // Create a VBox for the content with proper padding and alignment
-        VBox contentBox = new VBox(10);
+        VBox contentBox = new VBox(15);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.setPadding(new Insets(20, 20, 10, 20));
         
-        // Add header text with custom styling
+        // Add a decorative ribbon image - select based on action type
+        ImageView ribbonIcon = null;
+        String ribbonPath = "/com/example/assets/ui/Ribbon_Blue_3Slides.png"; // Default blue
+        
+        // Change ribbon color based on the dialog title/action
+        if (title.contains("Delete") || title.contains("Clear")) {
+            ribbonPath = "/com/example/assets/ui/Ribbon_Red_3Slides.png";
+        } else if (title.contains("Save")) {
+            ribbonPath = "/com/example/assets/ui/Ribbon_Yellow_3Slides.png";
+        }
+        
+        try {
+            Image iconImage = new Image(getClass().getResourceAsStream(ribbonPath));
+            ribbonIcon = new ImageView(iconImage);
+            ribbonIcon.setFitWidth(200);  // Make it wider to match the ribbon style
+            ribbonIcon.setFitHeight(40);  // Keep a reasonable height
+            ribbonIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            System.err.println("Could not load ribbon image: " + e.getMessage());
+        }
+        
+        // Add header text with custom styling - adjust color based on action type
         Label headerLabel = new Label(header);
-        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;");
+        String textColor = "#1565C0"; // Default blue
+        
+        if (title.contains("Delete") || title.contains("Clear")) {
+            textColor = "#C62828"; // Red for destructive actions
+        } else if (title.contains("Save")) {
+            textColor = "#F57F17"; // Dark yellow for save actions
+        }
+        
+        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: " + textColor + ";");
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setWrapText(true);
         
@@ -929,20 +1005,9 @@ public class MapEditorController implements Initializable {
         contentLabel.setWrapText(true);
         contentLabel.setAlignment(Pos.CENTER);
         
-        // Add a decorative image if desired (like a small tower or game element)
-        ImageView gameIcon = null;
-        try {
-            Image iconImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Button_Blue_3Slides.png"));
-            gameIcon = new ImageView(iconImage);
-            gameIcon.setFitHeight(30);
-            gameIcon.setPreserveRatio(true);
-        } catch (Exception e) {
-            // If image loading fails, continue without the image
-        }
-        
         // Add all elements to the content box
-        if (gameIcon != null) {
-            contentBox.getChildren().addAll(gameIcon, headerLabel, contentLabel);
+        if (ribbonIcon != null) {
+            contentBox.getChildren().addAll(ribbonIcon, headerLabel, contentLabel);
         } else {
             contentBox.getChildren().addAll(headerLabel, contentLabel);
         }
@@ -962,22 +1027,36 @@ public class MapEditorController implements Initializable {
         ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         dialogPane.getButtonTypes().add(okButtonType);
         
-        // Style the OK button to match the game buttons
+        // Style the OK button to match the action type
         Button okButton = (Button) dialogPane.lookupButton(okButtonType);
-        okButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        String buttonColor = "#4CAF50"; // Default green
+        String hoverColor = "#66BB6A"; // Default hover green
+        
+        if (title.contains("Delete") || title.contains("Clear")) {
+            buttonColor = "#d32f2f"; // Red button for destructive actions
+            hoverColor = "#ef5350"; // Red hover
+        } else if (title.contains("Save")) {
+            buttonColor = "#FFA000"; // Yellow/orange for save
+            hoverColor = "#FFB74D"; // Lighter yellow/orange for hover
+        }
+        
+        okButton.setStyle("-fx-background-color: " + buttonColor + "; -fx-text-fill: white; -fx-font-weight: bold;");
         
         // Add hover effect
+        final String finalButtonColor = buttonColor;
+        final String finalHoverColor = hoverColor;
+        
         okButton.setOnMouseEntered(e -> 
-            okButton.setStyle("-fx-background-color: #66BB6A; -fx-text-fill: white; -fx-font-weight: bold;")
+            okButton.setStyle("-fx-background-color: " + finalHoverColor + "; -fx-text-fill: white; -fx-font-weight: bold;")
         );
         okButton.setOnMouseExited(e -> 
-            okButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;")
+            okButton.setStyle("-fx-background-color: " + finalButtonColor + "; -fx-text-fill: white; -fx-font-weight: bold;")
         );
         
         // Show the dialog and wait for user response
         dialog.showAndWait();
     }
-    
+
     /**
      * Shows a custom-styled confirmation dialog that matches the game theme
      * 
@@ -992,26 +1071,32 @@ public class MapEditorController implements Initializable {
         DialogPane dialogPane = dialog.getDialogPane();
         
         // Create content layout
-        VBox contentBox = new VBox(10);
+        VBox contentBox = new VBox(15);
         contentBox.setAlignment(Pos.CENTER);
         contentBox.setPadding(new Insets(20, 20, 10, 20));
         
-        // Add warning icon
-        ImageView warningIcon = null;
-        try {
-            // You can replace this with a more appropriate warning icon from your assets
-            Image iconImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Button_Blue.png"));
-            warningIcon = new ImageView(iconImage);
-            warningIcon.setFitHeight(40);
-            warningIcon.setFitWidth(40);
-            warningIcon.setPreserveRatio(true);
-        } catch (Exception e) {
-            // If image loading fails, continue without the image
+        // For confirmation dialogs, use the ribbon color based on the action being confirmed
+        ImageView ribbonIcon = null;
+        String ribbonPath = "/com/example/assets/ui/Ribbon_Blue_3Slides.png"; // Default
+        
+        // For clear map action (which is the primary use case for confirmations)
+        if (title.contains("Clear")) {
+            ribbonPath = "/com/example/assets/ui/Ribbon_Red_3Slides.png";
         }
         
-        // Add header text with custom styling
+        try {
+            Image iconImage = new Image(getClass().getResourceAsStream(ribbonPath));
+            ribbonIcon = new ImageView(iconImage);
+            ribbonIcon.setFitWidth(200);  // Make it wider to match the ribbon style
+            ribbonIcon.setFitHeight(40);  // Keep a reasonable height
+            ribbonIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            System.err.println("Could not load ribbon image: " + e.getMessage());
+        }
+        
+        // Add header text with custom styling (red for warning is appropriate for confirmation dialogs)
         Label headerLabel = new Label(header);
-        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #d32f2f;"); // Red for warning
+        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #C62828;"); // Red for warning
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setWrapText(true);
         
@@ -1022,8 +1107,8 @@ public class MapEditorController implements Initializable {
         contentLabel.setAlignment(Pos.CENTER);
         
         // Add all elements to the content box
-        if (warningIcon != null) {
-            contentBox.getChildren().addAll(warningIcon, headerLabel, contentLabel);
+        if (ribbonIcon != null) {
+            contentBox.getChildren().addAll(ribbonIcon, headerLabel, contentLabel);
         } else {
             contentBox.getChildren().addAll(headerLabel, contentLabel);
         }
@@ -1044,7 +1129,8 @@ public class MapEditorController implements Initializable {
         ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialogPane.getButtonTypes().addAll(confirmButtonType, cancelButtonType);
         
-        // Style the buttons
+        // Style the buttons - keep red for the confirm button in confirmation dialogs
+        // as it represents a potentially destructive action
         Button confirmButton = (Button) dialogPane.lookupButton(confirmButtonType);
         confirmButton.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold;");
         
