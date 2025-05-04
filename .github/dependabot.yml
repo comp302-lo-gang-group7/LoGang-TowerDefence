@@ -1,16 +1,13 @@
 version: 2
 updates:
   - package-ecosystem: "maven"
-    directory: "/" # Root directory of your project
+    directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-    ignore:
-      # Ignore specific versions or ranges if needed
     allow:
       - dependency-type: "all"
-
-    # Optionally, group updates by type or scope
+    ignore: []
     groups:
       javafx:
         patterns:
@@ -21,7 +18,6 @@ updates:
       maven-plugins:
         patterns:
           - "org.apache.maven.plugins:*"
-
-    # Optionally, set labels for PRs
     labels:
       - "dependencies"
+      - "maven"
