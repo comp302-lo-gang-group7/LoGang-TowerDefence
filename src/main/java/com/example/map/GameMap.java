@@ -1,27 +1,20 @@
 package com.example.map;
 
-import com.example.ui.SpriteProvider;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import com.example.utils.Point;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 public class GameMap
 {
 	private final int width, height;
-	private final ObjectProperty<SpriteProvider>[][] tiles;
+	private final ObservableMap<Point, Tile> tiles = FXCollections.observableHashMap();
+	private final ObservableList<Entity> entities = FXCollections.observableArrayList();
 
 	public GameMap( int width, int height )
 	{
 		this.width = width;
 		this.height = height;
-		this.tiles = new ObjectProperty[height][];
-		for ( int i = 0; i < height; i++ )
-		{
-			this.tiles[i] = new ObjectProperty[width];
-			for ( int j = 0; j < width; j++ )
-			{
-				this.tiles[i][j] = new SimpleObjectProperty<>();
-			}
-		}
 	}
 
 	public int getWidth()
@@ -36,21 +29,45 @@ public class GameMap
 
 	public Tile getTile(int x, int y)
 	{
-		return ( Tile ) tiles[y][x].get();
+		return getTile(new Point(x, y));
 	}
 
-	public ObjectProperty<SpriteProvider> getTileProperty( int x, int y)
+	public Tile getTile(Point point)
 	{
-		return tiles[y][x];
+		if ( point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height )
+		{
+			return tiles.get(point);
+		}
+		else
+		{
+			throw new IllegalArgumentException("Tile x or y out of map bounds");
+		}
 	}
 
-	public void setTile(int x, int y, Tile tile)
+	public void setTile( int x, int y, Tile tile )
 	{
-		tiles[y][x].set(tile);
+		setTile(new Point(x, y), tile);
 	}
 
-	public ObjectProperty<SpriteProvider>[][] getTiles()
+	public void setTile(Point point, Tile tile)
+	{
+		if ( point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height )
+		{
+			tiles.put(point, tile);
+		}
+		else
+		{
+			throw new IllegalArgumentException("Tile x or y out of map bounds");
+		}
+	}
+
+	public ObservableMap<Point, Tile> getTiles()
 	{
 		return tiles;
+	}
+
+	public ObservableList<Entity> getEntities()
+	{
+		return entities;
 	}
 }

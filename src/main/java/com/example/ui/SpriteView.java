@@ -2,48 +2,54 @@ package com.example.ui;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.image.ImageView;
 
 public class SpriteView
 {
-	private final StringProperty imagePath = new SimpleStringProperty();
 	private final ObjectProperty<SpriteProvider> spriteProvider = new SimpleObjectProperty<>();
 	private final ImageView imageView = new ImageView();
 
+	// Processes Sprite changing the Image.
+	private final ChangeListener<String> imagePathListener = ( _, s, t1 ) ->
+	{
+		if ( t1 != null )
+			imageView.setImage(ImageLoader.getImage(t1));
+		else
+			imageView.setImage(null);
+	};
+
 	public SpriteView()
 	{
-		imagePath.addListener((obs, oldPath, newPath) -> {
-			if ( newPath != null )
-				imageView.setImage(ImageLoader.getImage(newPath));
-			else
-				imageView.setImage(null);
-		});
-		spriteProviderProperty().addListener(( spriteObs, oldSprite, newSprite) -> {
-			if ( oldSprite != null )
-			{
-				imagePathProperty().unbind();
-			}
-			if ( newSprite != null )
-			{
-				imagePathProperty().bindBidirectional(newSprite.getSprite().imagePathProperty());
-			}
-			else
-			{
-				imageView.setImage(null);
-			}
-		});
 	}
 
-	public String getImagePath()
+	public void setSpriteProvider( SpriteProvider provider )
 	{
-		return imagePath.get();
+		if ( provider == null )
+		{
+			imageView.setImage(null);
+			return;
+		}
+
+		imageView.setImage(ImageLoader.getImage(provider.getSprite().getImagePath()));
+		provider.getSprite().imagePathProperty().addListener(imagePathListener);
+
+		imageView.setX(provider.getSprite().getX());
+		imageView.setY(provider.getSprite().getY());
+		imageView.xProperty().bind(provider.getSprite().xProperty());
+		imageView.yProperty().bind(provider.getSprite().yProperty());
 	}
 
-	public StringProperty imagePathProperty()
+	public void replaceSpriteProvider ( SpriteProvider newProvider, SpriteProvider oldProvider )
 	{
-		return imagePath;
+		if ( oldProvider != null )
+		{
+			oldProvider.getSprite().imagePathProperty().removeListener(imagePathListener);
+			imageView.xProperty().unbind();
+			imageView.yProperty().unbind();
+		}
+		setSpriteProvider(newProvider);
 	}
 
 	public ImageView getImageView()

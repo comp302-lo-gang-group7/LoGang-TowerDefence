@@ -1,8 +1,10 @@
 package com.example.ui;
 
+import com.example.controllers.GameScreenController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,7 +23,15 @@ public class ViewManager {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = fxmlLoader.load();
-            stage.setScene(new Scene(root));
+
+            Scene scene = new Scene(root);
+            if ( fxmlLoader.getController() instanceof GameScreenController )
+            {
+                GameScreenController gameScreenController = fxmlLoader.getController();
+                scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
+            }
+
+            stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);

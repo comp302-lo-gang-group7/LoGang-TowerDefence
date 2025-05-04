@@ -2,20 +2,26 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.image.*?>
-
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controllers.GameScreenController">
+      fx:controller="com.example.controllers.GameScreenController"
+fx:id="root">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
     <Label fx:id="debugText"/>
-    <GridPane fx:id="imageGrid" alignment="CENTER" minHeight="256.0" minWidth="256.0" hgap="1.0" vgap="1.0">
+    <Pane fx:id="testPane" prefWidth="300.0" prefHeight="300.0" layoutX="500.0">
         <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
         </padding>
-    </GridPane>
+        <GridPane fx:id="imageGrid" alignment="CENTER" minHeight="256.0" minWidth="256.0" hgap="1.0" vgap="1.0">
+<!--            <padding>-->
+<!--                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>-->
+<!--            </padding>-->
+        </GridPane>
+    </Pane>
 </VBox>
