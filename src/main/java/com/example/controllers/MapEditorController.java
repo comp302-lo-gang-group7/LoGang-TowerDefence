@@ -16,6 +16,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.ButtonBar;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.layout.VBox;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -899,14 +905,83 @@ public class MapEditorController implements Initializable {
     }
 
     /**
-     * Shows an information alert with the given title, header, and content
+     * Shows a custom-styled game-themed dialog instead of the standard alert
      */
     private void showInfoAlert(String title, String header, String content) {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+        // Create a custom dialog instead of the standard alert
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        
+        // Remove the header area completely
+        dialog.setHeaderText(null);
+        
+        // Create a custom dialog pane with game-themed styling
+        DialogPane dialogPane = dialog.getDialogPane();
+        
+        // Create a VBox for the content with proper padding and alignment
+        VBox contentBox = new VBox(10);
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.setPadding(new Insets(20, 20, 10, 20));
+        
+        // Add header text with custom styling
+        Label headerLabel = new Label(header);
+        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2E7D32;");
+        headerLabel.setAlignment(Pos.CENTER);
+        headerLabel.setWrapText(true);
+        
+        // Add content text with custom styling
+        Label contentLabel = new Label(content);
+        contentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+        contentLabel.setWrapText(true);
+        contentLabel.setAlignment(Pos.CENTER);
+        
+        // Add a decorative image if desired (like a small tower or game element)
+        ImageView gameIcon = null;
+        try {
+            Image iconImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Button_Blue_3Slides.png"));
+            gameIcon = new ImageView(iconImage);
+            gameIcon.setFitHeight(30);
+            gameIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            // If image loading fails, continue without the image
+        }
+        
+        // Add all elements to the content box
+        if (gameIcon != null) {
+            contentBox.getChildren().addAll(gameIcon, headerLabel, contentLabel);
+        } else {
+            contentBox.getChildren().addAll(headerLabel, contentLabel);
+        }
+        
+        // Set the background to match the grass texture
+        String backgroundStyle = "-fx-background-color: #9dc183;"; // Same green as the map
+        dialogPane.setStyle(backgroundStyle);
+        
+        // Add a border to make it look like a game panel
+        contentBox.setStyle("-fx-background-color: #e9f5e3; -fx-background-radius: 5; " +
+                          "-fx-border-color: #5d7542; -fx-border-width: 3; -fx-border-radius: 5;");
+        
+        // Set the content
+        dialogPane.setContent(contentBox);
+        
+        // Add OK button but style it to match the game
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().add(okButtonType);
+        
+        // Style the OK button to match the game buttons
+        Button okButton = (Button) dialogPane.lookupButton(okButtonType);
+        okButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
+        
+        // Add hover effect
+        okButton.setOnMouseEntered(e -> 
+            okButton.setStyle("-fx-background-color: #66BB6A; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        okButton.setOnMouseExited(e -> 
+            okButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        
+        // Show the dialog and wait for user response
+        dialog.showAndWait();
     }
     
     /**
