@@ -770,7 +770,7 @@ public class MapEditorController implements Initializable {
     }
 
     /**
-     * Sets up button images with icons
+     * Sets up button images with text labels
      */
     private void setupButtonImages() {
         // Get the image views inside each button
@@ -786,31 +786,25 @@ public class MapEditorController implements Initializable {
         editModeContent.getChildren().addAll(editModeImage, editModeLabel);
         editModeBtn.setGraphic(editModeContent);
         
-        // Add trash icon overlay to delete button
-        Image trashIcon = new Image(getClass().getResourceAsStream("/com/example/assets/ui/kutowerbuttons4.png"));
-        ImageView trashIconView = new ImageView(trashIcon);
-        trashIconView.setFitWidth(20);
-        trashIconView.setFitHeight(20);
+        // Add text overlay to the delete mode button
         StackPane deleteContent = new StackPane();
-        deleteContent.getChildren().addAll(deleteModeImage, trashIconView);
+        Label deleteModeLabel = new Label("DELETE");
+        deleteModeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        deleteContent.getChildren().addAll(deleteModeImage, deleteModeLabel);
         deleteModeBtn.setGraphic(deleteContent);
         
-        // Add clear icon overlay
-        Image clearIcon = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Ribbon_Yellow_3Slides.png"));
-        ImageView clearIconView = new ImageView(clearIcon);
-        clearIconView.setFitWidth(20);
-        clearIconView.setFitHeight(20);
+        // Add text overlay to the clear map button
         StackPane clearContent = new StackPane();
-        clearContent.getChildren().addAll(clearMapImage, clearIconView);
+        Label clearLabel = new Label("CLEAR MAP");
+        clearLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        clearContent.getChildren().addAll(clearMapImage, clearLabel);
         clearMapBtn.setGraphic(clearContent);
         
-        // Add save icon overlay
-        Image saveIcon = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Button_Blue_Pressed.png"));
-        ImageView saveIconView = new ImageView(saveIcon);
-        saveIconView.setFitWidth(20);
-        saveIconView.setFitHeight(20);
+        // Add text overlay to the save button
         StackPane saveContent = new StackPane();
-        saveContent.getChildren().addAll(saveMapImage, saveIconView);
+        Label saveLabel = new Label("SAVE");
+        saveLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        saveContent.getChildren().addAll(saveMapImage, saveLabel);
         saveMapBtn.setGraphic(saveContent);
     }
 
@@ -841,14 +835,14 @@ public class MapEditorController implements Initializable {
      */
     @FXML
     private void clearMap() {
-        // Ask for confirmation
-        Alert confirmAlert = new Alert(AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Clear Map");
-        confirmAlert.setHeaderText("Are you sure you want to clear the map?");
-        confirmAlert.setContentText("This action will reset all tiles to grass and cannot be undone.");
+        // Ask for confirmation with custom styled dialog
+        boolean confirmed = showCustomConfirmDialog(
+            "Clear Map",
+            "Are you sure you want to clear the map?",
+            "This action will reset all tiles to grass and cannot be undone."
+        );
         
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (confirmed) {
             // Visual feedback - briefly change button image
             animateButtonClick(clearMapBtn, clearMapImage);
             
@@ -982,6 +976,99 @@ public class MapEditorController implements Initializable {
         
         // Show the dialog and wait for user response
         dialog.showAndWait();
+    }
+    
+    /**
+     * Shows a custom-styled confirmation dialog that matches the game theme
+     * 
+     * @return true if user confirmed, false otherwise
+     */
+    private boolean showCustomConfirmDialog(String title, String header, String content) {
+        // Create a custom dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(null);
+        
+        DialogPane dialogPane = dialog.getDialogPane();
+        
+        // Create content layout
+        VBox contentBox = new VBox(10);
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.setPadding(new Insets(20, 20, 10, 20));
+        
+        // Add warning icon
+        ImageView warningIcon = null;
+        try {
+            // You can replace this with a more appropriate warning icon from your assets
+            Image iconImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/Button_Blue.png"));
+            warningIcon = new ImageView(iconImage);
+            warningIcon.setFitHeight(40);
+            warningIcon.setFitWidth(40);
+            warningIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            // If image loading fails, continue without the image
+        }
+        
+        // Add header text with custom styling
+        Label headerLabel = new Label(header);
+        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #d32f2f;"); // Red for warning
+        headerLabel.setAlignment(Pos.CENTER);
+        headerLabel.setWrapText(true);
+        
+        // Add content text with custom styling
+        Label contentLabel = new Label(content);
+        contentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+        contentLabel.setWrapText(true);
+        contentLabel.setAlignment(Pos.CENTER);
+        
+        // Add all elements to the content box
+        if (warningIcon != null) {
+            contentBox.getChildren().addAll(warningIcon, headerLabel, contentLabel);
+        } else {
+            contentBox.getChildren().addAll(headerLabel, contentLabel);
+        }
+        
+        // Set the background to match the grass texture
+        String backgroundStyle = "-fx-background-color: #9dc183;"; // Same green as the map
+        dialogPane.setStyle(backgroundStyle);
+        
+        // Add a border to make it look like a game panel
+        contentBox.setStyle("-fx-background-color: #e9f5e3; -fx-background-radius: 5; " +
+                           "-fx-border-color: #5d7542; -fx-border-width: 3; -fx-border-radius: 5;");
+        
+        // Set the content
+        dialogPane.setContent(contentBox);
+        
+        // Add OK and Cancel buttons
+        ButtonType confirmButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialogPane.getButtonTypes().addAll(confirmButtonType, cancelButtonType);
+        
+        // Style the buttons
+        Button confirmButton = (Button) dialogPane.lookupButton(confirmButtonType);
+        confirmButton.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold;");
+        
+        Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
+        cancelButton.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-font-weight: bold;");
+        
+        // Add hover effects
+        confirmButton.setOnMouseEntered(e -> 
+            confirmButton.setStyle("-fx-background-color: #ef5350; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        confirmButton.setOnMouseExited(e -> 
+            confirmButton.setStyle("-fx-background-color: #d32f2f; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        
+        cancelButton.setOnMouseEntered(e -> 
+            cancelButton.setStyle("-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        cancelButton.setOnMouseExited(e -> 
+            cancelButton.setStyle("-fx-background-color: #757575; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        
+        // Show the dialog and process the result
+        Optional<ButtonType> result = dialog.showAndWait();
+        return result.isPresent() && result.get() == confirmButtonType;
     }
     
     /**

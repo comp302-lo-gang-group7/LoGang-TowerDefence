@@ -35,50 +35,50 @@
                     </tooltip>
                 </Button>
                 
-                <!-- Delete Mode Button with trash icon -->
-                <Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode"
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="40" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Switch to delete mode to remove tiles" />
-                    </tooltip>
-                </Button>
-                
-                <!-- Clear Map Button -->
-                <Button fx:id="clearMapBtn" onAction="#clearMap"
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="40" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Clear the entire map" />
-                    </tooltip>
-                </Button>
-                
-                <!-- Save Map Button -->
-                <Button fx:id="saveMapBtn" onAction="#saveMap"
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="40" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Save the current map" />
-                    </tooltip>
-                </Button>
+            <!-- Delete Mode Button with text -->
+<Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode"
+        style="-fx-background-color: transparent; -fx-padding: 0;">
+    <graphic>
+        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
+            <image>
+                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
+            </image>
+        </ImageView>
+    </graphic>
+    <tooltip>
+        <Tooltip text="Switch to delete mode to remove tiles" />
+    </tooltip>
+</Button>
+
+<!-- Clear Map Button -->
+<Button fx:id="clearMapBtn" onAction="#clearMap"
+        style="-fx-background-color: transparent; -fx-padding: 0;">
+    <graphic>
+        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
+            <image>
+                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
+            </image>
+        </ImageView>
+    </graphic>
+    <tooltip>
+        <Tooltip text="Clear the entire map" />
+    </tooltip>
+</Button>
+
+<!-- Save Map Button -->
+<Button fx:id="saveMapBtn" onAction="#saveMap"
+        style="-fx-background-color: transparent; -fx-padding: 0;">
+    <graphic>
+        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
+            <image>
+                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
+            </image>
+        </ImageView>
+    </graphic>
+    <tooltip>
+        <Tooltip text="Save the current map" />
+    </tooltip>
+</Button>
                 <padding>
                     <Insets right="10" />
                 </padding>
