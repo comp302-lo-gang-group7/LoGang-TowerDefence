@@ -12,7 +12,11 @@ import javafx.scene.paint.Color;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class MapEditorController implements Initializable {
 
@@ -48,6 +52,46 @@ public class MapEditorController implements Initializable {
     private int selectedOffsetRow = 0, selectedOffsetCol = 0;
     private Image selectedGroupImage;
     private ImageView[][] mapTileImageViews = new ImageView[MAP_ROWS][MAP_COLS];
+    
+    // Track which tiles belong to which group
+    private Map<String, Set<String>> groupTileMap = new HashMap<>();
+
+    // Helper method to generate a unique key for a tile position
+    private String tileKey(int row, int col) {
+        return row + "," + col;
+    }
+    
+    // Helper method to get the group key from a member tile
+    private String getGroupKeyForTile(int row, int col) {
+        String tileKey = tileKey(row, col);
+        for (Map.Entry<String, Set<String>> entry : groupTileMap.entrySet()) {
+            if (entry.getValue().contains(tileKey)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+    
+    // Helper method to reset a tile to grass
+    private void resetTileToGrass(int row, int col) {
+        if (row >= 0 && row < MAP_ROWS && col >= 0 && col < MAP_COLS) {
+            mapTileImageViews[row][col].setImage(defaultGrassTile.getImage());
+        }
+    }
+    
+    // Method to reset an entire group of tiles
+    private void resetGroup(String groupKey) {
+        if (groupKey != null && groupTileMap.containsKey(groupKey)) {
+            Set<String> tilesToReset = groupTileMap.get(groupKey);
+            for (String tilePos : tilesToReset) {
+                String[] parts = tilePos.split(",");
+                int r = Integer.parseInt(parts[0]);
+                int c = Integer.parseInt(parts[1]);
+                resetTileToGrass(r, c);
+            }
+            groupTileMap.remove(groupKey);
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -159,18 +203,45 @@ public class MapEditorController implements Initializable {
 
                 final int R = row, C = col;
                 cell.setOnMouseClicked(e -> {
+                    // Check if the current tile or any adjacent tiles are part of a group
+                    Set<String> groupsToReset = new HashSet<>();
+                    
+                    // Handle placing group tiles (e.g., castle)
                     if (selectedIsGroup) {
-
-                        PixelReader groupReader = selectedGroupImage.getPixelReader();
                         int baseRow = R - selectedOffsetRow;
                         int baseCol = C - selectedOffsetCol;
-
+                        
+                        // Check if any of the tiles in the 2x2 group are already part of a group
                         for (int dr = 0; dr < 2; dr++) {
                             for (int dc = 0; dc < 2; dc++) {
                                 int rr = baseRow + dr;
                                 int cc = baseCol + dc;
                                 if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
-
+                                    String groupKey = getGroupKeyForTile(rr, cc);
+                                    if (groupKey != null) {
+                                        groupsToReset.add(groupKey);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Reset all groups that would be affected
+                        for (String groupKey : groupsToReset) {
+                            resetGroup(groupKey);
+                        }
+                        
+                        // Create a new group key and set of tiles
+                        String newGroupKey = "group_" + System.currentTimeMillis();
+                        Set<String> newGroupTiles = new HashSet<>();
+                        
+                        PixelReader groupReader = selectedGroupImage.getPixelReader();
+                        
+                        // Place the new group tiles
+                        for (int dr = 0; dr < 2; dr++) {
+                            for (int dc = 0; dc < 2; dc++) {
+                                int rr = baseRow + dr;
+                                int cc = baseCol + dc;
+                                if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
                                     WritableImage sub = new WritableImage(
                                             groupReader,
                                             dc * TILE_SIZE,
@@ -179,17 +250,29 @@ public class MapEditorController implements Initializable {
                                             TILE_SIZE
                                     );
                                     ImageView iv = mapTileImageViews[rr][cc];
-                                    // composite on grass
                                     iv.setImage(compositeTile(
                                             defaultGrassTile.getImage(),
                                             sub
                                     ));
+                                    
+                                    // Add this tile to the group
+                                    newGroupTiles.add(tileKey(rr, cc));
                                 }
                             }
                         }
+                        
+                        // Register the new group
+                        groupTileMap.put(newGroupKey, newGroupTiles);
                     } else {
-
+                        // Handle placing single tiles
                         if (selectedImage != null) {
+                            // Check if this tile is part of a group
+                            String groupKey = getGroupKeyForTile(R, C);
+                            if (groupKey != null) {
+                                resetGroup(groupKey);
+                            }
+                            
+                            // Place the new tile
                             imageView.setImage(compositeTile(
                                     defaultGrassTile.getImage(),
                                     selectedImage
