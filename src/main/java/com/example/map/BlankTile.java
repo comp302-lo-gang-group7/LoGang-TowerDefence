@@ -4,8 +4,8 @@ import javafx.scene.image.Image;
 
 public class BlankTile extends Tile
 {
-	public BlankTile( int x, int y, String spritePath )
+	public BlankTile( int x, int y, Image image )
 	{
-		super(x, y, spritePath);
+		super(x, y, image);
 	}
 }

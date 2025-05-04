@@ -8,6 +8,7 @@ import com.example.map.BlankTile;
 import com.example.map.EmptyLotTile;
 import com.example.map.Entity;
 import com.example.map.GameMap;
+import com.example.ui.ImageLoader;
 import com.example.ui.SpriteProvider;
 import com.example.utils.Point;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -48,7 +49,7 @@ public class GameModel
 		{
 			for ( int x = 0; x < map.getWidth(); x++ )
 			{
-				map.setTile(x, y, new EmptyLotTile(x, y, "/com/example/assets/towers/TowerSlotwithoutbackground128.png"));
+				map.setTile(x, y, new EmptyLotTile(x, y, ImageLoader.getImage("/com/example/assets/towers/TowerSlotwithoutbackground128.png")));
 			}
 		}
 		towers = new ArrayList<>();
@@ -62,17 +63,17 @@ public class GameModel
 		{
 			case ARCHER:
 			{
-				tower = new ArcherTower(x, y, 10, 10, "/com/example/assets/towers/Tower_archer256.png");
+				tower = new ArcherTower(x, y, 10, 10, ImageLoader.getImage("/com/example/assets/towers/Tower_archer256.png"));
 				break;
 			}
 			case MAGE:
 			{
-				tower = new MageTower(x, y, 5, 30, "/com/example/assets/towers/Tower_spell256.png");
+				tower = new MageTower(x, y, 5, 30, ImageLoader.getImage("/com/example/assets/towers/Tower_spell256.png"));
 				break;
 			}
 			case ARTILLERY:
 			{
-				tower = new ArtilleryTower(x, y, 7, 50, "/com/example/assets/towers/tower_bomb256.png");
+				tower = new ArtilleryTower(x, y, 7, 50, ImageLoader.getImage("/com/example/assets/towers/tower_bomb256.png"));
 				break;
 			}
 			default:

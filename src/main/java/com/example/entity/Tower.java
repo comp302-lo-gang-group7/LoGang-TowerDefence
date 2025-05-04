@@ -10,9 +10,9 @@ public abstract class Tower extends Tile implements Damageable
 	private final HP hp;
 	private final int baseDamage;
 
-	public Tower(int x, int y, int baseHp, int baseDamage, String spritePath)
+	public Tower(int x, int y, int baseHp, int baseDamage, Image image)
 	{
-		super(x, y, spritePath);
+		super(x, y, image);
 		this.baseDamage = baseDamage;
 		this.hp = new HP(baseHp);
 	}

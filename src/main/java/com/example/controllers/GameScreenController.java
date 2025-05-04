@@ -6,6 +6,7 @@ import com.example.game.GameEventListener;
 import com.example.game.GameModel;
 import com.example.map.Entity;
 import com.example.map.Tile;
+import com.example.ui.ImageLoader;
 import com.example.ui.SpriteView;
 import com.example.utils.Point;
 import javafx.collections.ListChangeListener;
@@ -14,6 +15,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -156,7 +158,7 @@ public class GameScreenController implements GameEventListener
 			}
 		});
 
-		testEntity = new Entity(50.0, 50.0, "/tower_archer.png");
+		testEntity = new Entity(50.0, 50.0, ImageLoader.getImage("/tower_archer.png"));
 		gameModel.map.getEntities().add(testEntity);
 	}
 
