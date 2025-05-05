@@ -22,6 +22,21 @@
     <top>
         <ToolBar style="-fx-background-color: #333333; -fx-padding: 5px;">
             <HBox spacing="15" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <!-- Home Button -->
+                <Button fx:id="homeBtn" onAction="#goToHome" 
+                        style="-fx-background-color: transparent; -fx-padding: 0;">
+                    <graphic>
+                        <ImageView fx:id="homeImage" fitWidth="85" fitHeight="30" preserveRatio="false">
+                            <image>
+                                <Image url="@../assets/ui/Ribbon_Blue_3Slides.png"/>
+                            </image>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Return to home screen" />
+                    </tooltip>
+                </Button>
+                
                 <!-- Map Selection Label and Dropdown -->
                 <Label text="Select Map:" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;"/>
                 <ComboBox fx:id="mapSelectionCombo" prefWidth="240" promptText="Choose a map..."

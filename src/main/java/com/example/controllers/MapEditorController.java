@@ -43,6 +43,8 @@ public class MapEditorController implements Initializable {
     @FXML private Button clearMapBtn;
     @FXML private Button saveMapBtn;
     @FXML private ComboBox<String> mapSelectionCombo;
+    @FXML private Button homeBtn;
+    @FXML private ImageView homeImage;
 
     private static final int TILE_SIZE = 64; // The tile size is based on the tile file name (64x64 is what is used currently)
 
@@ -821,10 +823,18 @@ public class MapEditorController implements Initializable {
      */
     private void setupButtonImages() {
         // Get the image views inside each button
+        homeImage = (ImageView) homeBtn.getGraphic();
         editModeImage = (ImageView) editModeBtn.getGraphic();
         deleteModeImage = (ImageView) deleteModeBtn.getGraphic();
         clearMapImage = (ImageView) clearMapBtn.getGraphic();
         saveMapImage = (ImageView) saveMapBtn.getGraphic();
+        
+        // Add text overlay to the home button
+        StackPane homeContent = new StackPane();
+        Label homeLabel = new Label("HOME");
+        homeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+        homeContent.getChildren().addAll(homeImage, homeLabel);
+        homeBtn.setGraphic(homeContent);
         
         // Add text overlay to the edit mode button
         StackPane editModeContent = new StackPane();
@@ -930,7 +940,19 @@ public class MapEditorController implements Initializable {
      */
     private void animateButtonClick(Button button, ImageView imageView) {
         Image originalImage = imageView.getImage();
-        imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        
+        // Set the appropriate pressed button image based on button type
+        if (button == homeBtn) {
+            imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        } else if (button == editModeBtn) {
+            imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        } else if (button == deleteModeBtn) {
+            imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        } else if (button == clearMapBtn) {
+            imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        } else if (button == saveMapBtn) {
+            imageView.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
+        }
         
         // Reset after a short delay
         new Thread(() -> {
@@ -1163,6 +1185,42 @@ public class MapEditorController implements Initializable {
     private void showStatusMessage(String message) {
         System.out.println(message);
         // In a real implementation, this would update a status bar or show a toast notification
+    }
+
+    /**
+     * Returns to the main menu/home screen
+     */
+    @FXML
+    private void goToHome() {
+        // Show a confirmation dialog if there are unsaved changes
+        boolean canLeave = true;
+        
+        // Check if there are any non-grass tiles on the map
+        boolean hasChanges = false;
+        for (int row = 0; row < MAP_ROWS; row++) {
+            for (int col = 0; col < MAP_COLS; col++) {
+                if (mapTileImageViews[row][col].getImage() != defaultGrassTile.getImage()) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+            if (hasChanges) break;
+        }
+        
+        if (hasChanges) {
+            canLeave = showCustomConfirmDialog(
+                "Leave Editor", 
+                "Are you sure you want to leave?", 
+                "Any unsaved changes will be lost."
+            );
+        }
+        
+        if (canLeave) {
+            Main.getViewManager().resizeWindow(640, 450); // Standard home page size
+            
+            // Then navigate to the home page
+            Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
+        }
     }
 }
 
