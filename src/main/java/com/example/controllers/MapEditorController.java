@@ -674,98 +674,95 @@ public class MapEditorController implements Initializable {
     private void toggleEditMode() {
         currentMode = EditorMode.EDIT;
         updateModeButtonStyles();
-        MapEditorUtils.showInfoAlert("Edit Mode", "Edit mode activated", 
-                "You can now place tiles on the map by selecting from the palette and clicking on the grid.", this);
+        MapEditorUtils.showInfoAlert("Edit Mode", 
+                               "You can now place tiles on the map by selecting from the palette and clicking on the grid.", 
+                               this);
     }
 
     @FXML
     private void toggleDeleteMode() {
         currentMode = EditorMode.DELETE;
         updateModeButtonStyles();
-        MapEditorUtils.showInfoAlert("Delete Mode", "Delete mode activated", 
-                "You can now remove tiles from the map by clicking on them.", this);
+        MapEditorUtils.showInfoAlert("Delete Mode", 
+                               "You can now remove tiles from the map by clicking on them.", 
+                               this);
     }
 
     @FXML
-    private void clearMap() {
-        // Ask for confirmation
-        boolean confirmed = MapEditorUtils.showCustomConfirmDialog(
-            "Clear Map",
-            "Are you sure you want to clear the map?",
-            "This action will reset all tiles to grass and cannot be undone.",
-            this
-        );
-        
-        if (confirmed) {
-            // Visual feedback
-            MapEditorUtils.animateButtonClick(
-                clearMapBtn, 
-                clearMapImage, 
-                BUTTON_BLUE_PRESSED, 
-                this
-            );
-            
-            // Clear all tiles
-            for (int row = 0; row < MAP_ROWS; row++) {
-                for (int col = 0; col < MAP_COLS; col++) {
-                    resetTileToGrass(row, col);
-                }
-            }
-            
-            // Clear all group mappings
-            groupTileMap.clear();
-            
-            // Show success message
-            MapEditorUtils.showInfoAlert(
-                "Map Cleared", 
-                "Map cleared successfully", 
-                "All tiles have been reset to the default grass tile.",
-                this
-            );
-        }
-    }
-
-
-    @FXML
-    private void saveMap() {
+private void clearMap() {
+    // Ask for confirmation
+    boolean confirmed = MapEditorUtils.showCustomConfirmDialog(
+        "Clear Map",
+        "Are you sure you want to clear the map? This action will reset all tiles to grass and cannot be undone.",
+        this
+    );
+    
+    if (confirmed) {
+        // Visual feedback
         MapEditorUtils.animateButtonClick(
-            saveMapBtn, 
-            saveMapImage, 
+            clearMapBtn, 
+            clearMapImage, 
             BUTTON_BLUE_PRESSED, 
             this
         );
         
-        // Actual save functionality would go here
+        // Clear all tiles
+        for (int row = 0; row < MAP_ROWS; row++) {
+            for (int col = 0; col < MAP_COLS; col++) {
+                resetTileToGrass(row, col);
+            }
+        }
         
-  
+        // Clear all group mappings
+        groupTileMap.clear();
+        
+        // Show success message
         MapEditorUtils.showInfoAlert(
-            "Map Saved", 
-            "Map saved successfully", 
-            "Your map has been saved and can now be used in the game.",
+            "Map Cleared", 
+            "All tiles have been reset to the default grass tile.",
+            this
+        );
+    }
+}
+
+
+    @FXML
+private void saveMap() {
+    MapEditorUtils.animateButtonClick(
+        saveMapBtn, 
+        saveMapImage, 
+        BUTTON_BLUE_PRESSED, 
+        this
+    );
+    
+    // Actual save functionality would go here
+    
+    MapEditorUtils.showInfoAlert(
+        "Map Saved", 
+        "Your map has been saved and can now be used in the game.",
+        this
+    );
+}
+    
+
+@FXML
+private void goToHome() {
+    boolean canLeave = true;
+    boolean hasChanges = checkForUnsavedChanges();
+    
+    if (hasChanges) {
+        canLeave = MapEditorUtils.showCustomConfirmDialog(
+            "Leave Editor", 
+            "Are you sure you want to leave? Any unsaved changes will be lost.",
             this
         );
     }
     
-
-    @FXML
-    private void goToHome() {
-        boolean canLeave = true;
-        boolean hasChanges = checkForUnsavedChanges();
-        
-        if (hasChanges) {
-            canLeave = MapEditorUtils.showCustomConfirmDialog(
-                "Leave Editor", 
-                "Are you sure you want to leave?", 
-                "Any unsaved changes will be lost.",
-                this
-            );
-        }
-        
-        if (canLeave) {
-            Main.getViewManager().resizeWindow(640, 450);
-            Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
-        }
+    if (canLeave) {
+        Main.getViewManager().resizeWindow(640, 450);
+        Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
     }
+}
     
     private boolean checkForUnsavedChanges() {
         for (int row = 0; row < MAP_ROWS; row++) {
