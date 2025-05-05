@@ -15,10 +15,13 @@
            fx:controller="com.example.controllers.CreateGameController"
            prefWidth="640.0" prefHeight="450.0">
 
-   <!-- Background with grass-colored gradient -->
+   <!-- Background with grass image -->
    <StackPane>
-      <Rectangle width="640" height="450" 
-                 style="-fx-fill: linear-gradient(to bottom, #a9d18e, #7fb069, #9dc183);" />
+      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
+         <image>
+            <Image url="@../assets/grass_furkan.png" />
+         </image>
+      </ImageView>
    </StackPane>
 
    <!-- Decorative green header bar -->
@@ -112,29 +115,30 @@
    </BorderPane>
     
    <!-- Corner decorative elements -->
-   <StackPane pickOnBounds="false">
-      <!-- Top-left corner -->
-      <Rectangle width="40" height="40" 
-                style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;">
-         <StackPane.alignment>TOP_LEFT</StackPane.alignment>
-      </Rectangle>
-      
-      <!-- Top-right corner -->
-      <Rectangle width="40" height="40" 
-                style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;">
-         <StackPane.alignment>TOP_RIGHT</StackPane.alignment>
-      </Rectangle>
-      
-      <!-- Bottom-left corner -->
-      <Rectangle width="40" height="40" 
-                style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;">
-         <StackPane.alignment>BOTTOM_LEFT</StackPane.alignment>
-      </Rectangle>
-      
-      <!-- Bottom-right corner -->
-      <Rectangle width="40" height="40" 
-                style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;">
-         <StackPane.alignment>BOTTOM_RIGHT</StackPane.alignment>
-      </Rectangle>
-   </StackPane>
+   <BorderPane pickOnBounds="false">
+      <top>
+         <StackPane alignment="TOP_LEFT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </top>
+      <right>
+         <StackPane alignment="TOP_RIGHT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </right>
+      <left>
+         <StackPane alignment="BOTTOM_LEFT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </left>
+      <bottom>
+         <StackPane alignment="BOTTOM_RIGHT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </bottom>
+   </BorderPane>
 </StackPane>

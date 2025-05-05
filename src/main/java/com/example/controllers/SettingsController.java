@@ -8,6 +8,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.paint.Color;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,27 +38,96 @@ public class SettingsController extends Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Set up the ComboBoxes
-        difficultyCombo.getItems().addAll("Easy", "Normal", "Hard", "Expert");
-        difficultyCombo.setValue("Normal");
-        
-        gameSpeedCombo.getItems().addAll("Slow", "Normal", "Fast", "Turbo");
-        gameSpeedCombo.setValue("Normal");
+        setupComboBoxes();
         
         // Set up slider listeners to update labels
-        musicVolumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            int value = newVal.intValue();
-            musicVolumeLabel.setText(value + "%");
-        });
+        setupSliders();
         
-        sfxVolumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-            int value = newVal.intValue();
-            sfxVolumeLabel.setText(value + "%");
-        });
+        // Apply wooden style to checkboxes
+        setupCheckboxes();
         
         // Add wooden styling to all buttons
         applyButtonStyle(saveBtn);
         applyButtonStyle(resetBtn);
         applyButtonStyle(homeBtn);
+    }
+    
+    private void setupComboBoxes() {
+        // Configure difficulty combo box
+        difficultyCombo.getItems().addAll("Easy", "Normal", "Hard", "Expert");
+        difficultyCombo.setValue("Normal");
+        styleComboBox(difficultyCombo);
+        
+        // Configure game speed combo box
+        gameSpeedCombo.getItems().addAll("Slow", "Normal", "Fast", "Turbo");
+        gameSpeedCombo.setValue("Normal");
+        styleComboBox(gameSpeedCombo);
+    }
+    
+    private void styleComboBox(ComboBox<String> comboBox) {
+        // Set custom cell factory for items in dropdown
+        comboBox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new ListCell<String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        
+                        if (item != null && !empty) {
+                            setText(item);
+                            setTextFill(Color.web("#e8d9b5"));
+                            setStyle("-fx-background-color: #5d4228; -fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 13px;");
+                        } else {
+                            setText(null);
+                        }
+                    }
+                };
+            }
+        });
+        
+        // Set custom button cell (what's shown when closed)
+        comboBox.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                
+                if (item != null && !empty) {
+                    setText(item);
+                    setTextFill(Color.web("#e8d9b5"));
+                    setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 13px;");
+                } else {
+                    setText(null);
+                }
+            }
+        });
+    }
+    
+    private void setupSliders() {
+        // Format music volume slider
+        musicVolumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int value = newVal.intValue();
+            musicVolumeLabel.setText(value + "%");
+        });
+        
+        // Format sound effects slider
+        sfxVolumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            int value = newVal.intValue();
+            sfxVolumeLabel.setText(value + "%");
+        });
+    }
+    
+    private void setupCheckboxes() {
+        // Apply wooden style to all checkboxes
+        String checkboxStyle = "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI';" +
+                           "-fx-font-size: 13px; -fx-background-color: transparent;" +
+                           "-fx-border-color: transparent;" +
+                           "-fx-mark-color: #a07748;";
+                           
+        showHintsCb.setStyle(checkboxStyle);
+        autoSaveCb.setStyle(checkboxStyle);
+        fullscreenCb.setStyle(checkboxStyle);
+        showFpsCb.setStyle(checkboxStyle);
     }
     
     private void applyButtonStyle(Button button) {

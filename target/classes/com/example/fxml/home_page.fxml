@@ -16,10 +16,13 @@
            fx:controller="com.example.controllers.MainMenuController" 
            prefWidth="640.0" prefHeight="450.0">
 
-   <!-- Background with grass-colored gradient -->
+   <!-- Background with grass image -->
    <StackPane>
-      <Rectangle width="640" height="450" 
-                 style="-fx-fill: linear-gradient(to bottom, #a9d18e, #7fb069, #9dc183);" />
+      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
+         <image>
+            <Image url="@../assets/grass_furkan.png" />
+         </image>
+      </ImageView>
    </StackPane>
 
    <!-- Decorative green header bar -->
@@ -129,7 +132,6 @@
     
    <!-- Corner decorative elements -->
    <BorderPane pickOnBounds="false">
-      <!-- Use proper BorderPane positioning properties -->
       <top>
          <StackPane alignment="TOP_LEFT">
             <Rectangle width="40" height="40" 
