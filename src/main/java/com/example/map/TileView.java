@@ -13,13 +13,19 @@ public class TileView extends ImageView implements Serializable {
         this.tileType = tileType;
     }
 
+    public void setType(TileEnum tileType) {
+        this.tileType = tileType;
+    }
+
     @Override
     public String toJson() throws JsonProcessingException {
         return "";
     }
 
     @Override
-    public void fromJson(String json) throws JsonProcessingException {
+    public void fromJson(String json) throws JsonProcessingException { }
 
+    public TileEnum getType() {
+        return this.tileType;
     }
 }

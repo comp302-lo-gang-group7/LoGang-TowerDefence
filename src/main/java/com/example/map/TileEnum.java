@@ -70,4 +70,11 @@ public enum TileEnum {
         }
         throw new IllegalArgumentException("Invalid flat index: " + index);
     }
+
+    public static TileEnum fromRowCol(int row, int col) {
+        for (TileEnum tile : values()) {
+            if (tile.row == row && tile.col == col) return tile;
+        }
+        throw new IllegalArgumentException("No tile found for row: " + row + ", col: " + col);
+    }
 }
