@@ -734,9 +734,12 @@ public class MapEditorController implements Initializable {
             BUTTON_BLUE_PRESSED, 
             this
         );
-        
-        // Actual save functionality would go here
-        
+
+        for (int i = 0; i < MAP_ROWS; i++) {
+            for (int j = 0; j < MAP_COLS; j++) {
+                System.out.println(this.mapTileImageViews[i][j].getImage());
+            }
+        }
   
         MapEditorUtils.showInfoAlert(
             "Map Saved", 
