@@ -2,6 +2,7 @@ package com.example.map;
 
 import com.example.storage_manager.Serializable;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sun.jdi.StringReference;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -19,7 +20,7 @@ public class TileView extends ImageView implements Serializable {
 
     @Override
     public String toJson() throws JsonProcessingException {
-        return "";
+        return this.getType().name();
     }
 
     @Override
