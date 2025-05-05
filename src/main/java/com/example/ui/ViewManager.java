@@ -1,5 +1,7 @@
 package com.example.ui;
 
+import com.example.controllers.GameScreenController;
+import javafx.scene.input.MouseEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.ImageCursor;
 import javafx.scene.Parent;
@@ -53,6 +55,13 @@ public class ViewManager {
             Scene scene = ViewManager.getScene();
             scene.setRoot(root);
 
+            // If this is the GameScreen scene, inject mouse click event filter
+            if ( fxmlLoader.getController() instanceof GameScreenController )
+            {
+                GameScreenController gameScreenController = fxmlLoader.getController();
+                scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
+            }
+          
             // Load a new fxml onto the scene
             stage.setScene(ViewManager.getScene());
             stage.show();

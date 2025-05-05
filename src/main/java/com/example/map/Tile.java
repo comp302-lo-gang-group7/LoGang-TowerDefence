@@ -1,34 +1,31 @@
 package com.example.map;
 
+import com.example.controllers.GameScreenController;
 import com.example.ui.SpriteProvider;
 import com.example.ui.Sprite;
+import javafx.scene.image.Image;
 
 public class Tile implements SpriteProvider
 {
-	private final int x, y;
-	private final Sprite sprite = new Sprite();
+	private final int tileX, tileY;
+	private final Sprite sprite;
 
-	public Tile ( int x, int y )
+	public Tile( int tileX, int tileY, Image image )
 	{
-		this.x = x;
-		this.y = y;
+		this.tileX = tileX;
+		this.tileY = tileY;
+		this.sprite = new Sprite(image, GameScreenController.TILE_SIZE * tileX, GameScreenController.TILE_SIZE * tileY);
+		// TODO: WHICH PART IS RESPONSIBLE FOR CONVERTING TILE COORDINATES INTO GLOBAL COORDINATES?
 	}
 
-	public Tile( int x, int y, String spritePath )
+	public int getTileX()
 	{
-		this.x = x;
-		this.y = y;
-		sprite.setImagePath(spritePath);
+		return tileX;
 	}
 
-	public int getX()
+	public int getTileY()
 	{
-		return x;
-	}
-
-	public int getY()
-	{
-		return y;
+		return tileY;
 	}
 
 	public Sprite getSprite()

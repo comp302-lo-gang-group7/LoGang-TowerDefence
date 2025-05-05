@@ -1,28 +1,68 @@
 package com.example.ui;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.scene.image.Image;
 
 public class Sprite
 {
-	private final StringProperty imagePath = new SimpleStringProperty();
+	private final DoubleProperty x = new SimpleDoubleProperty();
+	private final DoubleProperty y = new SimpleDoubleProperty();
+	private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
 
 	public Sprite()
 	{
+		image.set(null);
+		x.set(0.0);
+		y.set(0.0);
 	}
 
-	public String getImagePath()
+	public Sprite( Image image, double x, double y )
 	{
-		return imagePath.get();
+		this.image.set(image);
+		this.x.set(x);
+		this.y.set(y);
 	}
 
-	public StringProperty imagePathProperty()
+	public double getX()
 	{
-		return imagePath;
+		return x.get();
 	}
 
-	public void setImagePath(String imagePath)
+	public DoubleProperty xProperty()
 	{
-		this.imagePath.set(imagePath);
+		return x;
+	}
+
+	public double getY()
+	{
+		return y.get();
+	}
+
+	public DoubleProperty yProperty()
+	{
+		return y;
+	}
+
+	/// This method must be called by the SpriteProvider when it should no longer exist!!!
+	public void unbind()
+	{
+		image.unbind();
+		x.unbind();
+		y.unbind();
+	}
+
+	public Image getImage()
+	{
+		return image.get();
+	}
+
+	public void setImage(Image image)
+	{
+		this.image.set(image);
+	}
+
+	public ObjectProperty<Image> imageProperty()
+	{
+		return image;
 	}
 }

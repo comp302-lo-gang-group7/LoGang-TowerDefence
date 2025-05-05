@@ -6,10 +6,17 @@ import com.example.entity.MageTower;
 import com.example.entity.Tower;
 import com.example.map.BlankTile;
 import com.example.map.EmptyLotTile;
+import com.example.map.Entity;
 import com.example.map.GameMap;
+import com.example.ui.ImageLoader;
+import com.example.ui.SpriteProvider;
+import com.example.utils.Point;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.image.Image;
+import java.security.SecureRandom;
 
 
 import java.io.FileInputStream;
@@ -42,42 +49,52 @@ public class GameModel
 		{
 			for ( int x = 0; x < map.getWidth(); x++ )
 			{
-				map.setTile(x, y, new EmptyLotTile(x, y, "/empty_lot.png"));
+				map.setTile(x, y, new EmptyLotTile(x, y, ImageLoader.getImage("/com/example/assets/towers/TowerSlotwithoutbackground128.png")));
 			}
 		}
 		towers = new ArrayList<>();
 		listeners = new HashSet<>();
 	}
 
-	private void createTower(int x, int y, TowerType type)
+	public Tower createTower( int x, int y, TowerType type )
 	{
 		Tower tower;
 		switch (type)
 		{
 			case ARCHER:
 			{
-				tower = new ArcherTower(x, y, 10, 10, "/com/example/assets/towers/Tower_archer256.png");
+				tower = new ArcherTower(x, y, 10, 10, ImageLoader.getImage("/com/example/assets/towers/Tower_archer256.png"));
 				break;
 			}
 			case MAGE:
 			{
-				tower = new MageTower(x, y, 5, 30, "/com/example/assets/towers/Tower_spell256.png");
+				tower = new MageTower(x, y, 5, 30, ImageLoader.getImage("/com/example/assets/towers/Tower_spell256.png"));
 				break;
 			}
 			case ARTILLERY:
 			{
-				tower = new ArtilleryTower(x, y, 7, 50, "/com/example/assets/towers/tower_bomb256.png");
+				tower = new ArtilleryTower(x, y, 7, 50, ImageLoader.getImage("/com/example/assets/towers/tower_bomb256.png"));
 				break;
 			}
 			default:
-				throw new IllegalArgumentException("Invalid tower type");
+			{
+				tower = null;
+				System.err.println("Unhandled Tower type: " + type);
+				break;
+			}
 		}
 		towers.add(tower);
+
 		map.setTile(x, y, tower);
 
 		debugMessage.set(String.format("%s tower placed at (%d, %d)", type.name(), x, y));
-//		postEvent(new GameDataEvent<>(GameEvent.GameEventType.MESSAGE,
-//				String.format("%s tower placed at (%d, %d)", type.name(), x, y)));
+
+		return tower;
+	}
+
+	public boolean isValidConstructionLot( int x, int y )
+	{
+		return map.getTile(x, y) instanceof EmptyLotTile;
 	}
 
 	public void addListener(GameEventListener listener)
