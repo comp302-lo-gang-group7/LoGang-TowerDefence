@@ -1,27 +1,211 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.SettingsController" prefHeight="450.0" prefWidth="640.0">
-   <children>
-      <ImageView fitWidth="640.0" fitHeight="450.0">
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="com.example.controllers.SettingsController"
+           prefWidth="640.0" prefHeight="450.0">
+
+   <!-- Background with grass image -->
+   <StackPane>
+      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
          <image>
-            <Image url="@../assets/background.jpg" />
+            <Image url="@../assets/grass_furkan.png" />
          </image>
       </ImageView>
-      <VBox alignment="CENTER" spacing="20.0">
-         <Text text="This is the settings page">
-            <font>
-               <Font size="19.0"/>
-            </font>
+   </StackPane>
+
+   <!-- Decorative green header bar -->
+   <BorderPane pickOnBounds="false">
+      <top>
+         <StackPane>
+            <Rectangle width="640" height="60" 
+                       style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
+               <effect>
+                  <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
+               </effect>
+            </Rectangle>
+            <Text fill="#e8f4d9" text="GAME SETTINGS" 
+                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
+               <effect>
+                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
+               </effect>
+            </Text>
+         </StackPane>
+      </top>
+   </BorderPane>
+
+   <!-- Main content -->
+   <VBox alignment="CENTER" spacing="20.0">
+      <!-- Title with stylized rectangle backdrop -->
+      <StackPane>
+         <!-- Title backdrop - Wooden-styled rectangle -->
+         <Rectangle width="500" height="60" arcWidth="20" arcHeight="20" 
+                    style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
+            <effect>
+               <DropShadow color="#00000099" height="15" radius="7" width="15" />
+            </effect>
+         </Rectangle>
+         
+         <Text fill="#f0e3c8" text="Game Preferences" 
+               style="-fx-font-family: 'Segoe UI'; -fx-font-size: 28px; -fx-font-weight: bold;">
+            <effect>
+               <DropShadow color="#00000080" height="5" radius="2" width="5" />
+            </effect>
          </Text>
-         <Button onAction="#goToHomePage" text="Home"/>
-      </VBox>
-   </children>
+      </StackPane>
+         
+      <!-- Settings panel -->
+      <StackPane>
+         <!-- Settings panel backdrop -->
+         <Rectangle width="520" height="290" arcWidth="15" arcHeight="15" 
+                    style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
+            <effect>
+               <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
+            </effect>
+         </Rectangle>
+            
+         <!-- Settings controls -->
+         <VBox alignment="CENTER" spacing="12" maxWidth="480">
+            <padding>
+               <Insets top="15" right="20" bottom="15" left="20" />
+            </padding>
+            
+            <!-- Volume settings -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+               <Label text="MUSIC VOLUME:" textFill="#e8d9b5" prefWidth="130"
+                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
+               <Slider fx:id="musicVolumeSlider" prefWidth="240" value="75"
+                       style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
+               <Label fx:id="musicVolumeLabel" text="75%" textFill="#e8d9b5" prefWidth="40"
+                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
+            </HBox>
+            
+            <HBox alignment="CENTER_LEFT" spacing="10">
+               <Label text="SOUND EFFECTS:" textFill="#e8d9b5" prefWidth="130"
+                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
+               <Slider fx:id="sfxVolumeSlider" prefWidth="240" value="100" 
+                       style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
+               <Label fx:id="sfxVolumeLabel" text="100%" textFill="#e8d9b5" prefWidth="40"
+                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
+            </HBox>
+            
+            <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
+
+            <!-- Gameplay settings -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+               <Label text="DIFFICULTY:" textFill="#e8d9b5" prefWidth="130"
+                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
+               <ComboBox fx:id="difficultyCombo" prefWidth="200" 
+                         style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; 
+                                -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
+                                -fx-border-width: 1; -fx-border-radius: 3;" />
+            </HBox>
+            
+            <HBox alignment="CENTER_LEFT" spacing="10">
+               <Label text="GAME SPEED:" textFill="#e8d9b5" prefWidth="130"
+                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
+               <ComboBox fx:id="gameSpeedCombo" prefWidth="200" 
+                         style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; 
+                                -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
+                                -fx-border-width: 1; -fx-border-radius: 3;" />
+            </HBox>
+            
+            <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
+
+            <!-- Toggle options (with fixed-width HBoxes for consistent alignment) -->
+            <HBox alignment="CENTER" spacing="30">
+               <HBox alignment="CENTER_LEFT" prefWidth="220">
+                  <CheckBox fx:id="showHintsCb" text="Show Gameplay Hints" textFill="#e8d9b5" 
+                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" selected="true" />
+               </HBox>
+               <HBox alignment="CENTER_LEFT" prefWidth="210">
+                  <CheckBox fx:id="autoSaveCb" text="Auto-Save Game" textFill="#e8d9b5" 
+                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" selected="true" />
+               </HBox>
+            </HBox>
+            
+            <HBox alignment="CENTER" spacing="30">
+               <HBox alignment="CENTER_LEFT" prefWidth="220">
+                  <CheckBox fx:id="fullscreenCb" text="Fullscreen Mode" textFill="#e8d9b5" 
+                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
+               </HBox>
+               <HBox alignment="CENTER_LEFT" prefWidth="210">
+                  <CheckBox fx:id="showFpsCb" text="Show FPS Counter" textFill="#e8d9b5" 
+                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
+               </HBox>
+            </HBox>
+            
+            <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
+            
+            <!-- Action buttons -->
+            <HBox alignment="CENTER" spacing="20">
+               <Button fx:id="saveBtn" text="Save Settings" prefWidth="140" prefHeight="35" 
+                      onAction="#saveSettings" styleClass="menu-button" />
+                      
+               <Button fx:id="resetBtn" text="Reset to Default" prefWidth="140" prefHeight="35" 
+                      onAction="#resetSettings" styleClass="menu-button" />
+                      
+               <Button fx:id="homeBtn" text="Back to Home" prefWidth="140" prefHeight="35" 
+                      onAction="#goToHomePage" styleClass="menu-button" />
+            </HBox>
+         </VBox>
+      </StackPane>
+   </VBox>
+    
+   <!-- Decorative green footer bar -->
+   <BorderPane pickOnBounds="false">
+      <bottom>
+         <StackPane>
+            <Rectangle width="640" height="40" 
+                       style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
+               <effect>
+                  <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
+               </effect>
+            </Rectangle>
+         </StackPane>
+      </bottom>
+   </BorderPane>
+    
+   <!-- Corner decorative elements -->
+   <BorderPane pickOnBounds="false">
+      <top>
+         <StackPane alignment="TOP_LEFT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </top>
+      <right>
+         <StackPane alignment="TOP_RIGHT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </right>
+      <left>
+         <StackPane alignment="BOTTOM_LEFT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </left>
+      <bottom>
+         <StackPane alignment="BOTTOM_RIGHT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </bottom>
+   </BorderPane>
 </StackPane>
