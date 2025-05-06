@@ -20,7 +20,7 @@
    <StackPane>
       <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
          <image>
-            <Image url="@../assets/grass_furkan.png" />
+            <Image url="@../assets/home_page_grass.png" />
          </image>
       </ImageView>
    </StackPane>
