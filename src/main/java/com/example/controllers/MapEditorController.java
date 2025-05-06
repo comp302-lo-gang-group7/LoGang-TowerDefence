@@ -753,18 +753,7 @@ private void clearMap() {
                 System.out.println(this.mapTileViews[i][j].getType());
             }
         }
-        
-        // Clear all group mappings
- //      groupTileMap.clear();
-        
-        // Show success message
-//         MapEditorUtils.showInfoAlert(
-//             "Map Cleared", 
-//             "All tiles have been reset to the default grass tile.",
-//             this
-//         );
     }
-}
     
 
 @FXML
