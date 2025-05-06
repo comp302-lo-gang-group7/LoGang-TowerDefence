@@ -1,6 +1,7 @@
 module com.example.game {
 	requires javafx.controls;
 	requires javafx.fxml;
+	requires jdk.jdi;
 	requires com.fasterxml.jackson.databind;
 
 	exports com.example.entity;
