@@ -766,7 +766,6 @@ private void clearMap() {
             MapEditorUtils.showInfoAlert(
                     "Map Saved",
                     "Map saved successfully",
-                    "Your map has been saved and can now be used in the game.",
                     this
             );
         } catch (Exception e) {
