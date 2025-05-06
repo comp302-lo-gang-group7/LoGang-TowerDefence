@@ -3,7 +3,6 @@ module com.example.game {
 	requires javafx.fxml;
 	requires com.fasterxml.jackson.databind;
 
-
 	exports com.example.entity;
     opens com.example.entity to javafx.fxml;
 	exports com.example.map;
