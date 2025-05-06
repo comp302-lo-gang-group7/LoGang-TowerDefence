@@ -1,12 +1,11 @@
 package com.example.ui;
 
 import com.example.controllers.GameScreenController;
-import javafx.scene.input.MouseEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.ImageCursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -20,27 +19,30 @@ public class ViewManager {
     private static Scene scene;
 
     public ViewManager(Stage stage) {
-        this.stage = stage; // Ensure it is initialized outside the scope of failure.
+        this.stage = stage;
 
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/home_page.fxml")); // Initially set to home page.
-            Parent root = fxmlLoader.load();
-            this.scene = new Scene(root); // Set initial scene in view manager.
-
-            // This is a check for the 01.png cursor image in /assets/ui. In case the image resource is not found, we default to a normal cursor.
-            InputStream stream = getClass().getResourceAsStream("/com/example/assets/ui/01.png");
-            if (stream != null) {
-                Image image = new Image(stream);
-                scene.setCursor(new ImageCursor(image));
-            } else {
-                System.err.println("Custom cursor image not found!");
-            }
-
+            // Load custom title bar
+            FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
+            Parent titleBar = titleBarLoader.load();
+            
+            // Load initial content (home page)
+            FXMLLoader contentLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/home_page.fxml"));
+            Parent content = contentLoader.load();
+            
+            // Create root container with title bar at top and content area
+            VBox root = new VBox();
+            root.getChildren().addAll(titleBar, content);
+            
+            // Create scene
+            this.scene = new Scene(root);
+            stage.setScene(scene);
+            
         } catch (IOException e) {
-            System.out.printf("An IOException occurred during switch to FXML home page in ViewManager constructor, error: %s%n", e);
+            System.out.printf("An IOException occurred during ViewManager initialization, error: %s%n", e);
             e.printStackTrace();
         } catch (Exception unexpectedError) {
-            System.out.printf("An unexpected error occured in ViewManager constructor, error: %s%n", unexpectedError);
+            System.out.printf("An unexpected error occurred in ViewManager constructor, error: %s%n", unexpectedError);
             unexpectedError.printStackTrace();
         }
     }
@@ -49,22 +51,20 @@ public class ViewManager {
         try {
             // Load new fxml page
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = fxmlLoader.load();
-
-            // Get original scene with correct setup
-            Scene scene = ViewManager.getScene();
-            scene.setRoot(root);
-
+            Parent content = fxmlLoader.load();
+            
+            // Get the current root layout which contains the title bar
+            VBox root = (VBox) scene.getRoot();
+            
+            // Keep the title bar and replace the content
+            root.getChildren().set(1, content);
+            
             // If this is the GameScreen scene, inject mouse click event filter
-            if ( fxmlLoader.getController() instanceof GameScreenController )
-            {
+            if (fxmlLoader.getController() instanceof GameScreenController) {
                 GameScreenController gameScreenController = fxmlLoader.getController();
                 scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
             }
-          
-            // Load a new fxml onto the scene
-            stage.setScene(ViewManager.getScene());
-            stage.show();
+            
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
             e.printStackTrace();
@@ -76,18 +76,20 @@ public class ViewManager {
      * @param width
      * @param height
      */
-    public void resizeWindow(int width, int height) {
-        stage.setWidth(width);
-        stage.setHeight(height);
-    }
-
+  public void resizeWindow(int width, int height) {
+    stage.setWidth(width);
+    stage.setHeight(height + 25); // Updated from 30 to 25 for smaller title bar
+}
 
     public void terminateApplication() {
-        // NOTE: WE NEED TO HAVE SOME CLEANUP STEP HERE DOWN THE LINE
         stage.close();
     }
 
     public static Scene getScene() {
         return scene;
+    }
+    
+    public void setPrimaryStage(Stage stage) {
+        // Method kept for compatibility
     }
 }

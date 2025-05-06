@@ -1,4 +1,4 @@
-name: JavaFX Maven Build
+name: JavaFX Maven Build and Run Main
 
 on:
   push:
