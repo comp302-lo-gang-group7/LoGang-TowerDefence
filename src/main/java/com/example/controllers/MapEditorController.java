@@ -737,6 +737,7 @@ private void clearMap() {
             }
         }
     }
+}
 
 
     @FXML
