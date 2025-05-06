@@ -1,6 +1,8 @@
 package com.example.controllers;
 
 import com.example.main.Main;
+import com.example.map.TileEnum;
+import com.example.map.TileView;
 import com.example.utils.MapEditorUtils;
 
 import javafx.fxml.FXML;
@@ -72,15 +74,18 @@ public class MapEditorController implements Initializable {
 
     // Tile management
     private Image tileset;
-    private ImageView defaultGrassTile;
-    private ImageView[][] mapTileImageViews = new ImageView[MAP_ROWS][MAP_COLS];
+    private TileView defaultGrassTile;
+    private TileView[][] mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
     
     // Selection state
     private Image selectedImage;
-    private ImageView selectedTileView;
+    private TileView selectedTileView;
+    private TileEnum selectedTileType;
+
     private boolean selectedIsGroup = false;
     private int selectedOffsetRow = 0, selectedOffsetCol = 0;
     private Image selectedGroupImage;
+    private int selectedGroupOriginRow, selectedGroupOriginCol;
     private Map<Pane, Boolean> selectedCellMap = new HashMap<>();
     
     // Group tracking
@@ -88,7 +93,7 @@ public class MapEditorController implements Initializable {
     
     // Drag and drop state
     private Pane dragSourceCell = null;
-    private ImageView dragSourceImageView = null;
+    private TileView dragSourceTileView = null;
     private boolean isDraggingGroup = false;
     private String draggedGroupKey = null;
     private int dragSourceRow = -1;
@@ -218,7 +223,9 @@ public class MapEditorController implements Initializable {
             for (int col = 0; col < PALETTE_COLS; col++) {
                 WritableImage tileImage = new WritableImage(reader, col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 
-                ImageView tileView = new ImageView(tileImage);
+                TileEnum tileType = TileEnum.fromRowCol(row, col); // This figures out the tile type based on its position.
+
+                TileView tileView = new TileView(tileImage, tileType);
                 tileView.setFitWidth(TILE_SIZE);
                 tileView.setFitHeight(TILE_SIZE);
                 tileView.setPreserveRatio(false);
@@ -245,7 +252,7 @@ public class MapEditorController implements Initializable {
         }
     }
     
-    private void setupPaletteCellInteractions(Pane paletteCell, ImageView tileView, 
+    private void setupPaletteCellInteractions(Pane paletteCell, TileView tileView,
                                             Image tileImage, PixelReader reader, int row, int col) {
         // Apply hover styles with different colors for roads vs structures
         paletteCell.setOnMouseEntered(e -> {
@@ -299,18 +306,27 @@ public class MapEditorController implements Initializable {
         });
     }
     
-    private void selectTile(int row, int col, ImageView tileView, Image tileImage, 
+    private void selectTile(int row, int col, TileView tileView, Image tileImage,
                           PixelReader reader, Pane paletteCell) {
         // Handle castle/group tile selection (bottom two rows, first two columns)
         if (row >= PALETTE_ROWS - 2 && col < 2) {
             selectedIsGroup = true;
             selectedOffsetRow = row - (PALETTE_ROWS - 2);
             selectedOffsetCol = col;
-            selectedGroupImage = new WritableImage(reader, 0, (PALETTE_ROWS - 2) * TILE_SIZE, 
-                                                TILE_SIZE * 2, TILE_SIZE * 2);
+            // compute the **absolute** top-left in the tileset:
+            selectedGroupOriginRow = row - selectedOffsetRow;
+            selectedGroupOriginCol = col - selectedOffsetCol;
+            selectedGroupImage = new WritableImage(
+                    reader,
+                    selectedGroupOriginCol * TILE_SIZE,
+                    selectedGroupOriginRow * TILE_SIZE,
+                    TILE_SIZE * 2,
+                    TILE_SIZE * 2
+            );
         } else {
             selectedIsGroup = false;
             selectedImage = tileImage;
+            selectedTileType = tileView.getType();
         }
 
         // Reset previous selection styling
@@ -347,12 +363,12 @@ public class MapEditorController implements Initializable {
     private void createMapGrid() {
         for (int row = 0; row < MAP_ROWS; row++) {
             for (int col = 0; col < MAP_COLS; col++) {
-                ImageView imageView = new ImageView(defaultGrassTile.getImage());
-                imageView.setFitWidth(TILE_SIZE);
-                imageView.setFitHeight(TILE_SIZE);
-                mapTileImageViews[row][col] = imageView;
+                TileView tileView = new TileView(defaultGrassTile.getImage(), defaultGrassTile.getType());
+                tileView.setFitWidth(TILE_SIZE);
+                tileView.setFitHeight(TILE_SIZE);
+                mapTileViews[row][col] = tileView;
 
-                Pane cell = new Pane(imageView);
+                Pane cell = new Pane(tileView);
                 cell.setPrefSize(TILE_SIZE, TILE_SIZE);
                 cell.setStyle("-fx-border-color: #666; -fx-border-width: 1; -fx-background-color: transparent;");
 
@@ -362,7 +378,7 @@ public class MapEditorController implements Initializable {
 
                 final int r = row, c = col;
                 
-                setupDragAndDrop(cell, imageView, r, c);
+                setupDragAndDrop(cell, tileView, r, c);
 
                 cell.setOnMouseClicked(e -> {
                     if (!e.isConsumed() && e.getButton() == MouseButton.PRIMARY) {
@@ -375,10 +391,10 @@ public class MapEditorController implements Initializable {
         }
     }
     
-    private void setupDragAndDrop(Pane cell, ImageView imageView, int row, int col) {
+    private void setupDragAndDrop(Pane cell, TileView tileView, int row, int col) {
         cell.setOnDragDetected(e -> {
             // Only allow dragging if this isn't a default grass tile
-            if (imageView.getImage() != defaultGrassTile.getImage()) {
+            if (tileView.getImage() != defaultGrassTile.getImage()) {
                 // Check if this is part of a group
                 String groupKey = getGroupKeyForTile(row, col);
                 if (groupKey != null) {
@@ -389,16 +405,16 @@ public class MapEditorController implements Initializable {
                 }
                 
                 dragSourceCell = cell;
-                dragSourceImageView = imageView;
+                dragSourceTileView = tileView;
                 dragSourceRow = row;
                 dragSourceCol = col;
-                draggedImage = imageView.getImage();
+                draggedImage = tileView.getImage();
                 
                 Dragboard db = cell.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent content = new ClipboardContent();
                 content.putString("tile");
                 db.setContent(content);
-                db.setDragView(imageView.getImage());
+                db.setDragView(tileView.getImage());
                 e.consume();
             }
         });
@@ -451,7 +467,7 @@ public class MapEditorController implements Initializable {
     
     private void resetDragState() {
         dragSourceCell = null;
-        dragSourceImageView = null;
+        dragSourceTileView = null;
         isDraggingGroup = false;
         draggedGroupKey = null;
         dragSourceRow = -1;
@@ -477,93 +493,97 @@ public class MapEditorController implements Initializable {
             }
         }
     }
-    
+
     private void placeGroupTile(int row, int col) {
         int baseRow = row - selectedOffsetRow;
         int baseCol = col - selectedOffsetCol;
-        
-        // Check if any of the tiles in the 2x2 group are already part of a group
+
+        // reset any overlapping groups
         Set<String> groupsToReset = new HashSet<>();
         for (int dr = 0; dr < 2; dr++) {
             for (int dc = 0; dc < 2; dc++) {
-                int rr = baseRow + dr;
-                int cc = baseCol + dc;
+                int rr = baseRow + dr, cc = baseCol + dc;
                 if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
-                    String groupKey = getGroupKeyForTile(rr, cc);
-                    if (groupKey != null) {
-                        groupsToReset.add(groupKey);
-                    }
+                    String key = getGroupKeyForTile(rr, cc);
+                    if (key != null) groupsToReset.add(key);
                 }
             }
         }
-        
-        // Reset all groups that would be affected
-        for (String groupKey : groupsToReset) {
-            resetGroup(groupKey);
-        }
-        
-        // Create a new group key and set of tiles
+        groupsToReset.forEach(this::resetGroup);
+
         String newGroupKey = "group_" + System.currentTimeMillis();
         Set<String> newGroupTiles = new HashSet<>();
-        
-        PixelReader groupReader = selectedGroupImage.getPixelReader();
-        
-        // Place the new group tiles
+        PixelReader reader = selectedGroupImage.getPixelReader();
+
         for (int dr = 0; dr < 2; dr++) {
             for (int dc = 0; dc < 2; dc++) {
-                int rr = baseRow + dr;
-                int cc = baseCol + dc;
-                if (rr >= 0 && rr < MAP_ROWS && cc >= 0 && cc < MAP_COLS) {
-                    WritableImage sub = new WritableImage(
-                            groupReader,
-                            dc * TILE_SIZE,
-                            dr * TILE_SIZE,
-                            TILE_SIZE,
-                            TILE_SIZE
-                    );
-                    ImageView iv = mapTileImageViews[rr][cc];
-                    iv.setImage(MapEditorUtils.compositeTile(
-                            defaultGrassTile.getImage(),
-                            sub,
-                            TILE_SIZE,
-                            WHITE_THRESHOLD
-                    ));
-                    
-                    // Add this tile to the group
-                    newGroupTiles.add(tileKey(rr, cc));
-                }
+                int rr = baseRow + dr, cc = baseCol + dc;
+                if (rr < 0 || rr >= MAP_ROWS || cc < 0 || cc >= MAP_COLS) continue;
+
+                // cut out the 64×64 sub-image
+                WritableImage sub = new WritableImage(
+                        reader,
+                        dc * TILE_SIZE,
+                        dr * TILE_SIZE,
+                        TILE_SIZE,
+                        TILE_SIZE
+                );
+
+                TileView iv = mapTileViews[rr][cc];
+                // set the composite image
+                iv.setImage(MapEditorUtils.compositeTile(
+                        defaultGrassTile.getImage(),
+                        sub,
+                        TILE_SIZE,
+                        WHITE_THRESHOLD
+                ));
+
+                // **new**: determine which sheet‐cell this is and assign enum
+                int sheetRow = selectedGroupOriginRow + dr;
+                int sheetCol = selectedGroupOriginCol + dc;
+                iv.setType(TileEnum.fromRowCol(sheetRow, sheetCol));
+
+                newGroupTiles.add(tileKey(rr, cc));
             }
         }
-        
-        // Register the new group
+
         groupTileMap.put(newGroupKey, newGroupTiles);
     }
-    
+
+
     private void placeSingleTile(int row, int col) {
-        // Check if this tile is part of a group
+        // if it was part of a group we reset it first…
         String groupKey = getGroupKeyForTile(row, col);
-        if (groupKey != null) {
-            resetGroup(groupKey);
-        }
-        
-        mapTileImageViews[row][col].setImage(MapEditorUtils.compositeTile(
+        if (groupKey != null) resetGroup(groupKey);
+
+        TileView tv = mapTileViews[row][col];
+        tv.setImage(MapEditorUtils.compositeTile(
                 defaultGrassTile.getImage(),
                 selectedImage,
                 TILE_SIZE,
                 WHITE_THRESHOLD
         ));
+        tv.setType(selectedTileType); // Set the enum correctly
     }
-    
+
+
     private void moveSingleTile(int targetRow, int targetCol) {
-        // Check if target is part of a group and reset if needed
-        String targetGroupKey = getGroupKeyForTile(targetRow, targetCol);
-        if (targetGroupKey != null) {
-            resetGroup(targetGroupKey);
-        }
-        
-        mapTileImageViews[targetRow][targetCol].setImage(draggedImage);
-        mapTileImageViews[dragSourceRow][dragSourceCol].setImage(defaultGrassTile.getImage());
+        // if target is in a group, clear it…
+        String tg = getGroupKeyForTile(targetRow, targetCol);
+        if (tg != null) resetGroup(tg);
+
+        // move both image and type
+        TileView from = dragSourceTileView;
+        TileView to   = mapTileViews[targetRow][targetCol];
+        to.setImage(from.getImage());
+        to.setType(from.getType());
+
+        // clear out the old spot
+        TileView old = mapTileViews[dragSourceRow][dragSourceCol];
+        old.setImage(defaultGrassTile.getImage());
+        old.setType(TileEnum.GRASS);
     }
+
     
     private void moveGroupTile(int targetRow, int targetCol) {
         if (!groupTileMap.containsKey(draggedGroupKey)) return;
@@ -614,42 +634,46 @@ public class MapEditorController implements Initializable {
         
         return true;
     }
-    
-    private void executeGroupMove(Set<String> groupTiles, int minRow, int minCol, 
-                                int newAnchorRow, int newAnchorCol) {
-        Map<String, Image> tileImages = new HashMap<>();
-        for (String tilePos : groupTiles) {
-            String[] parts = tilePos.split(",");
-            int r = Integer.parseInt(parts[0]);
-            int c = Integer.parseInt(parts[1]);
-            tileImages.put(tilePos, mapTileImageViews[r][c].getImage());
+
+    private void executeGroupMove(Set<String> groupTiles, int minRow, int minCol,
+                                  int newAnchorRow, int newAnchorCol) {
+        // 1) remember both image & type
+        Map<String, Image>   oldImages = new HashMap<>();
+        Map<String, TileEnum> oldTypes  = new HashMap<>();
+        for (String pos : groupTiles) {
+            String[] p = pos.split(",");
+            int r = Integer.parseInt(p[0]), c = Integer.parseInt(p[1]);
+            TileView tv = mapTileViews[r][c];
+            oldImages.put(pos, tv.getImage());
+            oldTypes.put(pos,  tv.getType());
         }
-        
-        // Reset the old group position
-        for (String tilePos : groupTiles) {
-            String[] parts = tilePos.split(",");
-            int r = Integer.parseInt(parts[0]);
-            int c = Integer.parseInt(parts[1]);
-            mapTileImageViews[r][c].setImage(defaultGrassTile.getImage());
+
+        // 2) clear the old group
+        for (String pos : groupTiles) {
+            String[] p = pos.split(",");
+            int r = Integer.parseInt(p[0]), c = Integer.parseInt(p[1]);
+            resetTileToGrass(r, c);
         }
-        
-        // Create new group
-        Set<String> newGroupTiles = new HashSet<>();
-        for (String tilePos : groupTiles) {
-            String[] parts = tilePos.split(",");
-            int oldRow = Integer.parseInt(parts[0]);
-            int oldCol = Integer.parseInt(parts[1]);
-            int newRow = oldRow - minRow + newAnchorRow;
-            int newCol = oldCol - minCol + newAnchorCol;
-            
-            // Place the tile at the new position
-            mapTileImageViews[newRow][newCol].setImage(tileImages.get(tilePos));
-            newGroupTiles.add(tileKey(newRow, newCol));
+
+        // 3) place images & types at new coords
+        Set<String> newGroup = new HashSet<>();
+        for (String pos : groupTiles) {
+            String[] p = pos.split(",");
+            int oldR = Integer.parseInt(p[0]), oldC = Integer.parseInt(p[1]);
+            int newR = oldR - minRow + newAnchorRow;
+            int newC = oldC - minCol + newAnchorCol;
+
+            TileView tv = mapTileViews[newR][newC];
+            tv.setImage(oldImages.get(pos));
+            tv.setType(oldTypes.get(pos));
+            newGroup.add(tileKey(newR, newC));
         }
-        
+
+        // 4) update your map
         groupTileMap.remove(draggedGroupKey);
-        groupTileMap.put(draggedGroupKey, newGroupTiles);
+        groupTileMap.put(draggedGroupKey, newGroup);
     }
+
 
 
     private void updateModeButtonStyles() {
@@ -712,37 +736,25 @@ private void clearMap() {
                 resetTileToGrass(row, col);
             }
         }
-        
-        // Clear all group mappings
-        groupTileMap.clear();
-        
-        // Show success message
-        MapEditorUtils.showInfoAlert(
-            "Map Cleared", 
-            "All tiles have been reset to the default grass tile.",
-            this
-        );
     }
 }
 
 
     @FXML
-private void saveMap() {
-    MapEditorUtils.animateButtonClick(
-        saveMapBtn, 
-        saveMapImage, 
-        BUTTON_BLUE_PRESSED, 
-        this
-    );
-    
-    // Actual save functionality would go here
-    
-    MapEditorUtils.showInfoAlert(
-        "Map Saved", 
-        "Your map has been saved and can now be used in the game.",
-        this
-    );
-}
+    private void saveMap() {
+        MapEditorUtils.animateButtonClick(
+            saveMapBtn, 
+            saveMapImage, 
+            BUTTON_BLUE_PRESSED, 
+            this
+        );
+
+        for (int i = 0; i < MAP_ROWS; i++) {
+            for (int j = 0; j < MAP_COLS; j++) {
+                System.out.println(this.mapTileViews[i][j].getType());
+            }
+        }
+    }
     
 
 @FXML
@@ -767,7 +779,7 @@ private void goToHome() {
     private boolean checkForUnsavedChanges() {
         for (int row = 0; row < MAP_ROWS; row++) {
             for (int col = 0; col < MAP_COLS; col++) {
-                if (mapTileImageViews[row][col].getImage() != defaultGrassTile.getImage()) {
+                if (mapTileViews[row][col].getImage() != defaultGrassTile.getImage()) {
                     return true;
                 }
             }
@@ -791,7 +803,9 @@ private void goToHome() {
     
     private void resetTileToGrass(int row, int col) {
         if (row >= 0 && row < MAP_ROWS && col >= 0 && col < MAP_COLS) {
-            mapTileImageViews[row][col].setImage(defaultGrassTile.getImage());
+            TileView tv = mapTileViews[row][col];
+            tv.setImage(defaultGrassTile.getImage());
+            tv.setType(TileEnum.GRASS);
         }
     }
     
@@ -807,7 +821,6 @@ private void goToHome() {
             groupTileMap.remove(groupKey);
         }
     }
-    
 
     private void showStatusMessage(String message) {
         System.out.println(message);

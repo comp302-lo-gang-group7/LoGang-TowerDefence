@@ -1,6 +1,8 @@
 module com.example.game {
 	requires javafx.controls;
 	requires javafx.fxml;
+	requires com.fasterxml.jackson.core;
+    requires java.desktop;
 
 
     exports com.example.entity;
