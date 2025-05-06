@@ -18,8 +18,8 @@ We highly recommend using **IntelliJ IDEA** as your main development environment
 
 ## Tools and Technologies
 
-- **Java 17+**
-- **JavaFX 17+**
+- **Java 23+**
+- **JavaFX 23+**
 - **Maven** (for build and dependency management)
 - **IntelliJ IDEA** (IDE recommendation)
 - **Gluon Scene Builder** (for JavaFX UI design)
