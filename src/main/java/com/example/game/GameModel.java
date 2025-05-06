@@ -27,13 +27,11 @@ import java.util.HashSet;
 public class GameModel
 {
 	private final ArrayList<Tower> towers;
-
-	public final GameMap map;
-
+	public final GameMap map; // TODO: Make private and add getters/setters
 	private final HashSet<GameEventListener> listeners;
-
 	public StringProperty debugMessage = new SimpleStringProperty();
 
+	// TODO: Move definition to a different file.
 	public enum TowerType
 	{
 		ARCHER,

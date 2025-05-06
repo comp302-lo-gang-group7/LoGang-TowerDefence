@@ -4,10 +4,9 @@ import com.example.game.GameDataEvent;
 import com.example.game.GameEvent;
 import com.example.game.GameEventListener;
 import com.example.game.GameModel;
-import com.example.map.EmptyLotTile;
-import com.example.map.Entity;
-import com.example.map.Tile;
-import com.example.map.TileEnum;
+import com.example.main.Main;
+import com.example.map.*;
+import com.example.storage_manager.MapStorageManager;
 import com.example.ui.ImageLoader;
 import com.example.ui.SpriteProvider;
 import com.example.ui.SpriteView;
@@ -31,57 +30,48 @@ import java.io.IOException;
 
 public class GameScreenController implements GameEventListener
 {
-	public static final double TILE_SIZE = 64.0;
-
-	private GameModel gameModel;
-
 	@FXML
 	private Label debugText;
-
 	@FXML
 	private Pane gameArea;
 
+	public static final double TILE_SIZE = 64.0; // NOTE: Double pixel?
+	private GameModel gameModel;
 	private Popup towerConstructionMenu;
+	private int clickedTileX, clickedTileY;
+	private WritableImage staticTiles;
 
+	private TileView[][] mapTiles;
+
+	// TODO: Move definition to a different file.
 	private enum GUIState
 	{
 		NONE,
 		TOWER_CONSTRUCTION
 	}
+
 	private GUIState state;
-	private int clickedTileX, clickedTileY;
 
-	private WritableImage staticTiles;
-
-	public static class SavedMapData
-	{
-		public int rows;
-		public int cols;
-		public int[][] tiles;
-	}
-	private SavedMapData savedMapData;
-
-	private SavedMapData loadSavedMap( String jsonPath ) throws IOException
-	{
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.readValue(getClass().getResourceAsStream(jsonPath), SavedMapData.class);
-	}
+	private final String MAP_NAME = "Forest Path"; // TODO: Update down the line to support an actual variable being possed.
+	private int map_rows;
+	private int map_cols;
 
 	@FXML
 	public void initialize()
 	{
 		state = GUIState.NONE;
 
-		try
-		{
-			savedMapData = loadSavedMap("/data/maps/Forest Path.json");
-		}
-		catch ( IOException e )
-		{
-			throw new RuntimeException( e );
+		try {
+			// Keep calculations straightforward and accessible directly without the need for additional data structs.
+			mapTiles = MapStorageManager.loadMap(MAP_NAME);
+			map_rows = mapTiles.length;
+			map_cols = (map_rows > 0) ? mapTiles[0].length : 0;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 
-		gameModel = new GameModel(savedMapData.cols, savedMapData.rows);
+
+		gameModel = new GameModel(map_rows, map_cols);
 
 		gameModel.map.getTiles().addListener(new MapChangeListener<>()
 		{
@@ -100,7 +90,7 @@ public class GameScreenController implements GameEventListener
 				if ( change.wasRemoved() )
 				{
 					// Unbind to delete all references and mark SpriteView for GC.
-					change.getValueAdded().getSprite().unbind();
+					change.getValueAdded().getSprite().unbind(); // TODO: Get value added or get value removed?
 					System.out.printf("removed %s from %s\n", change.getValueRemoved(), change.getKey());
 				}
 			}
@@ -213,69 +203,43 @@ public class GameScreenController implements GameEventListener
 	/// Stitch static, non-interactable map tiles into a single Image.
 	private void loadMapTiles()
 	{
-		int width = ( int ) (savedMapData.cols * TILE_SIZE);
-		int height = ( int ) (savedMapData.rows * TILE_SIZE);
+		int width = ( int ) (map_cols * TILE_SIZE);
+		int height = ( int ) (map_rows * TILE_SIZE);
+
+		Main.getViewManager().resizeWindow(width, height);
 
 		staticTiles = new WritableImage(width, height);
 		Canvas canvas = new Canvas(width, height);
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 
-		for ( int y = 0; y < savedMapData.rows; y++ )
-		{
-			for ( int x = 0; x < savedMapData.cols; x++ )
-			{
-				int index = savedMapData.tiles[y][x];
+		for (int y = 0; y < map_rows; y++) {
+			for (int x = 0; x < map_cols; x++) {
+				TileView tileView = mapTiles[y][x];
+				TileEnum tile = tileView.getType();
 
-				TileEnum tile;
-				tile = TileEnum.fromFlatIndex(index);
-				System.out.printf("Tile %s at %d:%d\n", tile.name(), x, y);
-				double sourceX = tile.getCol() * TILE_SIZE;
-				double sourceY = tile.getRow() * TILE_SIZE;
-
-				if ( index > 14 )
-				{
+				if (tile.getFlatIndex() > 14) {
 					gc.drawImage(ImageLoader.getImage("/com/example/assets/tiles/Tileset-64x64.png"),
-							TileEnum.GRASS.getCol() * TILE_SIZE, TileEnum.GRASS.getRow() * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+							TileEnum.GRASS.getCol() * TILE_SIZE, TileEnum.GRASS.getRow() * TILE_SIZE,
+							TILE_SIZE, TILE_SIZE,
 							x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
 				}
 
-				switch (tile)
-				{
-					// Any interactable Tiles will be registered in GameMap
-					case ARTILLERY_TOWER:
-					{
-						gameModel.createTower(x, y, GameModel.TowerType.ARTILLERY);
-						break;
-					}
-					case ARCHERY_TOWER:
-					{
-						gameModel.createTower(x, y, GameModel.TowerType.ARCHER);
-						break;
-					}
-					case MAGE_TOWER:
-					{
-						gameModel.createTower(x, y, GameModel.TowerType.MAGE);
-						break;
-					}
-					case EMPTY_TOWER_TILE:
-					{
-						System.out.printf("empty lot at %d:%d\n", x, y);
+				switch (tile) {
+					case ARTILLERY_TOWER -> gameModel.createTower(x, y, GameModel.TowerType.ARTILLERY);
+					case ARCHERY_TOWER   -> gameModel.createTower(x, y, GameModel.TowerType.ARCHER);
+					case MAGE_TOWER      -> gameModel.createTower(x, y, GameModel.TowerType.MAGE);
+					case EMPTY_TOWER_TILE -> {
 						gameModel.map.setTile(x, y,
 								new EmptyLotTile(x, y, ImageLoader.getImage("/com/example/assets/towers/TowerSlotwithoutbackground128.png")));
-						break;
 					}
-					// Other non-interactable Tiles will be drawn onto the grass background.
-					default:
-					{
-						gc.drawImage(ImageLoader.getImage("/com/example/assets/tiles/Tileset-64x64.png"),
-								sourceX, sourceY, TILE_SIZE, TILE_SIZE,
+					default -> {
+						gc.drawImage(tileView.getImage(),
+								0, 0, TILE_SIZE, TILE_SIZE,
 								x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-						break;
 					}
 				}
 			}
 		}
-		// Output
 		canvas.snapshot(null, staticTiles);
 	}
 
