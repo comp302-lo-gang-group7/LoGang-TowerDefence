@@ -5,8 +5,7 @@ import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -151,6 +150,71 @@ public class MapEditorUtils {
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
     }
+
+    public static void showErrorAlert(String title, String header, String content, Object caller) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(null);
+
+        DialogPane dialogPane = dialog.getDialogPane();
+
+        VBox contentBox = new VBox(15);
+        contentBox.setAlignment(Pos.CENTER);
+        contentBox.setPadding(new Insets(20, 20, 10, 20));
+
+        // Use red ribbon for errors
+        ImageView ribbonIcon = null;
+        String ribbonPath = "/com/example/assets/ui/Ribbon_Red_3Slides.png";
+
+        try {
+            Image iconImage = new Image(caller.getClass().getResourceAsStream(ribbonPath));
+            ribbonIcon = new ImageView(iconImage);
+            ribbonIcon.setFitWidth(200);
+            ribbonIcon.setFitHeight(40);
+            ribbonIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            System.err.println("Could not load ribbon image for error alert: " + e.getMessage());
+        }
+
+        Label headerLabel = new Label(header);
+        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #C62828;");
+        headerLabel.setAlignment(Pos.CENTER);
+        headerLabel.setWrapText(true);
+
+        Label contentLabel = new Label(content);
+        contentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+        contentLabel.setWrapText(true);
+        contentLabel.setAlignment(Pos.CENTER);
+
+        if (ribbonIcon != null) {
+            contentBox.getChildren().addAll(ribbonIcon, headerLabel, contentLabel);
+        } else {
+            contentBox.getChildren().addAll(headerLabel, contentLabel);
+        }
+
+        dialogPane.setStyle("-fx-background-color: #f4dede;");
+
+        contentBox.setStyle("-fx-background-color: #fbeaea; -fx-background-radius: 5; " +
+                "-fx-border-color: #c62828; -fx-border-width: 3; -fx-border-radius: 5;");
+
+        dialogPane.setContent(contentBox);
+
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialogPane.getButtonTypes().add(okButtonType);
+
+        Button okButton = (Button) dialogPane.lookupButton(okButtonType);
+        okButton.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        okButton.setOnMouseEntered(e ->
+                okButton.setStyle("-fx-background-color: #ef5350; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+        okButton.setOnMouseExited(e ->
+                okButton.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold;")
+        );
+
+        dialog.showAndWait();
+    }
+
 
     /**
      * Shows a fully custom styled confirmation dialog with our custom title bar

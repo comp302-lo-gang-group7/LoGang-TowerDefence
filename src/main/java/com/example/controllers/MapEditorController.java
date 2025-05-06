@@ -5,6 +5,7 @@ import com.example.map.TileEnum;
 import com.example.map.TileView;
 import com.example.utils.MapEditorUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.*;
@@ -743,16 +744,38 @@ private void clearMap() {
     @FXML
     private void saveMap() {
         MapEditorUtils.animateButtonClick(
-            saveMapBtn, 
-            saveMapImage, 
-            BUTTON_BLUE_PRESSED, 
-            this
+                saveMapBtn,
+                saveMapImage,
+                BUTTON_BLUE_PRESSED,
+                this
         );
 
-        for (int i = 0; i < MAP_ROWS; i++) {
-            for (int j = 0; j < MAP_COLS; j++) {
-                System.out.println(this.mapTileViews[i][j].getType());
-            }
+        String mapName = mapSelectionCombo.getValue();
+        if (mapName == null || mapName.trim().isEmpty()) {
+            MapEditorUtils.showErrorAlert(
+                    "Missing Map Name",
+                    "Please select or enter a name for the map before saving.",
+                    "You can do this from the dropdown menu at the top.",
+                    this
+            );
+            return;
+        }
+
+        try {
+            com.example.storage_manager.MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, mapName.trim());
+            MapEditorUtils.showInfoAlert(
+                    "Map Saved",
+                    "Map saved successfully",
+                    this
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            MapEditorUtils.showErrorAlert(
+                    "Save Failed",
+                    "Could not save the map.",
+                    "Error: " + e.getMessage(),
+                    this
+            );
         }
     }
     
@@ -769,6 +792,7 @@ private void goToHome() {
             this
         );
     }
+
     
     if (canLeave) {
         Main.getViewManager().resizeWindow(640, 450);
