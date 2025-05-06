@@ -194,7 +194,7 @@ public class LoadGameController implements Initializable {
                 
                 // In a real implementation, you would load the actual game state here
                 // For now, we'll just go to the game screen
-                Main.getViewManager().switchTo("/com/example/fxml/game_screen.fxml");
+                Main.getViewManager().switchTo("/com/example/fxml/game_screen_page.fxml");
             }
         }
     }

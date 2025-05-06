@@ -41,17 +41,10 @@ public class GameModel
 		ARTILLERY
 	}
 
-	public GameModel()
+	public GameModel( int mapWidth, int mapHeight )
 	{
-		map = new GameMap(10, 10);
+		map = new GameMap(mapWidth, mapHeight);
 
-		for ( int y = 0; y < map.getHeight(); y++ )
-		{
-			for ( int x = 0; x < map.getWidth(); x++ )
-			{
-				map.setTile(x, y, new EmptyLotTile(x, y, ImageLoader.getImage("/com/example/assets/towers/TowerSlotwithoutbackground128.png")));
-			}
-		}
 		towers = new ArrayList<>();
 		listeners = new HashSet<>();
 	}

@@ -1,11 +1,11 @@
 module com.example.game {
 	requires javafx.controls;
 	requires javafx.fxml;
-	requires com.fasterxml.jackson.core;
-    requires java.desktop;
+	requires com.fasterxml.jackson.databind;
+	requires java.desktop;
 
 
-    exports com.example.entity;
+	exports com.example.entity;
     opens com.example.entity to javafx.fxml;
 	exports com.example.map;
 	opens com.example.map to javafx.fxml;
