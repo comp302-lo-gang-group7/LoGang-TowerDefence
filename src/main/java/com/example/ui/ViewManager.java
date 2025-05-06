@@ -59,11 +59,11 @@ public class ViewManager {
             // Keep the title bar and replace the content
             root.getChildren().set(1, content);
             
-            // If this is the GameScreen scene, inject mouse click event filter
-            if (fxmlLoader.getController() instanceof GameScreenController) {
-                GameScreenController gameScreenController = fxmlLoader.getController();
-                scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
-            }
+//            // If this is the GameScreen scene, inject mouse click event filter
+//            if (fxmlLoader.getController() instanceof GameScreenController) {
+//                GameScreenController gameScreenController = fxmlLoader.getController();
+//                scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
+//            }
             
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
@@ -76,10 +76,10 @@ public class ViewManager {
      * @param width
      * @param height
      */
-  public void resizeWindow(int width, int height) {
-    stage.setWidth(width);
-    stage.setHeight(height + 25); // Updated from 30 to 25 for smaller title bar
-}
+    public void resizeWindow(int width, int height) {
+        stage.setWidth(width);
+        stage.setHeight(height + 25); // Updated from 30 to 25 for smaller title bar
+    }
 
     public void terminateApplication() {
         stage.close();
@@ -88,8 +88,12 @@ public class ViewManager {
     public static Scene getScene() {
         return scene;
     }
-    
-    public void setPrimaryStage(Stage stage) {
-        // Method kept for compatibility
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void resizeWindowDefault() {
+        this.resizeWindow(640, 450);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.ui;
 
-public interface SpriteProvider
-{
+public interface SpriteProvider {
 	Sprite getSprite();
+	int getTileX();
+	int getTileY();
 }
+

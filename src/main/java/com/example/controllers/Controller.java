@@ -10,5 +10,7 @@ import javafx.fxml.FXML;
 public class Controller {
     @FXML
     public void goToHomePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");}
+        Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
+        Main.getViewManager().resizeWindowDefault();
+    }
 }
