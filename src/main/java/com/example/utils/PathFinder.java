@@ -1,82 +1,97 @@
 package com.example.utils;
 
-
 import com.example.utils.Point;
 
 import java.util.*;
 
 public class PathFinder {
-    private static final int[] DX = {0, 1, 0, -1}; // up, right, down, left
+    private static final int[] DX = {0, 1, 0, -1};
     private static final int[] DY = {-1, 0, 1, 0};
 
+    private static final int TILE_SIZE    = 64;
+    private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
+    private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;     // 64
+    private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
+
+    /**
+     * Starting at spawn, at each step move to the neighbor with the highest weight,
+     * stopping when you hit the GOAL_WEIGHT cell or can’t improve further.
+     */
     public static List<Point> findPath(int[][] grid, Point start, Point goal) {
-        int height = grid.length;
-        int width = grid[0].length;
-        boolean[][] visited = new boolean[height][width];
-        Map<Point, Point> cameFrom = new HashMap<>();
+        int h = grid.length, w = grid[0].length;
+        double[][] dist = new double[h][w];
+        Point[][] prev = new Point[h][w];
+        for (int y = 0; y < h; y++)
+            Arrays.fill(dist[y], Double.POSITIVE_INFINITY);
 
-        PriorityQueue<Point> queue = new PriorityQueue<>(Comparator.comparingDouble(p -> distance(p, goal)));
-        queue.add(start);
-        visited[start.y()][start.x()] = true;
+        // Min-heap prioritized by lowest cumulative cost
+        PriorityQueue<Point> pq = new PriorityQueue<>(
+                Comparator.comparingDouble(p -> dist[p.y()][p.x()])
+        );
 
-        while (!queue.isEmpty()) {
-            Point current = queue.poll();
-            if (current.equals(goal)) {
-                return reconstructPath(cameFrom, current);
-            }
+        // Cost to enter the start cell is zero
+        dist[start.y()][start.x()] = 0;
+        pq.add(start);
 
+        while (!pq.isEmpty()) {
+            Point cur = pq.poll();
+            if (cur.equals(goal)) break;
+
+            int cx = cur.x(), cy = cur.y();
+            double baseCost = dist[cy][cx];
+
+            // Explore 4-neighbors
             for (int i = 0; i < 4; i++) {
-                int nx = current.x() + DX[i];
-                int ny = current.y() + DY[i];
+                int nx = cx + DX[i], ny = cy + DY[i];
+                if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+                int weight = grid[ny][nx];
+                if (weight <= 0) continue;   // obstacle
 
-                if (nx >= 0 && ny >= 0 && nx < width && ny < height &&
-                        !visited[ny][nx] && grid[ny][nx] != -1) {
-                    Point neighbor = new Point(nx, ny);
-                    queue.add(neighbor);
-                    visited[ny][nx] = true;
-                    cameFrom.put(neighbor, current);
+                // Cost = how much we *lose* from the perfect path
+                double stepCost = (GOAL_WEIGHT - weight);
+                double nd = baseCost + stepCost;
+
+                if (nd < dist[ny][nx]) {
+                    dist[ny][nx] = nd;
+                    prev[ny][nx] = cur;
+                    pq.add(new Point(nx, ny));
                 }
             }
         }
 
-        return Collections.emptyList(); // No path found
-    }
-
-    private static List<Point> reconstructPath(Map<Point, Point> cameFrom, Point end) {
+        // Reconstruct path if we reached goal
+        if (prev[goal.y()][goal.x()] == null) return Collections.emptyList();
         List<Point> path = new ArrayList<>();
-        Point current = end;
-        while (current != null) {
-            path.add(current);
-            current = cameFrom.get(current);
+        for (Point at = goal; at != null; at = prev[at.y()][at.x()]) {
+            path.add(at);
         }
         Collections.reverse(path);
         return path;
     }
 
-    private static double distance(Point a, Point b) {
-        return Math.abs(a.x() - b.x()) + Math.abs(a.y() - b.y()); // Manhattan distance
-    }
 
+    /** Spawn detection unchanged **/
     public static Point findSpawnPoint(int[][] grid) {
-        for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[0].length; x++) {
-                if (grid[y][x] == 3) {
-                    return new Point(x, y);
-                }
-            }
+        int h = grid.length, w = grid[0].length;
+        for (int x = 0; x < w; x++) {
+            if (grid[0][x] == SPAWN_WEIGHT)    return new Point(x, 0);
+            if (grid[h-1][x] == SPAWN_WEIGHT) return new Point(x, h-1);
         }
-        throw new IllegalStateException("No spawn point found in grid.");
+        for (int y = 0; y < h; y++) {
+            if (grid[y][0] == SPAWN_WEIGHT)    return new Point(0, y);
+            if (grid[y][w-1] == SPAWN_WEIGHT) return new Point(w-1, y);
+        }
+        throw new IllegalStateException("No spawn point found");
     }
 
+    /** Castle detection unchanged **/
     public static Point findCastlePoint(int[][] grid) {
-        for (int y = 0; y < grid.length; y++) {
-            for (int x = 0; x < grid[0].length; x++) {
-                if (grid[y][x] == 2) {
-                    return new Point(x, y);
-                }
+        int h = grid.length, w = grid[0].length;
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if (grid[y][x] == GOAL_WEIGHT) return new Point(x, y);
             }
         }
-        throw new IllegalStateException("No castle point found in grid.");
+        throw new IllegalStateException("No castle point found");
     }
-
 }

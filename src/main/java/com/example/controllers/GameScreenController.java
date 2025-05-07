@@ -106,6 +106,8 @@ public class GameScreenController extends Controller implements GameEventListene
 		Point start = PathFinder.findSpawnPoint(grid);
 		Point goal = PathFinder.findCastlePoint(grid);
 
+		gameModel.getMap().printExpandedGrid();
+
 		List<Point> path = PathFinder.findPath(grid, start, goal);
 
 		animateOrbAlongPath(path);
