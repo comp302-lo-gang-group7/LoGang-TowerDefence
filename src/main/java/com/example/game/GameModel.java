@@ -10,14 +10,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class GameModel {
-	private final ArrayList<Tower> towers;
 	private final GameMap map;
 	private final HashSet<GameEventListener> listeners;
 	public StringProperty debugMessage = new SimpleStringProperty();
 
 	public GameModel(TileView[][] tileViews) {
-		this.map = new GameMap(tileViews); // Use the tile views directly
-		this.towers = new ArrayList<>();
+		this.map = new GameMap(tileViews);
 		this.listeners = new HashSet<>();
 	}
 

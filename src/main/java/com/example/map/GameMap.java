@@ -1,50 +1,14 @@
 package com.example.map;
 
-import com.example.entity.Entity;
-import com.example.utils.Point;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-
-import java.util.Set;
-
 public class GameMap {
 	private final int width, height;
-	private final ObservableMap<Point, TileModel> tiles = FXCollections.observableHashMap();
-	private final ObservableList<Entity> entities = FXCollections.observableArrayList();
 	private int[][] expandedGrid;
 
-	private static final int TILE_SIZE = 64;
+	private static final int TILE_SIZE = 64; // TODO: Make dynamic
 	// peak weight at path center (half tile)
 	private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
 	private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;     // 64
 	private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
-
-	// Walkable path enums
-	private static final Set<TileEnum> PATH_TILES = Set.of(
-			TileEnum.TOP_LEFT_PATH_CORNER,
-			TileEnum.DOWN_CURVING_PATH,
-			TileEnum.TOP_RIGHT_PATH_CORNER,
-			TileEnum.VERTICAL_UPPER_PATH_END,
-			TileEnum.RIGHT_CURVING_PATH,
-			TileEnum.LEFT_CURVING_PATH,
-			TileEnum.VERTICAL_PATH,
-			TileEnum.BOTTOM_LEFT_PATH_CORNER,
-			TileEnum.UP_CURVING_PATH,
-			TileEnum.BOTTOM_RIGHT_PATH_CORNER,
-			TileEnum.VERTICAL_LOWER_PATH_END,
-			TileEnum.HORIZONTAL_LEFT_PATH_END,
-			TileEnum.HORIZONTAL_PATH,
-			TileEnum.HORIZONTAL_RIGHT_PATH_END
-	);
-
-	// Castle tile enums
-	private static final Set<TileEnum> CASTLE_TILES = Set.of(
-			TileEnum.CASTLE_TOP_LEFT,
-			TileEnum.CASTLE_TOP_RIGHT,
-			TileEnum.CASTLE_BOTTOM_LEFT,
-			TileEnum.CASTLE_BOTTOM_RIGHT
-	);
 
 	/**
 	 * Builds a heat-map grid for pathfinding:
@@ -68,7 +32,7 @@ public class GameMap {
 				int originX = tx * TILE_SIZE;
 				int originY = ty * TILE_SIZE;
 
-				if (PATH_TILES.contains(type)) {
+				if (TileEnum.PATH_TILES.contains(type)) {
 					int mid = TILE_SIZE / 2;  // 32 for a 64×64 tile
 
 					// 1) Draw the center row at peak weight
@@ -89,7 +53,7 @@ public class GameMap {
 							}
 						}
 					}
-				} else if (CASTLE_TILES.contains(type)) {
+				} else if (TileEnum.CASTLE_TILES.contains(type)) {
 					// vertical gradient: deeper (higher dy) => larger weight
 					double centerX = (TILE_SIZE - 1) / 2.0;
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
@@ -134,7 +98,7 @@ public class GameMap {
 		// 3a) Find the bounding box of all 4 castle tiles
 		for (int ty = 0; ty < height; ty++) {
 			for (int tx = 0; tx < width; tx++) {
-				if (CASTLE_TILES.contains(tileViews[ty][tx].getType())) {
+				if (TileEnum.CASTLE_TILES.contains(tileViews[ty][tx].getType())) {
 					minCx = Math.min(minCx, tx);
 					maxCx = Math.max(maxCx, tx);
 					minCy = Math.min(minCy, ty);
@@ -164,18 +128,6 @@ public class GameMap {
 		return height;
 	}
 
-	public TileModel getTile(int x, int y) {
-		return getTile(new Point(x, y));
-	}
-
-	public TileModel getTile(Point point) {
-		if (point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height) {
-			return tiles.get(point);
-		} else {
-			throw new IllegalArgumentException("Tile x or y out of map bounds");
-		}
-	}
-
 	public void printExpandedGrid() {
 		if (expandedGrid == null) {
 			System.out.println("Expanded grid is not initialized.");
@@ -191,25 +143,6 @@ public class GameMap {
 		}
 	}
 
-	public void setTile(int x, int y, TileModel tileModel) {
-		setTile(new Point(x, y), tileModel);
-	}
-
-	public void setTile(Point point, TileModel tileModel) {
-		if (point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height) {
-			tiles.put(point, tileModel);
-		} else {
-			throw new IllegalArgumentException("Tile x or y out of map bounds");
-		}
-	}
-
-	public ObservableMap<Point, TileModel> getTiles() {
-		return tiles;
-	}
-
-	public ObservableList<Entity> getEntities() {
-		return entities;
-	}
 
 	public int[][] getExpandedGrid() {
 		return expandedGrid;

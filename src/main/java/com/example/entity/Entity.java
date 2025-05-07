@@ -1,29 +1,24 @@
 package com.example.entity;
 
-import com.example.ui.Sprite;
-import com.example.ui.SpriteProvider;
-import javafx.scene.image.Image;
+import javafx.scene.canvas.GraphicsContext;
 
 
-public class Entity implements SpriteProvider {
-	private final Sprite sprite;
+public abstract class Entity {
+    protected double x, y;
+    protected int hp;
 
-	public Entity(double x, double y, Image image) {
-		this.sprite = new Sprite(image, x, y);
-	}
+    public Entity(double x, double y, int hp) {
+        this.x = x;
+        this.y = y;
+        this.hp = hp;
+    }
 
-	@Override
-	public Sprite getSprite() {
-		return sprite;
-	}
+    public abstract void update(double dt);
 
-	@Override
-	public int getTileX() {
-		return (int) sprite.getX();
-	}
+    public abstract void render(GraphicsContext gc);
 
-	@Override
-	public int getTileY() {
-		return (int) sprite.getY();
-	}
+    public void onClick() {}
+
+    public int getHp() { return hp; }
+    public void setHp(int hp) { this.hp = hp; }
 }
