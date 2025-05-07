@@ -7,6 +7,8 @@ import com.example.game.GameModel;
 import com.example.main.Main;
 import com.example.map.*;
 import com.example.storage_manager.MapStorageManager;
+import com.example.utils.PathFinder;
+import com.example.utils.Point;
 import com.example.utils.TileRenderer;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -20,6 +22,7 @@ import javafx.stage.Popup;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GameScreenController extends Controller implements GameEventListener {
@@ -34,7 +37,8 @@ public class GameScreenController extends Controller implements GameEventListene
 	private Tile[][] tiles;
 
 	private GameModel gameModel;
-	private Popup towerMenu;
+	private Popup createTowerMenu;
+	private Popup sellTowerMenu;
 	private TileRenderer renderer;
 	private int clickedTileX, clickedTileY;
 	private final Map<Entity, ImageView> entityViews = new HashMap<>();
@@ -54,7 +58,7 @@ public class GameScreenController extends Controller implements GameEventListene
 
 		// 2) init renderer & model
 		renderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
-		gameModel = new GameModel(cols, rows);
+		gameModel = new GameModel(mapTiles);
 		debugText.textProperty().bindBidirectional(gameModel.debugMessage);
 		gameModel.addListener(this);
 
@@ -86,7 +90,7 @@ public class GameScreenController extends Controller implements GameEventListene
 		gameArea.setPrefSize(w, h);
 
 		// 5) entity views
-		gameModel.map.getEntities().addListener((ListChangeListener<Entity>) ch -> {
+		gameModel.getMap().getEntities().addListener((ListChangeListener<Entity>) ch -> {
 			while (ch.next()) {
 				if (ch.wasAdded())   ch.getAddedSubList().forEach(this::addEntityView);
 				if (ch.wasRemoved()) ch.getRemoved().forEach(this::removeEntityView);
@@ -94,14 +98,60 @@ public class GameScreenController extends Controller implements GameEventListene
 		});
 
 		// 6) build tower menu
-		buildTowerMenu();
+		buildCreateTowerMenu();
+		buildSellTowerMenu();
+
+		// 7) Create pixel map for path calculation
+		int[][] grid = gameModel.getMap().getExpandedGrid();
+		Point start = PathFinder.findSpawnPoint(grid);
+		Point goal = PathFinder.findCastlePoint(grid);
+
+		List<Point> path = PathFinder.findPath(grid, start, goal);
+
+		animateOrbAlongPath(path);
 	}
+
+	private void animateOrbAlongPath(List<Point> path) {
+		if (path.isEmpty()) return;
+
+		// Create a visible orb (red circle)
+		javafx.scene.shape.Circle orb = new javafx.scene.shape.Circle(8); // radius = 8
+		orb.setFill(javafx.scene.paint.Color.RED); // make it stand out
+		gameArea.getChildren().add(orb);
+
+		final int[] index = {0};
+		final int stepDurationMs = 30;
+
+		javafx.animation.Timeline timeline = new javafx.animation.Timeline();
+		timeline.setCycleCount(path.size());
+
+		timeline.getKeyFrames().add(
+				new javafx.animation.KeyFrame(javafx.util.Duration.millis(stepDurationMs), e -> {
+					if (index[0] >= path.size()) {
+						timeline.stop();
+						return;
+					}
+					Point p = path.get(index[0]);
+					orb.setLayoutX(p.x());
+					orb.setLayoutY(p.y());
+					index[0]++;
+				})
+		);
+
+		timeline.play();
+	}
+
+
 
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
 		if (tv.getType().equals(TileEnum.EMPTY_TOWER_TILE)) {
 			clickedTileX = x;
 			clickedTileY = y;
-			towerMenu.show(gameArea.getScene().getWindow(), e.getScreenX(), e.getScreenY());
+			createTowerMenu.show(gameArea.getScene().getWindow(), e.getScreenX(), e.getScreenY());
+		} else if (!tv.getType().name().contains("EMPTY")) {
+			clickedTileX = x;
+			clickedTileY = y;
+			sellTowerMenu.show(gameArea.getScene().getWindow(), e.getScreenX(), e.getScreenY());
 		}
 	}
 
@@ -120,8 +170,8 @@ public class GameScreenController extends Controller implements GameEventListene
 		if (iv != null) gameArea.getChildren().remove(iv);
 	}
 
-	private void buildTowerMenu() {
-		towerMenu = new Popup();
+	private void buildCreateTowerMenu() {
+		createTowerMenu = new Popup();
 		VBox box = new VBox(5);
 		box.setStyle("-fx-background-color:white; -fx-border-color:gray; -fx-padding:8;");
 		Button a = new Button("Archer"), m = new Button("Mage"), r = new Button("Artillery");
@@ -129,7 +179,17 @@ public class GameScreenController extends Controller implements GameEventListene
 		m.setOnAction(evt -> constructTower(TileEnum.MAGE_TOWER));
 		r.setOnAction(evt -> constructTower(TileEnum.ARTILLERY_TOWER));
 		box.getChildren().addAll(a, m, r);
-		towerMenu.getContent().add(box);
+		createTowerMenu.getContent().add(box);
+	}
+
+	private void buildSellTowerMenu() {
+		sellTowerMenu = new Popup();
+		VBox box = new VBox(5);
+		box.setStyle("-fx-background-color:white; -fx-border-color:gray; -fx-padding:8;");
+		Button s = new Button("Sell Tower");
+		s.setOnAction(evt -> sellTower());
+		box.getChildren().add(s);
+		sellTowerMenu.getContent().add(box);
 	}
 
 	private void constructTower(TileEnum towerType) {
@@ -148,10 +208,30 @@ public class GameScreenController extends Controller implements GameEventListene
 		tile.view = newView;
 		tile.model.setTower(towerType, 10, 5, 100); // example values: HP=10, DMG=5, cost=100
 
-		// Disable further clicks
-		newView.setOnMouseClicked(null);
+		newView.setOnMouseClicked(e -> onTowerTileClicked(tile.view, clickedTileX, clickedTileY, e));
 
-		towerMenu.hide();
+		createTowerMenu.hide();
+	}
+
+	private void sellTower() {
+		Tile tile = tiles[clickedTileY][clickedTileX];
+
+		// Replace visual with new tower image
+		TileView newView = renderer.createTileView(TileEnum.EMPTY_TOWER_TILE);
+		newView.setLayoutX(clickedTileX * TILE_SIZE);
+		newView.setLayoutY(clickedTileY * TILE_SIZE);
+
+		// Swap in pane
+		gameArea.getChildren().remove(tile.view);
+		gameArea.getChildren().add(newView);
+
+		// Update Tile (both view + model)
+		tile.view = newView;
+		tile.model.setTower(TileEnum.EMPTY_TOWER_TILE, 0, 0, 0);
+
+		newView.setOnMouseClicked(e -> onTowerTileClicked(tile.view, clickedTileX, clickedTileY, e));
+
+		sellTowerMenu.hide();
 	}
 
 
