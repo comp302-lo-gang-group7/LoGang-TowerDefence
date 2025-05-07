@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.geometry.Pos?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.layout.StackPane?>
-<VBox alignment="TOP_CENTER" spacing="10.0" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.controllers.GameScreenController">
+<StackPane fx:id="gameArea" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.controllers.GameScreenController">
 
-    <!-- HUD Buttons Row -->
-    <HBox alignment="TOP_RIGHT" spacing="10">
-        <Button fx:id="optionsButton" text="Options" onAction="#goToSettings" />
-        <Button fx:id="exitButton" text="Exit" onAction="#goToHomePage" />
-    </HBox>
-
-    <!-- Debug Text -->
-    <Label fx:id="debugText" />
-
-    <!-- Game Area with 3 Layers -->
-    <StackPane fx:id="gameArea" VBox.vgrow="ALWAYS">
-        <!-- 1) Map layer: background tiles, pathlines, canvas -->
+    <!-- 1) Game Layers -->
+    <StackPane>
+        <!-- a) Map layer: base terrain and tiles -->
         <Pane fx:id="mapLayer" />
 
-        <!-- 2) Entity layer: moving sprites (enemies, projectiles) -->
+        <!-- b) Entity layer: moving goblins, warriors -->
         <Pane fx:id="entityLayer" />
 
-        <!-- 3) Tower layer: placed towers and UI popups -->
+        <!-- ✅ c) Tower layer: this goes LAST to render on top -->
         <Pane fx:id="towerLayer" />
     </StackPane>
-</VBox>
+
+    <!-- 2) HUD Overlay (anchored top-left) -->
+    <VBox fx:id="hudOverlay" alignment="TOP_LEFT" mouseTransparent="true">
+        <Label fx:id="goldLabel" text="1230" style="-fx-background-color: lightblue; -fx-padding: 5 10;" />
+        <Label fx:id="healthLabel" text="10/10" style="-fx-background-color: lightcoral; -fx-padding: 5 10;" />
+        <Label fx:id="waveLabel" text="1/10" style="-fx-background-color: lightsteelblue; -fx-padding: 5 10;" />
+    </VBox>
+
+    <!-- 2) Top-right menu buttons -->
+    <HBox alignment="TOP_RIGHT" spacing="3" pickOnBounds="false">
+        <Button fx:id="speedUp" onAction="#speedUp"
+                style="-fx-background-color: transparent;
+                   -fx-background-size: contain;
+                   -fx-border-color: transparent;" />
+        <Button fx:id="optionsButton" onAction="#goToSettings"
+                style="-fx-background-color: transparent;
+                   -fx-background-size: contain;
+                   -fx-border-color: transparent;" />
+        <Button fx:id="exitButton" onAction="#goToHomePage"
+                style="-fx-background-color: transparent;
+                   -fx-background-size: contain;
+                   -fx-border-color: transparent;" />
+    </HBox>
+
+</StackPane>
 

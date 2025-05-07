@@ -6,12 +6,17 @@ import com.example.map.*;
 import com.example.main.Main;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -21,10 +26,16 @@ import javafx.stage.Popup;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GameScreenController extends Controller {
 	@FXML private Pane gameArea;
 	@FXML private Pane mapLayer, entityLayer, towerLayer;
+	@FXML public VBox hudOverlay;
+	@FXML private Label goldLabel;
+	@FXML private Label healthLabel;
+	@FXML private Label waveLabel;
+	@FXML private Button speedUp, optionsButton, exitButton;
 
 	private static final int TILE_SIZE = 64;
 	private static final String MAP_NAME = "Forest Path";
@@ -36,6 +47,8 @@ public class GameScreenController extends Controller {
 	@FXML
 	public void initialize() {
 		contextMenu.setAutoHide(true);
+		setupButtonIcons();
+		updateHud();
 
 		// load map data
         TileView[][] mapTiles;
@@ -74,7 +87,7 @@ public class GameScreenController extends Controller {
 
 		// adjust window size
 		double w = cols * TILE_SIZE;
-		double h = (rows + 1) * TILE_SIZE;
+		double h = rows * TILE_SIZE;
 		Main.getViewManager().resizeWindow((int)w, (int)h);
 		gameArea.setPrefSize(w, h);
 
@@ -91,6 +104,7 @@ public class GameScreenController extends Controller {
 		mgr.start();
 	}
 
+
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
 		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
 			showBuildMenu(x, y, e.getScreenX(), e.getScreenY());
@@ -101,24 +115,23 @@ public class GameScreenController extends Controller {
 
 	private void showBuildMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
-		opts.add(new Option("Archer",   () -> constructTower(tileX, tileY, TileEnum.ARCHERY_TOWER)));
-		opts.add(new Option("Mage",     () -> constructTower(tileX, tileY, TileEnum.MAGE_TOWER)));
-		opts.add(new Option("Artillery",() -> constructTower(tileX, tileY, TileEnum.ARTILLERY_TOWER)));
+		opts.add(new Option("Archer", () -> constructTower(tileX, tileY, TileEnum.ARCHERY_TOWER), "/com/example/assets/buttons/Archer_Tower_Button.png"));
+		opts.add(new Option("Mage", () -> constructTower(tileX, tileY, TileEnum.MAGE_TOWER), "/com/example/assets/buttons/Spell_Tower_Button.png"));
+		opts.add(new Option("Artillery", () -> constructTower(tileX, tileY, TileEnum.ARTILLERY_TOWER), "/com/example/assets/buttons/Bomb_Tower_Button.png"));
 		showRadialMenu(tileX, tileY, opts);
 	}
 
 	private void showSellMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
-		opts.add(new Option("Sell", () -> sellTower(tileX, tileY)));
+		opts.add(new Option("Sell", () -> sellTower(tileX, tileY), "/com/example/assets/buttons/Bin_Button.png"));
 		showRadialMenu(tileX, tileY, opts);
 	}
 
-	private void showRadialMenu(int tileX, int tileY,
-								List<Option> options) {
+	private void showRadialMenu(int tileX, int tileY, List<Option> options) {
 		contextMenu.getContent().clear();
 
 		double baseRadius = TILE_SIZE * 0.5;
-		double btnSize = 48;
+		double btnSize = 32;
 		double halfDiag = Math.sqrt(2) * btnSize / 2;
 		double pathRadius = baseRadius + halfDiag;
 		double containerSize = pathRadius * 2 + btnSize;
@@ -129,51 +142,51 @@ public class GameScreenController extends Controller {
 		double cx0 = containerSize / 2;
 		double cy0 = containerSize / 2;
 
-		// Outer outline ring in dark-teal
 		Circle outerRing = new Circle(cx0, cy0, pathRadius);
 		outerRing.setFill(Color.TRANSPARENT);
-		outerRing.setStroke(Color.web("#004d40"));
+		outerRing.setStroke(Color.web("#87bfbe"));
 		outerRing.setStrokeWidth(2);
 		container.getChildren().add(outerRing);
 
-		int count = options.size();
-		for (int i = 0; i < count; i++) {
-			double angle = 2 * Math.PI * i / count - Math.PI / 2;
+		for (int i = 0; i < options.size(); i++) {
+			Option opt = options.get(i);
+
+			double angle = 2 * Math.PI * i / options.size() - Math.PI / 2;
 			double bx = cx0 + Math.cos(angle) * pathRadius - btnSize / 2;
 			double by = cy0 + Math.sin(angle) * pathRadius - btnSize / 2;
 
-			Button btn = new Button(options.get(i).label);
+			Button btn = new Button();
 			btn.setPrefSize(btnSize, btnSize);
-			btn.setWrapText(true);
-			btn.setTextAlignment(TextAlignment.CENTER);
-			btn.setFont(Font.font(10));
 
-			// To use an icon instead of text:
-			// Image img = new Image(getClass().getResourceAsStream("/com/example/assets/icons/archer.png"));
-			// btn.setGraphic(new ImageView(img));
-			// btn.setText(null);
+			Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(opt.iconPath)));
+			ImageView view = new ImageView(img);
+			view.setFitWidth(32);
+			view.setFitHeight(32);
+			btn.setGraphic(view);
+			btn.setText(null);
+
+			btn.setStyle(
+					"-fx-background-color: transparent;" +
+							"-fx-padding: 0;" +
+							"-fx-border-color: transparent;"
+			);
 
 			btn.setLayoutX(bx);
 			btn.setLayoutY(by);
-
-			int idx = i;
 			btn.setOnAction(evt -> {
-				options.get(idx).action.run();
+				opt.action.run();
 				contextMenu.hide();
 			});
+
 			container.getChildren().add(btn);
 		}
 
 		contextMenu.getContent().add(container);
 
-		// 1) figure out the tile’s center in local coords
 		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
 		double localY = tileY * TILE_SIZE + TILE_SIZE / 2.0;
-
-		// 2) convert to screen
 		Point2D screenCenter = towerLayer.localToScreen(localX, localY);
 
-		// 3) show the popup so it’s perfectly centered on that point
 		contextMenu.show(
 				towerLayer.getScene().getWindow(),
 				screenCenter.getX() - containerSize / 2,
@@ -218,11 +231,49 @@ public class GameScreenController extends Controller {
 		Main.getViewManager().resizeWindowDefault();
 	}
 
+	public void speedUp(ActionEvent actionEvent) {
+
+	}
+
 	// helper for radial menu
 	private static class Option {
-		final String label; final Runnable action;
-		Option(String label, Runnable action) {
-			this.label = label; this.action = action;
+		final String label;
+		final Runnable action;
+		final String iconPath;
+
+		Option(String label, Runnable action, String iconPath) {
+			this.label = label;
+			this.action = action;
+			this.iconPath = iconPath;
 		}
 	}
+
+	private void updateHud() {
+		goldLabel.setText("1230"); // example
+		healthLabel.setText("10/10");
+		waveLabel.setText("2/10");
+	}
+
+	private void setupButtonIcons() {
+		Image speedUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Skip_Button.png")));
+		Image optionsIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Settings_Button.png")));
+		Image exitIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Cross_Button.png")));
+
+		ImageView speedView = new ImageView(speedUpIcon);
+		ImageView optionsView = new ImageView(optionsIcon);
+		ImageView exitView = new ImageView(exitIcon);
+
+		speedView.setFitWidth(32);
+		speedView.setFitHeight(32);
+		optionsView.setFitWidth(32);
+		optionsView.setFitHeight(32);
+		exitView.setFitWidth(32);
+		exitView.setFitHeight(32);
+
+		speedUp.setGraphic(speedView);
+		optionsButton.setGraphic(optionsView);
+		exitButton.setGraphic(exitView);
+	}
+
+
 }
