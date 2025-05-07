@@ -71,6 +71,7 @@ public class GameScreenController extends Controller {
 				}
 			}
 		}
+
 		// adjust window size
 		double w = cols * TILE_SIZE;
 		double h = (rows + 1) * TILE_SIZE;
@@ -86,6 +87,7 @@ public class GameScreenController extends Controller {
 		// 3) Hook up & start the GameManager loop
 		GameManager mgr = new GameManager(gameCanvas, allEntities, gameModel);
 		mgr.spawnGoblin();
+		mgr.spawnWarrior();
 		mgr.start();
 	}
 

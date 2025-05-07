@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 import java.util.List;
+import java.util.Collections;
 
 public class AnimatedEntity extends Entity {
     private final Image[] frames;
@@ -16,7 +17,7 @@ public class AnimatedEntity extends Entity {
     // path + movement
     private final List<Point> path;
     private final double speed;
-    private int waypointIndex = 1;
+    private int waypointIndex = 0;  // Start at first waypoint
 
     public AnimatedEntity(Image spriteSheet,
                           int frameCount,
@@ -24,22 +25,24 @@ public class AnimatedEntity extends Entity {
                           double frameDuration,
                           List<Point> path,
                           double speed,
-                          int hp)
+                          int hp,
+                          double scaleFactor)
     {
-        // start x,y at the first path point:
+        // Start at the first path point
         super(path.get(0).x(), path.get(0).y(), hp);
-        this.path          = path;
-        this.speed         = speed;
+        this.path = path;
+        this.speed = speed;
         this.frameDuration = frameDuration;
-        this.frames        = new Image[frameCount];
+        this.frames = new Image[frameCount];
 
-        // slice sprite‐sheet
+        // slice sprite‐sheet + scaling
         for (int i = 0; i < frameCount; i++) {
-            frames[i] = new WritableImage(
+            Image raw = new WritableImage(
                     spriteSheet.getPixelReader(),
                     i * frameSize, 0,
                     frameSize, frameSize
             );
+            frames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
         }
     }
 
@@ -57,19 +60,45 @@ public class AnimatedEntity extends Entity {
             Point target = path.get(waypointIndex);
             double dx = target.x() - x, dy = target.y() - y;
             double dist = Math.hypot(dx, dy);
-            if (dist <= speed * dt) {
+
+            // If very close to target, consider it reached
+            if (dist < 1) {
                 x = target.x();
                 y = target.y();
                 waypointIndex++;
             } else {
-                x += dx / dist * speed * dt;
-                y += dy / dist * speed * dt;
+                // Scale movement by dt and speed
+                double moveDistance = speed * dt;
+                if (moveDistance > dist) moveDistance = dist;
+
+                x += dx / dist * moveDistance;
+                y += dy / dist * moveDistance;
             }
         }
     }
 
     @Override
     public void render(GraphicsContext gc) {
-        gc.drawImage(frames[currentFrame], x, y);
+        // Get the sprite dimensions
+        double spriteWidth = frames[currentFrame].getWidth();
+        double spriteHeight = frames[currentFrame].getHeight();
+
+        // Center the sprite on the entity position
+        double drawX = x - spriteWidth / 2;
+        double drawY = y - spriteHeight / 2;
+
+        gc.drawImage(frames[currentFrame], drawX, drawY);
+    }
+
+    private Image scaleImage(Image src, double targetWidth, double targetHeight) {
+        javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
+        GraphicsContext gc = tempCanvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, targetWidth, targetHeight); // ensure it's transparent
+        gc.drawImage(src, 0, 0, targetWidth, targetHeight);
+
+        javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
+        params.setFill(javafx.scene.paint.Color.TRANSPARENT);
+
+        return tempCanvas.snapshot(params, null);
     }
 }
