@@ -123,34 +123,34 @@ public class MapEditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // 1) Resize and renderer
-        Main.getViewManager().resizeWindow(windowWidth, windowHeight);
-        tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
+    // 1) Resize and renderer
+    Main.getViewManager().resizeWindow(windowWidth, windowHeight);
+    tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
-        // 2) Allocate the backing array
-        mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
+    // 2) Allocate the backing array
+    mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
 
-        // 3) Build the static UI
-        setupButtonImages();
-        createTilePalette();
-        createMapGrid();
+    // 3) Build the static UI
+    setupMapManagementButtons();  // Do this first
+    setupButtonImages();          // Apply button styling
+    createTilePalette();
+    createMapGrid();
 
-        // 4) Wire up the combo exactly once
-        setupMapSelectionComboBox();
+    // 4) Wire up the combo exactly once
+    setupMapSelectionComboBox();
 
-        // 5) If there's at least one saved map, select & load it
-        List<String> maps = MapStorageManager.listAvailableMaps();
-        if (!maps.isEmpty()) {
-            String first = maps.get(0);
-            mapSelectionCombo.setValue(first);
-            loadMapIntoGrid(first);
-        }
-
-        // 6) Kick off in EDIT mode
-        currentMode = EditorMode.EDIT;
-        updateModeButtonStyles();
-        setupMapManagementButtons();
+    // 5) If there's at least one saved map, select & load it
+    List<String> maps = MapStorageManager.listAvailableMaps();
+    if (!maps.isEmpty()) {
+        String first = maps.get(0);
+        mapSelectionCombo.setValue(first);
+        loadMapIntoGrid(first);
     }
+
+    // 6) Set initial mode
+    currentMode = EditorMode.EDIT;
+    updateModeButtonStyles();
+}
 
     /**
      * After loading tiles into mapTileViews, scan for any 2×2 blocks
@@ -362,47 +362,39 @@ public class MapEditorController implements Initializable {
     }
 
     private void setupButtonImages() {
-        // Get the image views inside each button
-        homeImage = (ImageView) homeBtn.getGraphic();
-        editModeImage = (ImageView) editModeBtn.getGraphic();
-        deleteModeImage = (ImageView) deleteModeBtn.getGraphic();
-        clearMapImage = (ImageView) clearMapBtn.getGraphic();
-        saveMapImage = (ImageView) saveMapBtn.getGraphic();
-
-        // Add text overlay to the home button
-        StackPane homeContent = new StackPane();
-        Label homeLabel = new Label("HOME");
-        homeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        homeContent.getChildren().addAll(homeImage, homeLabel);
-        homeBtn.setGraphic(homeContent);
-
-        // Add text overlay to the edit mode button
-        StackPane editModeContent = new StackPane();
-        Label editModeLabel = new Label("EDIT MODE");
-        editModeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        editModeContent.getChildren().addAll(editModeImage, editModeLabel);
-        editModeBtn.setGraphic(editModeContent);
-
-        // Add text overlay to the delete mode button
-        StackPane deleteContent = new StackPane();
-        Label deleteModeLabel = new Label("DELETE");
-        deleteModeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        deleteContent.getChildren().addAll(deleteModeImage, deleteModeLabel);
-        deleteModeBtn.setGraphic(deleteContent);
-
-        // Add text overlay to the clear map button
-        StackPane clearContent = new StackPane();
-        Label clearLabel = new Label("CLEAR MAP");
-        clearLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        clearContent.getChildren().addAll(clearMapImage, clearLabel);
-        clearMapBtn.setGraphic(clearContent);
-
-        // Add text overlay to the save button
-        StackPane saveContent = new StackPane();
-        Label saveLabel = new Label("SAVE");
-        saveLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        saveContent.getChildren().addAll(saveMapImage, saveLabel);
-        saveMapBtn.setGraphic(saveContent);
+        // Define the button styles
+        String buttonStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
+        String buttonHoverStyle = MapEditorUtils.BUTTON_HOVER_STYLE;
+        String buttonPressedStyle = MapEditorUtils.BUTTON_PRESSED_STYLE;
+        
+        // Apply styles to all navigation/action buttons
+        Button[] actionButtons = {homeBtn, editModeBtn, deleteModeBtn, clearMapBtn, saveMapBtn};
+        
+        for (Button button : actionButtons) {
+            // Apply normal style
+            button.setStyle(buttonStyle);
+            
+            // Add hover effects
+            button.setOnMouseEntered(e -> button.setStyle(buttonHoverStyle));
+            button.setOnMouseExited(e -> button.setStyle(buttonStyle));
+            
+            // Add pressed effects
+            button.setOnMousePressed(e -> button.setStyle(buttonPressedStyle));
+            button.setOnMouseReleased(e -> {
+                if (button.isHover()) {
+                    button.setStyle(buttonHoverStyle);
+                } else {
+                    button.setStyle(buttonStyle);
+                }
+            });
+            
+            // Set button dimensions
+            button.setPrefHeight(32);
+            button.setPrefWidth(120);
+        }
+        
+        // Set the current mode button (initially Edit Mode) to be highlighted
+        updateModeButtonStyles();
     }
 
     private void createTilePalette() {
@@ -863,21 +855,45 @@ public class MapEditorController implements Initializable {
     }
 
     private void updateModeButtonStyles() {
-        // Update button backgrounds based on current mode
-        editModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
-        deleteModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
-
+        // Reset styles for both buttons
+        String normalStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
+        String activeStyle = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+                             "-fx-text-fill: #ffcc66; -fx-font-family: 'Segoe UI'; " +
+                             "-fx-font-size: 14px; -fx-font-weight: bold; " +
+                             "-fx-border-color: #ffcc66; -fx-border-width: 2; " +
+                             "-fx-border-radius: 5; -fx-background-radius: 5;";
+        
+        // Update based on current mode
         if (currentMode == EditorMode.EDIT) {
-            if (editModeImage != null && deleteModeImage != null) {
-                editModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_3SLIDES)));
-                deleteModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE)));
-            }
+            editModeBtn.setStyle(activeStyle);
+            deleteModeBtn.setStyle(normalStyle);
         } else {
-            if (editModeImage != null && deleteModeImage != null) {
-                editModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE)));
-                deleteModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
-            }
+            editModeBtn.setStyle(normalStyle);
+            deleteModeBtn.setStyle(activeStyle);
         }
+        
+        // Re-attach the hover handlers
+        editModeBtn.setOnMouseEntered(e -> {
+            if (currentMode != EditorMode.EDIT) {
+                editModeBtn.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE);
+            }
+        });
+        editModeBtn.setOnMouseExited(e -> {
+            if (currentMode != EditorMode.EDIT) {
+                editModeBtn.setStyle(normalStyle);
+            }
+        });
+        
+        deleteModeBtn.setOnMouseEntered(e -> {
+            if (currentMode != EditorMode.DELETE) {
+                deleteModeBtn.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE);
+            }
+        });
+        deleteModeBtn.setOnMouseExited(e -> {
+            if (currentMode != EditorMode.DELETE) {
+                deleteModeBtn.setStyle(normalStyle);
+            }
+        });
     }
 
     @FXML
