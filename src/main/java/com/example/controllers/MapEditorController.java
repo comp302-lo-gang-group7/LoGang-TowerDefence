@@ -15,11 +15,40 @@ import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.cell.ComboBoxListCell;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Predicate;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 
 public class MapEditorController implements Initializable {
     @FXML private GridPane paletteGrid;
@@ -94,34 +123,34 @@ public class MapEditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // 1) Resize and renderer
-        Main.getViewManager().resizeWindow(windowWidth, windowHeight);
-        tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
+    // 1) Resize and renderer
+    Main.getViewManager().resizeWindow(windowWidth, windowHeight);
+    tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
-        // 2) Allocate the backing array
-        mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
+    // 2) Allocate the backing array
+    mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
 
-        // 3) Build the static UI
-        setupButtonImages();
-        createTilePalette();
-        createMapGrid();
+    // 3) Build the static UI
+    setupMapManagementButtons();  // Do this first
+    setupButtonImages();          // Apply button styling
+    createTilePalette();
+    createMapGrid();
 
-        // 4) Wire up the combo exactly once
-        setupMapSelectionComboBox();
+    // 4) Wire up the combo exactly once
+    setupMapSelectionComboBox();
 
-        // 5) If there's at least one saved map, select & load it
-        List<String> maps = MapStorageManager.listAvailableMaps();
-        if (!maps.isEmpty()) {
-            String first = maps.get(0);
-            mapSelectionCombo.setValue(first);
-            loadMapIntoGrid(first);
-        }
-
-        // 6) Kick off in EDIT mode
-        currentMode = EditorMode.EDIT;
-        updateModeButtonStyles();
-        setupMapManagementButtons();
+    // 5) If there's at least one saved map, select & load it
+    List<String> maps = MapStorageManager.listAvailableMaps();
+    if (!maps.isEmpty()) {
+        String first = maps.get(0);
+        mapSelectionCombo.setValue(first);
+        loadMapIntoGrid(first);
     }
+
+    // 6) Set initial mode
+    currentMode = EditorMode.EDIT;
+    updateModeButtonStyles();
+}
 
     /**
      * After loading tiles into mapTileViews, scan for any 2×2 blocks
@@ -176,55 +205,84 @@ public class MapEditorController implements Initializable {
 
 
     private void setupMapSelectionComboBox() {
-        // allow typing a new map name
+        // Allow typing a new map name
         mapSelectionCombo.setEditable(true);
-
-        // populate with saved maps
+    
+        // Populate with saved maps
         refreshMapList();
-
-        // style as before…
-        mapSelectionCombo.setStyle("-fx-background-color: #555555; -fx-text-fill: white;");
-
+    
+        // Apply wooden theme styling to the ComboBox itself
+        mapSelectionCombo.setStyle("-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+                                  "-fx-text-fill: #e8d9b5; -fx-font-weight: bold; " +
+                                  "-fx-border-color: #8a673c; -fx-border-width: 2; " +
+                                  "-fx-border-radius: 3;");
+    
+        // Style the list cells
         mapSelectionCombo.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (!empty && item != null) {
                     setText(item);
-                    setStyle("-fx-background-color: #333333; -fx-text-fill: white;");
+                    setStyle("-fx-background-color: #5d4228; -fx-text-fill: #e8d9b5;");
                 } else {
                     setText(null);
                 }
             }
         });
+        
+        // Style the button cell (what's displayed when closed)
         mapSelectionCombo.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (!empty && item != null) {
                     setText(item);
-                    setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+                    setStyle("-fx-text-fill: #e8d9b5; -fx-font-weight: bold; -fx-background-color: #6b4c2e;");
                 } else {
                     setText("Choose or enter a map…");
-                    setStyle("-fx-text-fill: #CCCCCC; -fx-font-style: italic;");
+                    setStyle("-fx-text-fill: #d5c4a1; -fx-font-style: italic; -fx-background-color: #6b4c2e;");
                 }
             }
         });
-
-        // when the user selects or types and presses Enter, load that map
+    
+        // Style the text field in the editable combo box
+        mapSelectionCombo.getEditor().setStyle("-fx-background-color: #6b4c2e; -fx-text-fill: #e8d9b5; " +
+                                             "-fx-font-weight: bold; -fx-highlight-fill: #8a673c;");
+    
+        // When the user selects or types and presses Enter, load that map
         mapSelectionCombo.setOnAction(evt -> {
             String name = mapSelectionCombo.getEditor().getText().trim();
             if (name.isEmpty()) return;
-
-            // if new, create an empty map immediately
+    
+            // If new, create an empty map immediately
             if (!MapStorageManager.listAvailableMaps().contains(name)) {
                 MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, name);
                 refreshMapList();
                 mapSelectionCombo.setValue(name);
             }
-
-            // then load it
+    
+            // Then load it
             loadMapIntoGrid(name);
+        });
+        
+        // Add a platform.runLater to style elements that might not be available immediately
+        javafx.application.Platform.runLater(() -> {
+            try {
+                // Style the arrow button and arrow separately after the UI is fully loaded
+                if (mapSelectionCombo.lookup(".arrow-button") != null) {
+                    mapSelectionCombo.lookup(".arrow-button").setStyle("-fx-background-color: #6b4c2e;");
+                }
+                if (mapSelectionCombo.lookup(".arrow") != null) {
+                    mapSelectionCombo.lookup(".arrow").setStyle("-fx-background-color: #e8d9b5;");
+                }
+                
+                // Add CSS to style the dropdown popup
+                mapSelectionCombo.getStyleClass().add("wooden-combo-box");
+            } catch (Exception e) {
+                // Log the error but don't crash the application
+                System.err.println("Error styling ComboBox components: " + e.getMessage());
+            }
         });
     }
 
@@ -304,47 +362,39 @@ public class MapEditorController implements Initializable {
     }
 
     private void setupButtonImages() {
-        // Get the image views inside each button
-        homeImage = (ImageView) homeBtn.getGraphic();
-        editModeImage = (ImageView) editModeBtn.getGraphic();
-        deleteModeImage = (ImageView) deleteModeBtn.getGraphic();
-        clearMapImage = (ImageView) clearMapBtn.getGraphic();
-        saveMapImage = (ImageView) saveMapBtn.getGraphic();
-
-        // Add text overlay to the home button
-        StackPane homeContent = new StackPane();
-        Label homeLabel = new Label("HOME");
-        homeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        homeContent.getChildren().addAll(homeImage, homeLabel);
-        homeBtn.setGraphic(homeContent);
-
-        // Add text overlay to the edit mode button
-        StackPane editModeContent = new StackPane();
-        Label editModeLabel = new Label("EDIT MODE");
-        editModeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        editModeContent.getChildren().addAll(editModeImage, editModeLabel);
-        editModeBtn.setGraphic(editModeContent);
-
-        // Add text overlay to the delete mode button
-        StackPane deleteContent = new StackPane();
-        Label deleteModeLabel = new Label("DELETE");
-        deleteModeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        deleteContent.getChildren().addAll(deleteModeImage, deleteModeLabel);
-        deleteModeBtn.setGraphic(deleteContent);
-
-        // Add text overlay to the clear map button
-        StackPane clearContent = new StackPane();
-        Label clearLabel = new Label("CLEAR MAP");
-        clearLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        clearContent.getChildren().addAll(clearMapImage, clearLabel);
-        clearMapBtn.setGraphic(clearContent);
-
-        // Add text overlay to the save button
-        StackPane saveContent = new StackPane();
-        Label saveLabel = new Label("SAVE");
-        saveLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-        saveContent.getChildren().addAll(saveMapImage, saveLabel);
-        saveMapBtn.setGraphic(saveContent);
+        // Define the button styles
+        String buttonStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
+        String buttonHoverStyle = MapEditorUtils.BUTTON_HOVER_STYLE;
+        String buttonPressedStyle = MapEditorUtils.BUTTON_PRESSED_STYLE;
+        
+        // Apply styles to all navigation/action buttons
+        Button[] actionButtons = {homeBtn, editModeBtn, deleteModeBtn, clearMapBtn, saveMapBtn};
+        
+        for (Button button : actionButtons) {
+            // Apply normal style
+            button.setStyle(buttonStyle);
+            
+            // Add hover effects
+            button.setOnMouseEntered(e -> button.setStyle(buttonHoverStyle));
+            button.setOnMouseExited(e -> button.setStyle(buttonStyle));
+            
+            // Add pressed effects
+            button.setOnMousePressed(e -> button.setStyle(buttonPressedStyle));
+            button.setOnMouseReleased(e -> {
+                if (button.isHover()) {
+                    button.setStyle(buttonHoverStyle);
+                } else {
+                    button.setStyle(buttonStyle);
+                }
+            });
+            
+            // Set button dimensions
+            button.setPrefHeight(32);
+            button.setPrefWidth(120);
+        }
+        
+        // Set the current mode button (initially Edit Mode) to be highlighted
+        updateModeButtonStyles();
     }
 
     private void createTilePalette() {
@@ -805,21 +855,45 @@ public class MapEditorController implements Initializable {
     }
 
     private void updateModeButtonStyles() {
-        // Update button backgrounds based on current mode
-        editModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
-        deleteModeBtn.setStyle("-fx-background-color: transparent; -fx-padding: 0;");
-
+        // Reset styles for both buttons
+        String normalStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
+        String activeStyle = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+                             "-fx-text-fill: #ffcc66; -fx-font-family: 'Segoe UI'; " +
+                             "-fx-font-size: 14px; -fx-font-weight: bold; " +
+                             "-fx-border-color: #ffcc66; -fx-border-width: 2; " +
+                             "-fx-border-radius: 5; -fx-background-radius: 5;";
+        
+        // Update based on current mode
         if (currentMode == EditorMode.EDIT) {
-            if (editModeImage != null && deleteModeImage != null) {
-                editModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_3SLIDES)));
-                deleteModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE)));
-            }
+            editModeBtn.setStyle(activeStyle);
+            deleteModeBtn.setStyle(normalStyle);
         } else {
-            if (editModeImage != null && deleteModeImage != null) {
-                editModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE)));
-                deleteModeImage.setImage(new Image(getClass().getResourceAsStream(BUTTON_BLUE_PRESSED)));
-            }
+            editModeBtn.setStyle(normalStyle);
+            deleteModeBtn.setStyle(activeStyle);
         }
+        
+        // Re-attach the hover handlers
+        editModeBtn.setOnMouseEntered(e -> {
+            if (currentMode != EditorMode.EDIT) {
+                editModeBtn.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE);
+            }
+        });
+        editModeBtn.setOnMouseExited(e -> {
+            if (currentMode != EditorMode.EDIT) {
+                editModeBtn.setStyle(normalStyle);
+            }
+        });
+        
+        deleteModeBtn.setOnMouseEntered(e -> {
+            if (currentMode != EditorMode.DELETE) {
+                deleteModeBtn.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE);
+            }
+        });
+        deleteModeBtn.setOnMouseExited(e -> {
+            if (currentMode != EditorMode.DELETE) {
+                deleteModeBtn.setStyle(normalStyle);
+            }
+        });
     }
 
     @FXML
@@ -934,29 +1008,55 @@ public class MapEditorController implements Initializable {
     }
 
     private void setupMapManagementButtons() {
-        newMapBtn.setOnAction(e -> {
-            TextInputDialog dlg = new TextInputDialog();
-            dlg.setTitle("Create New Map");
-            dlg.setHeaderText("Enter a name for your new map:");
-            dlg.setContentText("Map name:");
-            dlg.showAndWait().ifPresent(name -> {
-                name = name.trim();
-                if (name.isEmpty()) {
-                    MapEditorUtils.showErrorAlert("Invalid Name",
-                            "Map name cannot be empty.", null, this);
-                } else if (MapStorageManager.listAvailableMaps().contains(name)) {
-                    MapEditorUtils.showErrorAlert("Name Exists",
-                            "A map called \"" + name + "\" already exists.", null, this);
-                } else {
-                    // save an empty grid
-                    MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, name);
-                    refreshMapList();
-                    mapSelectionCombo.setValue(name);
-                    clearGrid();  // reset all tiles to grass
-                }
-            });
-        });
-
+        // Apply woody styling to buttons
+        String buttonStyle = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+                            "-fx-text-fill: #e8d9b5; " +
+                            "-fx-font-family: 'Segoe UI'; " +
+                            "-fx-font-size: 12px; " +
+                            "-fx-font-weight: bold; " +
+                            "-fx-border-color: #8a673c; " +
+                            "-fx-border-width: 2; " +
+                            "-fx-border-radius: 3; " +
+                            "-fx-background-radius: 3;";
+    
+        String buttonHoverStyle = "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
+                                 "-fx-text-fill: #f5ead9; " +
+                                 "-fx-font-family: 'Segoe UI'; " +
+                                 "-fx-font-size: 12px; " +
+                                 "-fx-font-weight: bold; " +
+                                 "-fx-border-color: #a07748; " +
+                                 "-fx-border-width: 2; " +
+                                 "-fx-border-radius: 3; " +
+                                 "-fx-background-radius: 3; " +
+                                 "-fx-cursor: hand;";
+    
+        String buttonPressedStyle = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
+                                  "-fx-text-fill: #d9c9a0; " +
+                                  "-fx-font-family: 'Segoe UI'; " +
+                                  "-fx-font-size: 12px; " +
+                                  "-fx-font-weight: bold; " +
+                                  "-fx-border-color: #8a673c; " +
+                                  "-fx-border-width: 2; " +
+                                  "-fx-border-radius: 3; " +
+                                  "-fx-background-radius: 3;";
+        
+        // Apply styles to New Map button
+        newMapBtn.setStyle(buttonStyle);
+        newMapBtn.setOnMouseEntered(e -> newMapBtn.setStyle(buttonHoverStyle));
+        newMapBtn.setOnMouseExited(e -> newMapBtn.setStyle(buttonStyle));
+        newMapBtn.setOnMousePressed(e -> newMapBtn.setStyle(buttonPressedStyle));
+        newMapBtn.setOnMouseReleased(e -> newMapBtn.setStyle(buttonHoverStyle));
+        
+        // Apply styles to Delete Map button
+        deleteMapBtn.setStyle(buttonStyle);
+        deleteMapBtn.setOnMouseEntered(e -> deleteMapBtn.setStyle(buttonHoverStyle));
+        deleteMapBtn.setOnMouseExited(e -> deleteMapBtn.setStyle(buttonStyle));
+        deleteMapBtn.setOnMousePressed(e -> deleteMapBtn.setStyle(buttonPressedStyle));
+        deleteMapBtn.setOnMouseReleased(e -> deleteMapBtn.setStyle(buttonHoverStyle));
+        
+        // Button actions
+        newMapBtn.setOnAction(e -> showNewMapDialog());
+    
         deleteMapBtn.setOnAction(e -> {
             String selected = mapSelectionCombo.getValue();
             if (selected == null) {
@@ -984,6 +1084,150 @@ public class MapEditorController implements Initializable {
                 resetTileToGrass(r, c);
             }
         }
+    }
+
+    private void showNewMapDialog() {
+        // Create a new stage for our custom dialog
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        dialogStage.initStyle(StageStyle.UNDECORATED);
+        dialogStage.setTitle("Create New Map");
+        
+        // Create the custom title bar
+        HBox titleBar = createTitleBar(dialogStage, "Create New Map");
+        
+        // Create content area
+        VBox contentArea = new VBox(15);
+        contentArea.setAlignment(Pos.CENTER);
+        contentArea.setPadding(new Insets(20, 20, 20, 20));
+        contentArea.setStyle("-fx-background-color: #5d4228;");
+        
+        // Create prompt text
+        Text promptText = new Text("Enter a name for your new map:");
+        promptText.setFont(Font.font("Segoe UI", 14));
+        promptText.setFill(Color.web("#e8d9b5"));
+        
+        // Create text field
+        TextField mapNameField = new TextField();
+        mapNameField.setPromptText("Map name");
+        mapNameField.setPrefWidth(250);
+        mapNameField.setStyle("-fx-background-color: #7d5a3c; " +
+                             "-fx-text-fill: #e8d9b5; " +
+                             "-fx-border-color: #8a673c; " +
+                             "-fx-border-width: 2;");
+        
+        // Create button area
+        HBox buttonBox = new HBox(20);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setPadding(new Insets(20, 0, 10, 0));
+        buttonBox.setStyle("-fx-background-color: #5d4228;");
+        
+        // Create OK button
+        Button okButton = new Button("Create");
+        okButton.setPrefWidth(100);
+        okButton.setPrefHeight(30);
+        okButton.setStyle(MapEditorUtils.OK_BUTTON_NORMAL_STYLE);
+        
+        // OK button hover effect
+        okButton.setOnMouseEntered(e -> okButton.setStyle(MapEditorUtils.OK_BUTTON_HOVER_STYLE));
+        okButton.setOnMouseExited(e -> okButton.setStyle(MapEditorUtils.OK_BUTTON_NORMAL_STYLE));
+        
+        // OK button click action
+        okButton.setOnAction(e -> {
+            String name = mapNameField.getText().trim();
+            if (name.isEmpty()) {
+                MapEditorUtils.showErrorAlert("Invalid Name",
+                        "Map name cannot be empty.", null, this);
+            } else if (MapStorageManager.listAvailableMaps().contains(name)) {
+                MapEditorUtils.showErrorAlert("Name Exists",
+                        "A map called \"" + name + "\" already exists.", null, this);
+            } else {
+                // Save an empty grid
+                MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, name);
+                refreshMapList();
+                mapSelectionCombo.setValue(name);
+                clearGrid();  // Reset all tiles to grass
+                dialogStage.close();
+            }
+        });
+        
+        // Create Cancel button
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setPrefWidth(100);
+        cancelButton.setPrefHeight(30);
+        cancelButton.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
+        
+        // Cancel button hover effect
+        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE));
+        cancelButton.setOnMouseExited(e -> cancelButton.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE));
+        
+        // Cancel button click action
+        cancelButton.setOnAction(e -> dialogStage.close());
+        
+        // Add buttons to button area
+        buttonBox.getChildren().addAll(okButton, cancelButton);
+        
+        // Build the content area
+        contentArea.getChildren().addAll(promptText, mapNameField, buttonBox);
+        
+        // Create main container with title bar and content
+        VBox root = new VBox();
+        root.getChildren().addAll(titleBar, contentArea);
+        root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
+        
+        // Apply drop shadow effect
+        root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
+        
+        // Set up the scene
+        Scene dialogScene = new Scene(root, 400, 200);
+        dialogScene.setFill(Color.web("#5d4228"));
+        dialogStage.setScene(dialogScene);
+        
+        // Center on parent
+        dialogStage.centerOnScreen();
+        
+        // Add enter key handler for the text field
+        mapNameField.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ENTER) {
+                okButton.fire();
+            }
+        });
+        
+        // Make the dialog draggable by the title bar
+        MapEditorUtils.setupDraggableStage(titleBar, dialogStage);
+        
+        // Show dialog and wait for it to close
+        dialogStage.showAndWait();
+    }
+
+    private HBox createTitleBar(Stage stage, String title) {
+        // Create the title bar
+        HBox titleBar = new HBox();
+        titleBar.setAlignment(Pos.CENTER_RIGHT);
+        titleBar.setPrefHeight(25);
+        titleBar.setStyle(MapEditorUtils.TITLE_BAR_STYLE);
+        titleBar.setPadding(new Insets(0, 5, 0, 10));
+        
+        // Title text on the left
+        Label titleLabel = new Label(title);
+        titleLabel.setTextFill(Color.web("#e8d9b5"));
+        titleLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 14));
+        HBox.setHgrow(titleLabel, Priority.ALWAYS);
+        titleLabel.setAlignment(Pos.CENTER_LEFT);
+        
+        // Close button on the right
+        Button closeButton = new Button("×");
+        closeButton.setStyle(MapEditorUtils.BUTTON_TRANSPARENT_STYLE + "-fx-font-size: 16px;");
+        closeButton.setOnAction(e -> stage.close());
+        
+        // Hover effect for close button
+        closeButton.setOnMouseEntered(e -> closeButton.setStyle(MapEditorUtils.CLOSE_BUTTON_HOVER + "-fx-font-size: 16px;"));
+        closeButton.setOnMouseExited(e -> closeButton.setStyle(MapEditorUtils.BUTTON_TRANSPARENT_STYLE + "-fx-font-size: 16px;"));
+        
+        // Add components to title bar
+        titleBar.getChildren().addAll(titleLabel, closeButton);
+        
+        return titleBar;
     }
 }
 

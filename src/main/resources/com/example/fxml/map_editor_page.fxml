@@ -3,11 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -22,87 +19,43 @@
     <top>
         <ToolBar style="-fx-background-color: #333333; -fx-padding: 5px;">
             <HBox spacing="15" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                <!-- Home Button -->
-                <Button fx:id="homeBtn" onAction="#goToHome" 
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fx:id="homeImage" fitWidth="85" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Ribbon_Blue_3Slides.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Return to home screen" />
-                    </tooltip>
-                </Button>
-                
-                <!-- Map Selection Label and Dropdown -->
-                <Label text="Select Map:" style="-fx-text-fill: #ffffff; -fx-font-weight: bold;"/>
-                <ComboBox fx:id="mapSelectionCombo" prefWidth="240" promptText="Choose a map..."
-                          style="-fx-background-color: #555555; -fx-text-fill: white; -fx-font-weight: bold; 
-                                 -fx-border-color: #66BB6A; -fx-border-width: 2; -fx-border-radius: 3;">
-                </ComboBox>
+                <!-- Map Selection Dropdown (removed label) -->
+                <ComboBox fx:id="mapSelectionCombo" prefWidth="240" promptText="Choose a map..." />
                 <Button fx:id="newMapBtn" text="New Map…" />
                 <Button fx:id="deleteMapBtn" text="Delete Map" />
             </HBox>
             
             <HBox alignment="CENTER_RIGHT" spacing="10">
-                <!-- Edit Mode Button with Blue Slides background -->
-                <Button fx:id="editModeBtn" onAction="#toggleEditMode" 
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
+                <!-- Home Button -->
+                <Button fx:id="homeBtn" onAction="#goToHome" text="HOME">
+                    <tooltip>
+                        <Tooltip text="Return to home screen" />
+                    </tooltip>
+                </Button>
+                
+                <!-- Edit Mode Button -->
+                <Button fx:id="editModeBtn" onAction="#toggleEditMode" text="EDIT MODE">
                     <tooltip>
                         <Tooltip text="Switch to edit mode to place tiles" />
                     </tooltip>
                 </Button>
                 
-                <!-- Delete Mode Button with text -->
-                <Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode"
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
+                <!-- Delete Mode Button -->
+                <Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode" text="DELETE">
                     <tooltip>
                         <Tooltip text="Switch to delete mode to remove tiles" />
                     </tooltip>
                 </Button>
 
                 <!-- Clear Map Button -->
-                <Button fx:id="clearMapBtn" onAction="#clearMap"
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
+                <Button fx:id="clearMapBtn" onAction="#clearMap" text="CLEAR MAP">
                     <tooltip>
                         <Tooltip text="Clear the entire map" />
                     </tooltip>
                 </Button>
 
                 <!-- Save Map Button -->
-                <Button fx:id="saveMapBtn" onAction="#saveMap"
-                        style="-fx-background-color: transparent; -fx-padding: 0;">
-                    <graphic>
-                        <ImageView fitWidth="85" fitHeight="30" preserveRatio="false">
-                            <image>
-                                <Image url="@../assets/ui/Button_Blue_3Slides.png"/>
-                            </image>
-                        </ImageView>
-                    </graphic>
+                <Button fx:id="saveMapBtn" onAction="#saveMap" text="SAVE">
                     <tooltip>
                         <Tooltip text="Save the current map" />
                     </tooltip>
