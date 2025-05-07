@@ -27,20 +27,18 @@ public class GameScreenController extends Controller {
 	@FXML private Pane mapLayer, entityLayer, towerLayer;
 
 	private static final int TILE_SIZE = 64;
-	private static final String MAP_NAME = "Forest Path";
 
     private Tile[][] tiles;
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
 
-	@FXML
-	public void initialize() {
+	public void init( String mapName ) {
 		contextMenu.setAutoHide(true);
 
 		// load map data
         TileView[][] mapTiles;
         try {
-			mapTiles = MapStorageManager.loadMap(MAP_NAME);
+			mapTiles = MapStorageManager.loadMap(mapName);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
