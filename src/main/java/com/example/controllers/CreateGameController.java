@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.main.Main;
+import com.example.ui.ViewManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -104,7 +105,7 @@ public class CreateGameController extends Controller implements Initializable {
 
     @FXML
     public void goToDefaultGamePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/game_screen_page.fxml");
+        Main.getViewManager().switchTo("/com/example/fxml/game_config_page.fxml");
     }
 
     @FXML

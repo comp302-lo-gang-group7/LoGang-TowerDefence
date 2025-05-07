@@ -123,4 +123,9 @@ public class MapStorageManager {
             throw new UncheckedIOException("Failed to list map files", e);
         }
     }
+
+    public static Path getMapDirectory()
+    {
+        return MAP_DIRECTORY;
+    }
 }

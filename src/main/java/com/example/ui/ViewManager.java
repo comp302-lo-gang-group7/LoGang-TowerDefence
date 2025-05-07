@@ -72,6 +72,27 @@ public class ViewManager {
         }
     }
 
+    public void switchToGameScreen( String mapName )
+    {
+        try {
+            // Load new fxml page
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
+            Parent content = fxmlLoader.load();
+
+            ((GameScreenController)fxmlLoader.getController()).init(mapName);
+
+            // Get the current root layout which contains the title bar
+            VBox root = (VBox) scene.getRoot();
+
+            // Keep the title bar and replace the content
+            root.getChildren().set(1, content);
+
+        } catch (IOException e) {
+            System.out.printf("An IOException occurred during switch to FXML path com/example/fxml/game_screen_page.fxml, error: %s%n", e);
+            e.printStackTrace();
+        }
+    }
+
     /**
      * This method allows different parts of the project to resize the window.
      * @param width
