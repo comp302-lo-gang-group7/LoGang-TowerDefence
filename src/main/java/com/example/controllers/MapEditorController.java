@@ -679,7 +679,7 @@ public class MapEditorController implements Initializable {
     }
 
     @FXML
-    private void toggleEditMode() {
+    public void toggleEditMode() {
         currentMode = EditorMode.EDIT;
         updateModeButtonStyles();
         MapEditorUtils.showInfoAlert("Edit Mode",
@@ -688,7 +688,7 @@ public class MapEditorController implements Initializable {
     }
 
     @FXML
-    private void toggleDeleteMode() {
+    public void toggleDeleteMode() {
         currentMode = EditorMode.DELETE;
         updateModeButtonStyles();
         MapEditorUtils.showInfoAlert("Delete Mode", 
@@ -697,7 +697,7 @@ public class MapEditorController implements Initializable {
     }
 
     @FXML
-    private void clearMap() {
+    public void clearMap() {
         // Ask for confirmation
         boolean confirmed = MapEditorUtils.showCustomConfirmDialog(
             "Clear Map",
@@ -763,7 +763,7 @@ public class MapEditorController implements Initializable {
     }
 
     @FXML
-    private void goToHome() {
+    public void goToHome() {
         boolean canLeave = true;
         boolean hasChanges = checkForUnsavedChanges();
 
@@ -826,11 +826,6 @@ public class MapEditorController implements Initializable {
             }
             groupTileMap.remove(groupKey);
         }
-    }
-
-    private void showStatusMessage(String message) {
-        System.out.println(message);
-        // In a real implementation, this would update a status bar or show a toast notification
     }
 }
 

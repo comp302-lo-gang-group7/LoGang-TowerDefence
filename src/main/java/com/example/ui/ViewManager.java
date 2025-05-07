@@ -47,6 +47,7 @@ public class ViewManager {
         }
     }
 
+
     public void switchTo(String fxmlPath) {
         try {
             // Load new fxml page

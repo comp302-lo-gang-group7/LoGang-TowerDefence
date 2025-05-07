@@ -77,10 +77,15 @@ public class MapEditorUtils {
     // Track dialog confirmation status
     private static boolean dialogConfirmed = false;
 
+    // For dialog suppression
+    private static boolean suppressDialogs = false;
+
     /**
      * Shows a wood-styled info alert with custom title bar
      */
     public static void showInfoAlert(String title, String content, Object controller) {
+        if (suppressDialogs) return;
+
         // Create a new stage for our custom dialog
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -152,6 +157,8 @@ public class MapEditorUtils {
     }
 
     public static void showErrorAlert(String title, String header, String content, Object caller) {
+        if (suppressDialogs) return;
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(title);
         dialog.setHeaderText(null);
@@ -220,6 +227,8 @@ public class MapEditorUtils {
      * Shows a fully custom styled confirmation dialog with our custom title bar
      */
     public static boolean showCustomConfirmDialog(String title, String content, Object controller) {
+        if (suppressDialogs) return true;
+
         // Create a new stage for our custom dialog
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -389,33 +398,7 @@ public class MapEditorUtils {
         st.play();
     }
 
-    /**
-     * Creates a composite tile image from a base image and an overlay
-     */
-    public static Image compositeTile(Image base, Image overlay, int tileSize, double whiteThreshold) {
-        WritableImage result = new WritableImage(tileSize, tileSize);
-        
-        PixelReader baseReader = base.getPixelReader();
-        PixelReader overlayReader = overlay.getPixelReader();
-        PixelWriter resultWriter = result.getPixelWriter();
-        
-        for (int y = 0; y < tileSize; y++) {
-            for (int x = 0; x < tileSize; x++) {
-                Color overlayColor = overlayReader.getColor(x, y);
-                
-                // If the overlay pixel is close to white, use the base color
-                if (isCloseToWhite(overlayColor, whiteThreshold)) {
-                    resultWriter.setColor(x, y, baseReader.getColor(x, y));
-                } else {
-                    resultWriter.setColor(x, y, overlayColor);
-                }
-            }
-        }
-        
-        return result;
-    }
-    
-    private static boolean isCloseToWhite(Color color, double threshold) {
-        return color.getRed() > threshold && color.getGreen() > threshold && color.getBlue() > threshold;
+    public static void setSuppressDialogs(boolean b) {
+        suppressDialogs = b;
     }
 }

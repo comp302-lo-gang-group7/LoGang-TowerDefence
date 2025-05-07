@@ -8,7 +8,7 @@ import javafx.collections.ObservableMap;
 public class GameMap
 {
 	private final int width, height;
-	private final ObservableMap<Point, Tile> tiles = FXCollections.observableHashMap();
+	private final ObservableMap<Point, TileModel> tiles = FXCollections.observableHashMap();
 	private final ObservableList<Entity> entities = FXCollections.observableArrayList();
 
 	public GameMap( int width, int height )
@@ -27,12 +27,12 @@ public class GameMap
 		return height;
 	}
 
-	public Tile getTile(int x, int y)
+	public TileModel getTile(int x, int y)
 	{
 		return getTile(new Point(x, y));
 	}
 
-	public Tile getTile(Point point)
+	public TileModel getTile(Point point)
 	{
 		if ( point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height )
 		{
@@ -44,16 +44,16 @@ public class GameMap
 		}
 	}
 
-	public void setTile( int x, int y, Tile tile )
+	public void setTile( int x, int y, TileModel tileModel)
 	{
-		setTile(new Point(x, y), tile);
+		setTile(new Point(x, y), tileModel);
 	}
 
-	public void setTile(Point point, Tile tile)
+	public void setTile(Point point, TileModel tileModel)
 	{
 		if ( point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height )
 		{
-			tiles.put(point, tile);
+			tiles.put(point, tileModel);
 		}
 		else
 		{
@@ -61,7 +61,7 @@ public class GameMap
 		}
 	}
 
-	public ObservableMap<Point, Tile> getTiles()
+	public ObservableMap<Point, TileModel> getTiles()
 	{
 		return tiles;
 	}

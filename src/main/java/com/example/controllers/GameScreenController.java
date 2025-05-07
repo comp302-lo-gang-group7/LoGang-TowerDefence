@@ -5,9 +5,7 @@ import com.example.game.GameEvent;
 import com.example.game.GameEventListener;
 import com.example.game.GameModel;
 import com.example.main.Main;
-import com.example.map.Entity;
-import com.example.map.TileEnum;
-import com.example.map.TileView;
+import com.example.map.*;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
 import javafx.collections.ListChangeListener;
@@ -31,7 +29,10 @@ public class GameScreenController extends Controller implements GameEventListene
 	private static final int TILE_SIZE = 64;
 	private static final String MAP_NAME = "Forest Path";
 
-	private TileView[][] mapTiles;
+	private TileView[][] mapTiles; // These are primarily for setup and background creation
+
+	private Tile[][] tiles;
+
 	private GameModel gameModel;
 	private Popup towerMenu;
 	private TileRenderer renderer;
@@ -49,6 +50,8 @@ public class GameScreenController extends Controller implements GameEventListene
 		int rows = mapTiles.length;
 		int cols = mapTiles[0].length;
 
+		tiles = new Tile[rows][cols];
+
 		// 2) init renderer & model
 		renderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 		gameModel = new GameModel(cols, rows);
@@ -60,12 +63,16 @@ public class GameScreenController extends Controller implements GameEventListene
 			for (int x = 0; x < cols; x++) {
 				TileEnum type = mapTiles[y][x].getType();
 				TileView tv = renderer.createTileView(type);
+				TileModel model = new TileModel(x, y);
+
+				tiles[y][x] = new Tile(tv, model);
+
 				tv.setLayoutX(x * TILE_SIZE);
 				tv.setLayoutY(y * TILE_SIZE);
 
 				if (type == TileEnum.EMPTY_TOWER_TILE) {
 					final int tx = x, ty = y;
-					tv.setOnMouseClicked(e -> onTileClicked(tx, ty, e));
+					tv.setOnMouseClicked(e -> onTowerTileClicked(tv, tx, ty, e));
 				}
 
 				gameArea.getChildren().add(tv);
@@ -74,7 +81,7 @@ public class GameScreenController extends Controller implements GameEventListene
 
 		// 4) adjust window & pane size
 		double w = cols * TILE_SIZE;
-		double h = rows * TILE_SIZE;
+		double h = (rows + 1) * TILE_SIZE;
 		Main.getViewManager().resizeWindow((int) w, (int) h);
 		gameArea.setPrefSize(w, h);
 
@@ -90,11 +97,12 @@ public class GameScreenController extends Controller implements GameEventListene
 		buildTowerMenu();
 	}
 
-	private void onTileClicked(int x, int y, MouseEvent e) {
-		if (!gameModel.isValidConstructionLot(x, y)) return;
-		clickedTileX = x;
-		clickedTileY = y;
-		towerMenu.show(gameArea.getScene().getWindow(), e.getScreenX(), e.getScreenY());
+	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
+		if (tv.getType().equals(TileEnum.EMPTY_TOWER_TILE)) {
+			clickedTileX = x;
+			clickedTileY = y;
+			towerMenu.show(gameArea.getScene().getWindow(), e.getScreenX(), e.getScreenY());
+		}
 	}
 
 	private void addEntityView(Entity e) {
@@ -117,17 +125,35 @@ public class GameScreenController extends Controller implements GameEventListene
 		VBox box = new VBox(5);
 		box.setStyle("-fx-background-color:white; -fx-border-color:gray; -fx-padding:8;");
 		Button a = new Button("Archer"), m = new Button("Mage"), r = new Button("Artillery");
-		a.setOnAction(evt -> constructTower(GameModel.TowerType.ARCHER));
-		m.setOnAction(evt -> constructTower(GameModel.TowerType.MAGE));
-		r.setOnAction(evt -> constructTower(GameModel.TowerType.ARTILLERY));
+		a.setOnAction(evt -> constructTower(TileEnum.ARCHERY_TOWER));
+		m.setOnAction(evt -> constructTower(TileEnum.MAGE_TOWER));
+		r.setOnAction(evt -> constructTower(TileEnum.ARTILLERY_TOWER));
 		box.getChildren().addAll(a, m, r);
 		towerMenu.getContent().add(box);
 	}
 
-	private void constructTower(GameModel.TowerType type) {
-		gameModel.createTower(clickedTileX, clickedTileY, type);
+	private void constructTower(TileEnum towerType) {
+		Tile tile = tiles[clickedTileY][clickedTileX];
+
+		// Replace visual with new tower image
+		TileView newView = renderer.createTileView(towerType);
+		newView.setLayoutX(clickedTileX * TILE_SIZE);
+		newView.setLayoutY(clickedTileY * TILE_SIZE);
+
+		// Swap in pane
+		gameArea.getChildren().remove(tile.view);
+		gameArea.getChildren().add(newView);
+
+		// Update Tile (both view + model)
+		tile.view = newView;
+		tile.model.setTower(towerType, 10, 5, 100); // example values: HP=10, DMG=5, cost=100
+
+		// Disable further clicks
+		newView.setOnMouseClicked(null);
+
 		towerMenu.hide();
 	}
+
 
 	@Override
 	public void handle(GameEvent event) {

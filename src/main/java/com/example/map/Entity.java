@@ -4,6 +4,7 @@ import com.example.ui.Sprite;
 import com.example.ui.SpriteProvider;
 import javafx.scene.image.Image;
 
+
 public class Entity implements SpriteProvider {
 	private final Sprite sprite;
 
