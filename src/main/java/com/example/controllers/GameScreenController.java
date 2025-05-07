@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.entity.Entity;
 import com.example.game.GameDataEvent;
 import com.example.game.GameEvent;
 import com.example.game.GameEventListener;
@@ -106,7 +107,7 @@ public class GameScreenController extends Controller implements GameEventListene
 		Point start = PathFinder.findSpawnPoint(grid);
 		Point goal = PathFinder.findCastlePoint(grid);
 
-		gameModel.getMap().printExpandedGrid();
+		// gameModel.getMap().printExpandedGrid();
 
 		List<Point> path = PathFinder.findPath(grid, start, goal);
 

@@ -1,4 +1,4 @@
-package com.example.map;
+package com.example.entity;
 
 import com.example.ui.Sprite;
 import com.example.ui.SpriteProvider;

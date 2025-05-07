@@ -8,7 +8,6 @@ module com.example.game {
 	requires org.junit.jupiter.api;
 
 	exports com.example.entity;
-	opens com.example.entity to javafx.fxml;
 
 	exports com.example.map;
 	opens com.example.map to javafx.fxml, com.fasterxml.jackson.databind;
@@ -24,5 +23,6 @@ module com.example.game {
 
 	exports com.example.controllers;
 	opens com.example.controllers to javafx.fxml;
+	opens com.example.entity to com.fasterxml.jackson.databind, javafx.fxml;
 
 }

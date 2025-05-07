@@ -21,15 +21,13 @@ public class PathFinder {
         int h = grid.length, w = grid[0].length;
         double[][] dist = new double[h][w];
         Point[][] prev = new Point[h][w];
-        for (int y = 0; y < h; y++)
+        for (int y = 0; y < h; y++) {
             Arrays.fill(dist[y], Double.POSITIVE_INFINITY);
+        }
 
-        // Min-heap prioritized by lowest cumulative cost
         PriorityQueue<Point> pq = new PriorityQueue<>(
                 Comparator.comparingDouble(p -> dist[p.y()][p.x()])
         );
-
-        // Cost to enter the start cell is zero
         dist[start.y()][start.x()] = 0;
         pq.add(start);
 
@@ -40,14 +38,12 @@ public class PathFinder {
             int cx = cur.x(), cy = cur.y();
             double baseCost = dist[cy][cx];
 
-            // Explore 4-neighbors
             for (int i = 0; i < 4; i++) {
                 int nx = cx + DX[i], ny = cy + DY[i];
                 if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
                 int weight = grid[ny][nx];
-                if (weight <= 0) continue;   // obstacle
+                if (weight <= 0) continue; // obstacle
 
-                // Cost = how much we *lose* from the perfect path
                 double stepCost = (GOAL_WEIGHT - weight);
                 double nd = baseCost + stepCost;
 
@@ -59,14 +55,26 @@ public class PathFinder {
             }
         }
 
-        // Reconstruct path if we reached goal
-        if (prev[goal.y()][goal.x()] == null) return Collections.emptyList();
-        List<Point> path = new ArrayList<>();
-        for (Point at = goal; at != null; at = prev[at.y()][at.x()]) {
-            path.add(at);
+        // Reconstruct full path
+        List<Point> fullPath = new ArrayList<>();
+        if (prev[goal.y()][goal.x()] != null || start.equals(goal)) {
+            for (Point at = goal; at != null; at = prev[at.y()][at.x()]) {
+                fullPath.add(at);
+            }
+            Collections.reverse(fullPath);
         }
-        Collections.reverse(path);
-        return path;
+
+        // Trim after 20 GOAL_WEIGHT cells
+        List<Point> trimmed = new ArrayList<>();
+        int goalCount = 0;
+        for (Point p : fullPath) {
+            trimmed.add(p);
+            if (grid[p.y()][p.x()] == GOAL_WEIGHT) {
+                goalCount++;
+                if (goalCount >= 20) break;
+            }
+        }
+        return trimmed;
     }
 
 

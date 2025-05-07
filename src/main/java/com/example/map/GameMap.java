@@ -1,6 +1,6 @@
 package com.example.map;
 
-import com.example.map.Entity;
+import com.example.entity.Entity;
 import com.example.utils.Point;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
