@@ -1,12 +1,10 @@
 package com.example.map;
 
+import com.example.map.Entity;
 import com.example.utils.Point;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import java.util.Set;
 
@@ -131,13 +129,28 @@ public class GameMap {
 			};
 		}
 
-		// 3) Mark goal at lower-center of each castle tile
+		// 3) Mark entire bottom-half of the combined 2×2 castle area at GOAL_WEIGHT
+		int minCx = width, minCy = height, maxCx = -1, maxCy = -1;
+		// 3a) Find the bounding box of all 4 castle tiles
 		for (int ty = 0; ty < height; ty++) {
 			for (int tx = 0; tx < width; tx++) {
 				if (CASTLE_TILES.contains(tileViews[ty][tx].getType())) {
-					int cx = tx * TILE_SIZE + TILE_SIZE/2;
-					int cy = ty * TILE_SIZE + (int)(TILE_SIZE * 0.75);
-					expandedGrid[cy][cx] = GOAL_WEIGHT;
+					minCx = Math.min(minCx, tx);
+					maxCx = Math.max(maxCx, tx);
+					minCy = Math.min(minCy, ty);
+					maxCy = Math.max(maxCy, ty);
+				}
+			}
+		}
+		if (minCx <= maxCx && minCy <= maxCy) {
+			int castleX = minCx * TILE_SIZE;
+			int castleY = minCy * TILE_SIZE;
+			int castleW = (maxCx - minCx + 1) * TILE_SIZE;  // should be 128
+			int castleH = (maxCy - minCy + 1) * TILE_SIZE;  // should be 128
+			// 3b) Flood the bottom half of that 128×128 region
+			for (int dy = castleH/2; dy < castleH; dy++) {
+				for (int dx = 0; dx < castleW; dx++) {
+					expandedGrid[castleY + dy][castleX + dx] = GOAL_WEIGHT;
 				}
 			}
 		}
