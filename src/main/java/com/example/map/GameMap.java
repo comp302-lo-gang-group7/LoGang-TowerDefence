@@ -1,73 +1,150 @@
 package com.example.map;
 
-import com.example.utils.Point;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
-
-public class GameMap
-{
+public class GameMap {
 	private final int width, height;
-	private final ObservableMap<Point, Tile> tiles = FXCollections.observableHashMap();
-	private final ObservableList<Entity> entities = FXCollections.observableArrayList();
+	private int[][] expandedGrid;
 
-	public GameMap( int width, int height )
-	{
-		this.width = width;
-		this.height = height;
+	private static final int TILE_SIZE = 64; // TODO: Make dynamic
+	// peak weight at path center (half tile)
+	private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
+	private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;     // 64
+	private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
+
+	/**
+	 * Builds a heat-map grid for pathfinding:
+	 * - Path tiles: weights taper from center (max PEAK_WEIGHT) to 1 at edges.
+	 * - Castle tiles: weights grow downward from top (1) to max at lower-center.
+	 * - Obstacles: -1
+	 * - Spawn: any positive weight border pixel is set to PEAK_WEIGHT
+	 * - Goal: each castle tile's lower-center pixel set to PEAK_WEIGHT
+	 */
+	public GameMap(TileView[][] tileViews) {
+		this.height = tileViews.length;
+		this.width  = tileViews[0].length;
+		int pixelW = width * TILE_SIZE;
+		int pixelH = height * TILE_SIZE;
+		expandedGrid = new int[pixelH][pixelW];
+
+		// 1) Compute base heat values
+		for (int ty = 0; ty < height; ty++) {
+			for (int tx = 0; tx < width; tx++) {
+				TileEnum type = tileViews[ty][tx].getType();
+				int originX = tx * TILE_SIZE;
+				int originY = ty * TILE_SIZE;
+
+				if (TileEnum.PATH_TILES.contains(type)) {
+					int mid = TILE_SIZE / 2;  // 32 for a 64×64 tile
+
+					// 1) Draw the center row at peak weight
+					for (int dx = 0; dx < TILE_SIZE; dx++) {
+						expandedGrid[originY + mid][originX + dx] = PEAK_WEIGHT;
+					}
+					// 2) Draw the center column at peak weight
+					for (int dy = 0; dy < TILE_SIZE; dy++) {
+						expandedGrid[originY + dy][originX + mid] = PEAK_WEIGHT;
+					}
+
+					// 3) Optionally fill the rest of the tile's walkable area with a minimal weight (e.g., 1)
+					for (int dy = 0; dy < TILE_SIZE; dy++) {
+						for (int dx = 0; dx < TILE_SIZE; dx++) {
+							int y = originY + dy, x = originX + dx;
+							if (expandedGrid[y][x] == 0) {       // untouched
+								expandedGrid[y][x] = 1;          // bare‐minimum walkable
+							}
+						}
+					}
+				} else if (TileEnum.CASTLE_TILES.contains(type)) {
+					// vertical gradient: deeper (higher dy) => larger weight
+					double centerX = (TILE_SIZE - 1) / 2.0;
+					for (int dy = 0; dy < TILE_SIZE; dy++) {
+						for (int dx = 0; dx < TILE_SIZE; dx++) {
+							double weightX = Math.max(0, GOAL_WEIGHT - Math.abs(dx - centerX));
+							double factorY = dy / (double)(TILE_SIZE - 1);
+							int w = (int)Math.max(1, Math.round(weightX * factorY));
+							expandedGrid[originY + dy][originX + dx] = w;
+						}
+					}
+				} else {
+					// obstacle
+					for (int dy = 0; dy < TILE_SIZE; dy++) {
+						for (int dx = 0; dx < TILE_SIZE; dx++) {
+							expandedGrid[originY + dy][originX + dx] = -1;
+						}
+					}
+				}
+			}
+		}
+
+		// 2) Mark spawn points on any border pixel that has positive weight
+		for (int x = 0; x < pixelW; x++) {
+			if (expandedGrid[0][x] > 0) {
+				expandedGrid[0][x] = SPAWN_WEIGHT;
+			};
+			if (expandedGrid[pixelH - 1][x] > 0) {
+				expandedGrid[pixelH - 1][x] = SPAWN_WEIGHT;
+			};
+		}
+		for (int y = 0; y < pixelH; y++) {
+			if (expandedGrid[y][0] > 0) {
+				expandedGrid[y][0] = SPAWN_WEIGHT;
+			};
+			if (expandedGrid[y][pixelW - 1] > 0) {
+				expandedGrid[y][pixelW - 1] = SPAWN_WEIGHT;
+			};
+		}
+
+		// 3) Mark entire bottom-half of the combined 2×2 castle area at GOAL_WEIGHT
+		int minCx = width, minCy = height, maxCx = -1, maxCy = -1;
+		// 3a) Find the bounding box of all 4 castle tiles
+		for (int ty = 0; ty < height; ty++) {
+			for (int tx = 0; tx < width; tx++) {
+				if (TileEnum.CASTLE_TILES.contains(tileViews[ty][tx].getType())) {
+					minCx = Math.min(minCx, tx);
+					maxCx = Math.max(maxCx, tx);
+					minCy = Math.min(minCy, ty);
+					maxCy = Math.max(maxCy, ty);
+				}
+			}
+		}
+		if (minCx <= maxCx && minCy <= maxCy) {
+			int castleX = minCx * TILE_SIZE;
+			int castleY = minCy * TILE_SIZE;
+			int castleW = (maxCx - minCx + 1) * TILE_SIZE;  // should be 128
+			int castleH = (maxCy - minCy + 1) * TILE_SIZE;  // should be 128
+			// 3b) Flood the bottom half of that 128×128 region
+			for (int dy = castleH/2; dy < castleH; dy++) {
+				for (int dx = 0; dx < castleW; dx++) {
+					expandedGrid[castleY + dy][castleX + dx] = GOAL_WEIGHT;
+				}
+			}
+		}
 	}
 
-	public int getWidth()
-	{
+	public int getWidth() {
 		return width;
 	}
 
-	public int getHeight()
-	{
+	public int getHeight() {
 		return height;
 	}
 
-	public Tile getTile(int x, int y)
-	{
-		return getTile(new Point(x, y));
-	}
-
-	public Tile getTile(Point point)
-	{
-		if ( point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height )
-		{
-			return tiles.get(point);
+	public void printExpandedGrid() {
+		if (expandedGrid == null) {
+			System.out.println("Expanded grid is not initialized.");
+			return;
 		}
-		else
-		{
-			throw new IllegalArgumentException("Tile x or y out of map bounds");
+
+		for (int y = 0; y < expandedGrid.length; y++) {
+			StringBuilder row = new StringBuilder();
+			for (int x = 0; x < expandedGrid[0].length; x++) {
+				row.append(String.format("%2d ", expandedGrid[y][x]));
+			}
+			System.out.println(row);
 		}
 	}
 
-	public void setTile( int x, int y, Tile tile )
-	{
-		setTile(new Point(x, y), tile);
-	}
 
-	public void setTile(Point point, Tile tile)
-	{
-		if ( point.x() >= 0 && point.x() < width && point.y() >= 0 && point.y() < height )
-		{
-			tiles.put(point, tile);
-		}
-		else
-		{
-			throw new IllegalArgumentException("Tile x or y out of map bounds");
-		}
-	}
-
-	public ObservableMap<Point, Tile> getTiles()
-	{
-		return tiles;
-	}
-
-	public ObservableList<Entity> getEntities()
-	{
-		return entities;
+	public int[][] getExpandedGrid() {
+		return expandedGrid;
 	}
 }

@@ -30,57 +30,61 @@ import javafx.util.Duration;
 public class MapEditorUtils {
 
     // Button styling constants
-    private static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+    public static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
                                                      "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                                                      "-fx-font-size: 14px; -fx-font-weight: bold; " +
                                                      "-fx-border-color: #8a673c; -fx-border-width: 2; " +
                                                      "-fx-border-radius: 5; -fx-background-radius: 5;";
     
-    private static final String BUTTON_HOVER_STYLE = "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
+    public static final String BUTTON_HOVER_STYLE = "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
                                                     "-fx-text-fill: #f5ead9; -fx-font-family: 'Segoe UI'; " +
                                                     "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                     "-fx-border-color: #a07748; -fx-border-width: 2; " +
                                                     "-fx-border-radius: 5; -fx-background-radius: 5; " +
                                                     "-fx-cursor: hand;";
     
-    private static final String BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
+    public static final String BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
                                                       "-fx-text-fill: #d9c9a0; -fx-font-family: 'Segoe UI'; " +
                                                       "-fx-font-size: 14px; -fx-font-weight: bold; " +
                                                       "-fx-border-color: #8a673c; -fx-border-width: 2; " +
                                                       "-fx-border-radius: 5; -fx-background-radius: 5;";
     
-    // Green OK button styling
-    private static final String OK_BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#447240, #2e5a23); " +
+    public static final String OK_BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#447240, #2e5a23); " +
                                                         "-fx-text-fill: #e8f4d9; -fx-font-family: 'Segoe UI'; " +
                                                         "-fx-font-size: 14px; -fx-font-weight: bold; " +
                                                         "-fx-border-color: #5d7542; -fx-border-width: 2; " +
                                                         "-fx-border-radius: 5; -fx-background-radius: 5;";
     
-    private static final String OK_BUTTON_HOVER_STYLE = "-fx-background-color: linear-gradient(#548e4f, #3b6e2c); " +
+    public static final String OK_BUTTON_HOVER_STYLE = "-fx-background-color: linear-gradient(#548e4f, #3b6e2c); " +
                                                        "-fx-text-fill: #f5ffe9; -fx-font-family: 'Segoe UI'; " +
                                                        "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                        "-fx-border-color: #6a894d; -fx-border-width: 2; " +
                                                        "-fx-border-radius: 5; -fx-background-radius: 5; " +
                                                        "-fx-cursor: hand;";
     
-    private static final String OK_BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#2e5a23, #447240); " +
+    public static final String OK_BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#2e5a23, #447240); " +
                                                          "-fx-text-fill: #d9f0c0; -fx-font-family: 'Segoe UI'; " +
                                                          "-fx-font-size: 14px; -fx-font-weight: bold; " +
                                                          "-fx-border-color: #5d7542; -fx-border-width: 2; " +
                                                          "-fx-border-radius: 5; -fx-background-radius: 5;";
     
     // Title bar constants
-    private static final String TITLE_BAR_STYLE = "-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 0 0 1 0;";
-    private static final String BUTTON_TRANSPARENT_STYLE = "-fx-background-color: transparent; -fx-text-fill: #e8d9b5; -fx-font-weight: bold;";
-    private static final String CLOSE_BUTTON_HOVER = "-fx-background-color: #a05454; -fx-text-fill: #f5ead9;";
+    public static final String TITLE_BAR_STYLE = "-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 0 0 1 0;";
+    public static final String BUTTON_TRANSPARENT_STYLE = "-fx-background-color: transparent; -fx-text-fill: #e8d9b5; -fx-font-weight: bold;";
+    public static final String CLOSE_BUTTON_HOVER = "-fx-background-color: #a05454; -fx-text-fill: #f5ead9;";
 
     // Track dialog confirmation status
-    private static boolean dialogConfirmed = false;
+    public static boolean dialogConfirmed = false;
+
+    // For dialog suppression
+    public static boolean suppressDialogs = false;
 
     /**
      * Shows a wood-styled info alert with custom title bar
      */
     public static void showInfoAlert(String title, String content, Object controller) {
+        if (suppressDialogs) return;
+
         // Create a new stage for our custom dialog
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -152,6 +156,8 @@ public class MapEditorUtils {
     }
 
     public static void showErrorAlert(String title, String header, String content, Object caller) {
+        if (suppressDialogs) return;
+
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(title);
         dialog.setHeaderText(null);
@@ -220,6 +226,8 @@ public class MapEditorUtils {
      * Shows a fully custom styled confirmation dialog with our custom title bar
      */
     public static boolean showCustomConfirmDialog(String title, String content, Object controller) {
+        if (suppressDialogs) return true;
+
         // Create a new stage for our custom dialog
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -326,7 +334,7 @@ public class MapEditorUtils {
     /**
      * Creates a custom title bar for dialogs
      */
-    private static HBox createTitleBar(Stage stage, String title) {
+    public static HBox createTitleBar(Stage stage, String title) {
         // Create the title bar
         HBox titleBar = new HBox();
         titleBar.setAlignment(Pos.CENTER_RIGHT);
@@ -359,7 +367,7 @@ public class MapEditorUtils {
     /**
      * Makes a stage draggable by a node
      */
-    private static void setupDraggableStage(HBox titleBar, Stage stage) {
+    public static void setupDraggableStage(HBox titleBar, Stage stage) {
         final double[] xOffset = {0};
         final double[] yOffset = {0};
         
@@ -389,33 +397,7 @@ public class MapEditorUtils {
         st.play();
     }
 
-    /**
-     * Creates a composite tile image from a base image and an overlay
-     */
-    public static Image compositeTile(Image base, Image overlay, int tileSize, double whiteThreshold) {
-        WritableImage result = new WritableImage(tileSize, tileSize);
-        
-        PixelReader baseReader = base.getPixelReader();
-        PixelReader overlayReader = overlay.getPixelReader();
-        PixelWriter resultWriter = result.getPixelWriter();
-        
-        for (int y = 0; y < tileSize; y++) {
-            for (int x = 0; x < tileSize; x++) {
-                Color overlayColor = overlayReader.getColor(x, y);
-                
-                // If the overlay pixel is close to white, use the base color
-                if (isCloseToWhite(overlayColor, whiteThreshold)) {
-                    resultWriter.setColor(x, y, baseReader.getColor(x, y));
-                } else {
-                    resultWriter.setColor(x, y, overlayColor);
-                }
-            }
-        }
-        
-        return result;
-    }
-    
-    private static boolean isCloseToWhite(Color color, double threshold) {
-        return color.getRed() > threshold && color.getGreen() > threshold && color.getBlue() > threshold;
+    public static void setSuppressDialogs(boolean b) {
+        suppressDialogs = b;
     }
 }

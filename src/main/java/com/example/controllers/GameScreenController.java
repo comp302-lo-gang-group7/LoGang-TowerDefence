@@ -1,291 +1,277 @@
 package com.example.controllers;
 
-import com.example.game.GameDataEvent;
-import com.example.game.GameEvent;
-import com.example.game.GameEventListener;
-import com.example.game.GameModel;
-import com.example.map.EmptyLotTile;
-import com.example.map.Entity;
-import com.example.map.Tile;
-import com.example.map.TileEnum;
-import com.example.ui.ImageLoader;
-import com.example.ui.SpriteProvider;
-import com.example.ui.SpriteView;
-import com.example.utils.Point;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
-import javafx.event.EventHandler;
+import com.example.entity.Entity;
+import com.example.game.*;
+import com.example.map.*;
+import com.example.main.Main;
+import com.example.storage_manager.MapStorageManager;
+import com.example.utils.TileRenderer;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class GameScreenController implements GameEventListener
-{
-	public static final double TILE_SIZE = 64.0;
+public class GameScreenController extends Controller {
+	@FXML private Pane gameArea;
+	@FXML private Pane mapLayer, entityLayer, towerLayer;
+	@FXML public VBox hudOverlay;
+	@FXML private Label goldLabel;
+	@FXML private Label healthLabel;
+	@FXML private Label waveLabel;
+	@FXML private Button speedUp, optionsButton, exitButton;
 
-	private GameModel gameModel;
+	private static final int TILE_SIZE = 64;
+
+    private Tile[][] tiles;
+    private TileRenderer renderer;
+	private final Popup contextMenu = new Popup();
+
+	public void init( String mapName ) {
+		contextMenu.setAutoHide(true);
+		setupButtonIcons();
+		updateHud();
+
+		// load map data
+        TileView[][] mapTiles;
+        try {
+			mapTiles = MapStorageManager.loadMap(mapName);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		int rows = mapTiles.length;
+		int cols = mapTiles[0].length;
+		tiles = new Tile[rows][cols];
+
+		// init renderer & model
+		renderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
+        GameModel gameModel = new GameModel(mapTiles);
+
+		// render map tiles
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
+				TileEnum type = mapTiles[y][x].getType();
+				TileView tv = renderer.createTileView(type);
+				tv.setLayoutX(x * TILE_SIZE);
+				tv.setLayoutY(y * TILE_SIZE);
+				tiles[y][x] = new Tile(tv, new TileModel(x, y));
+
+				if (type == TileEnum.EMPTY_TOWER_TILE) {
+					final int tx = x, ty = y;
+					tv.setOnMouseClicked(e -> onTowerTileClicked(tv, tx, ty, e));
+					towerLayer.getChildren().add(tv);
+				} else {
+					mapLayer.getChildren().add(tv);
+				}
+			}
+		}
+
+		// adjust window size
+		double w = cols * TILE_SIZE;
+		double h = rows * TILE_SIZE;
+		Main.getViewManager().resizeWindow((int)w, (int)h);
+		gameArea.setPrefSize(w, h);
+
+		Canvas gameCanvas = new Canvas(cols * TILE_SIZE, rows * TILE_SIZE);
+		entityLayer.getChildren().add(gameCanvas);
+
+		// 2) Grab all of your Entities out of the model
+		List<Entity> allEntities = gameModel.getEntities();
+
+		// 3) Hook up & start the GameManager loop
+		GameManager mgr = new GameManager(gameCanvas, allEntities, gameModel);
+		mgr.spawnGoblin();
+		mgr.spawnWarrior();
+		mgr.start();
+	}
+
+
+	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
+		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
+			showBuildMenu(x, y, e.getScreenX(), e.getScreenY());
+		} else {
+			showSellMenu(x, y, e.getScreenX(), e.getScreenY());
+		}
+	}
+
+	private void showBuildMenu(int tileX, int tileY, double sx, double sy) {
+		List<Option> opts = new ArrayList<>();
+		opts.add(new Option("Archer", () -> constructTower(tileX, tileY, TileEnum.ARCHERY_TOWER), "/com/example/assets/buttons/Archer_Tower_Button.png"));
+		opts.add(new Option("Mage", () -> constructTower(tileX, tileY, TileEnum.MAGE_TOWER), "/com/example/assets/buttons/Spell_Tower_Button.png"));
+		opts.add(new Option("Artillery", () -> constructTower(tileX, tileY, TileEnum.ARTILLERY_TOWER), "/com/example/assets/buttons/Bomb_Tower_Button.png"));
+		showRadialMenu(tileX, tileY, opts);
+	}
+
+	private void showSellMenu(int tileX, int tileY, double sx, double sy) {
+		List<Option> opts = new ArrayList<>();
+		opts.add(new Option("Sell", () -> sellTower(tileX, tileY), "/com/example/assets/buttons/Bin_Button.png"));
+		showRadialMenu(tileX, tileY, opts);
+	}
+
+	private void showRadialMenu(int tileX, int tileY, List<Option> options) {
+		contextMenu.getContent().clear();
+
+		double baseRadius = TILE_SIZE * 0.5;
+		double btnSize = 32;
+		double halfDiag = Math.sqrt(2) * btnSize / 2;
+		double pathRadius = baseRadius + halfDiag;
+		double containerSize = pathRadius * 2 + btnSize;
+
+		Pane container = new Pane();
+		container.setPrefSize(containerSize, containerSize);
+
+		double cx0 = containerSize / 2;
+		double cy0 = containerSize / 2;
+
+		Circle outerRing = new Circle(cx0, cy0, pathRadius);
+		outerRing.setFill(Color.TRANSPARENT);
+		outerRing.setStroke(Color.web("#87bfbe"));
+		outerRing.setStrokeWidth(2);
+		container.getChildren().add(outerRing);
+
+		for (int i = 0; i < options.size(); i++) {
+			Option opt = options.get(i);
+
+			double angle = 2 * Math.PI * i / options.size() - Math.PI / 2;
+			double bx = cx0 + Math.cos(angle) * pathRadius - btnSize / 2;
+			double by = cy0 + Math.sin(angle) * pathRadius - btnSize / 2;
+
+			Button btn = new Button();
+			btn.setPrefSize(btnSize, btnSize);
+
+			Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream(opt.iconPath)));
+			ImageView view = new ImageView(img);
+			view.setFitWidth(32);
+			view.setFitHeight(32);
+			btn.setGraphic(view);
+			btn.setText(null);
+
+			btn.setStyle(
+					"-fx-background-color: transparent;" +
+							"-fx-padding: 0;" +
+							"-fx-border-color: transparent;"
+			);
+
+			btn.setLayoutX(bx);
+			btn.setLayoutY(by);
+			btn.setOnAction(evt -> {
+				opt.action.run();
+				contextMenu.hide();
+			});
+
+			container.getChildren().add(btn);
+		}
+
+		contextMenu.getContent().add(container);
+
+		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
+		double localY = tileY * TILE_SIZE + TILE_SIZE / 2.0;
+		Point2D screenCenter = towerLayer.localToScreen(localX, localY);
+
+		contextMenu.show(
+				towerLayer.getScene().getWindow(),
+				screenCenter.getX() - containerSize / 2,
+				screenCenter.getY() - containerSize / 2
+		);
+	}
+
+
+	private void constructTower(int x, int y, TileEnum towerType) {
+		Tile tile = tiles[y][x];
+		TileView newView = renderer.createTileView(towerType);
+		newView.setLayoutX(x * TILE_SIZE);
+		newView.setLayoutY(y * TILE_SIZE);
+
+		towerLayer.getChildren().remove(tile.view);
+		towerLayer.getChildren().add(newView);
+
+		tile.view = newView;
+		tile.model.setTower(towerType, 10, 5, 100);
+		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+	}
+
+
+	private void sellTower(int x, int y) {
+		Tile tile = tiles[y][x];
+		TileView newView = renderer.createTileView(TileEnum.EMPTY_TOWER_TILE);
+		newView.setLayoutX(x * TILE_SIZE);
+		newView.setLayoutY(y * TILE_SIZE);
+
+		towerLayer.getChildren().remove(tile.view);
+		towerLayer.getChildren().add(newView);
+
+		tile.view = newView;
+		tile.model.removeTower();
+		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+	}
+
 
 	@FXML
-	private Label debugText;
-
-	@FXML
-	private Pane gameArea;
-
-	private Popup towerConstructionMenu;
-
-	private enum GUIState
-	{
-		NONE,
-		TOWER_CONSTRUCTION
-	}
-	private GUIState state;
-	private int clickedTileX, clickedTileY;
-
-	private WritableImage staticTiles;
-
-	public static class SavedMapData
-	{
-		public int rows;
-		public int cols;
-		public int[][] tiles;
-	}
-	private SavedMapData savedMapData;
-
-	private SavedMapData loadSavedMap( String jsonPath ) throws IOException
-	{
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.readValue(getClass().getResourceAsStream(jsonPath), SavedMapData.class);
+	public void goToSettings() {
+		Main.getViewManager().switchTo("/com/example/fxml/settings.fxml");
+		Main.getViewManager().resizeWindowDefault();
 	}
 
-	@FXML
-	public void initialize()
-	{
-		state = GUIState.NONE;
+	public void speedUp(ActionEvent actionEvent) {
 
-		try
-		{
-			savedMapData = loadSavedMap("/data/maps/Forest Path.json");
-		}
-		catch ( IOException e )
-		{
-			throw new RuntimeException( e );
-		}
-
-		gameModel = new GameModel(savedMapData.cols, savedMapData.rows);
-
-		gameModel.map.getTiles().addListener(new MapChangeListener<>()
-		{
-			@Override
-			public void onChanged( Change<? extends Point, ? extends Tile> change )
-			{
-				if ( change.wasAdded() )
-				{
-					// Create a SpriteView that will display the Tile entity's sprite
-					Tile tile = change.getValueAdded();
-					createSpriteView( tile )
-							.getImageView()
-							.setOnMouseClicked(mouseEvent -> onTileClicked(tile.getTileX(), tile.getTileY(), mouseEvent));
-					System.out.printf("added %s at %s\n", tile, change.getKey());
-				}
-				if ( change.wasRemoved() )
-				{
-					// Unbind to delete all references and mark SpriteView for GC.
-					change.getValueAdded().getSprite().unbind();
-					System.out.printf("removed %s from %s\n", change.getValueRemoved(), change.getKey());
-				}
-			}
-		});
-
-		loadMapTiles();
-
-		// The stitched image of static, non-interactable Tiles is set as backgound.
-		ImageView staticTilesView = new ImageView(staticTiles);
-		gameArea.getChildren().add(staticTilesView);
-
-		debugText.textProperty().bindBidirectional(gameModel.debugMessage);
-		gameModel.addListener(this);
-
-		// Dynamically create construction popup menu
-		// TODO: Try to put this into .fxml instead of dynamic creation.
-		towerConstructionMenu = new Popup();
-
-		// Create menu content
-		VBox menuContent = new VBox();
-		menuContent.setStyle("-fx-background-color: white; -fx-border-color: gray; -fx-padding: 5;");
-
-		// Add tower type buttons
-		Button btn1 = new Button("Archer");
-		btn1.setOnAction(_ -> constructTower( GameModel.TowerType.ARCHER ));
-
-		Button btn2 = new Button("Mage");
-		btn2.setOnAction(_ -> constructTower( GameModel.TowerType.MAGE ));
-
-		Button btn3 = new Button("Artillery");
-		btn3.setOnAction(_ -> constructTower( GameModel.TowerType.ARTILLERY ));
-
-		menuContent.getChildren().addAll(btn1, btn2, btn3);
-
-		towerConstructionMenu.getContent().add(menuContent);
-		towerConstructionMenu.hide();
-
-		// Create and link SpriteViews to any new Entities on the GameMap.
-		gameModel.map.getEntities().addListener(new ListChangeListener<Entity>()
-		{
-			@Override
-			public void onChanged( Change<? extends Entity> change )
-			{
-				change.next();
-				if ( change.wasAdded() )
-				{
-					for ( Entity entity : change.getAddedSubList() )
-					{
-						createSpriteView( entity );
-					}
-				}
-				if ( change.wasRemoved() )
-				{
-					for ( Entity entity : change.getRemoved() )
-					{
-						entity.getSprite().unbind();
-					}
-				}
-			}
-		});
-		staticTilesView.toBack();
 	}
 
-	// SpriteView factory method.
-	private SpriteView createSpriteView( SpriteProvider provider )
-	{
-		SpriteView spriteView = new SpriteView();
-		spriteView.setSpriteProvider(provider);
+	// helper for radial menu
+	private static class Option {
+		final String label;
+		final Runnable action;
+		final String iconPath;
 
-		ImageView tileImage = spriteView.getImageView();
-		tileImage.setFitHeight(TILE_SIZE);
-		tileImage.setFitWidth(TILE_SIZE);
-		tileImage.setPreserveRatio(false);
-		gameArea.getChildren().add(tileImage);
-
-		return spriteView;
-	}
-
-	///  If tower can be constructed, open construction popup and await user input.
-	private void onTileClicked( int x, int y , MouseEvent event )
-	{
-		clickedTileX = x;  clickedTileY = y;
-		if ( gameModel.isValidConstructionLot(clickedTileX, clickedTileY) )
-		{
-			state = GUIState.TOWER_CONSTRUCTION;
-
-			towerConstructionMenu.show(gameArea.getScene().getWindow(), event.getScreenX(), event.getScreenY());
+		Option(String label, Runnable action, String iconPath) {
+			this.label = label;
+			this.action = action;
+			this.iconPath = iconPath;
 		}
 	}
 
-	private void constructTower( GameModel.TowerType type )
-	{
-		gameModel.createTower(clickedTileX, clickedTileY, type);
-		towerConstructionMenu.hide();
+	private void updateHud() {
+		goldLabel.setText("1230"); // example
+		healthLabel.setText("10/10");
+		waveLabel.setText("2/10");
 	}
 
-	/// Must be relayed to Scene upon call. For handling tower construction popup closing when clicked anywhere on screen.
-	public EventHandler<MouseEvent> getOnMouseClickedFilter()
-	{
-		return mouseEvent ->
-		{
-			if ( towerConstructionMenu.isShowing()
-					&& !towerConstructionMenu.getContent().getFirst().contains(mouseEvent.getScreenX(), mouseEvent.getScreenY()))
-			{
-				towerConstructionMenu.hide();
-			}
-		};
+	private void setupButtonIcons() {
+		Image speedUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Skip_Button.png")));
+		Image optionsIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Settings_Button.png")));
+		Image exitIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Cross_Button.png")));
+
+		ImageView speedView = new ImageView(speedUpIcon);
+		ImageView optionsView = new ImageView(optionsIcon);
+		ImageView exitView = new ImageView(exitIcon);
+
+		speedView.setFitWidth(32);
+		speedView.setFitHeight(32);
+		optionsView.setFitWidth(32);
+		optionsView.setFitHeight(32);
+		exitView.setFitWidth(32);
+		exitView.setFitHeight(32);
+
+		speedUp.setGraphic(speedView);
+		optionsButton.setGraphic(optionsView);
+		exitButton.setGraphic(exitView);
 	}
 
-	/// Stitch static, non-interactable map tiles into a single Image.
-	private void loadMapTiles()
-	{
-		int width = ( int ) (savedMapData.cols * TILE_SIZE);
-		int height = ( int ) (savedMapData.rows * TILE_SIZE);
 
-		staticTiles = new WritableImage(width, height);
-		Canvas canvas = new Canvas(width, height);
-		GraphicsContext gc = canvas.getGraphicsContext2D();
-
-		for ( int y = 0; y < savedMapData.rows; y++ )
-		{
-			for ( int x = 0; x < savedMapData.cols; x++ )
-			{
-				int index = savedMapData.tiles[y][x];
-
-				TileEnum tile;
-				tile = TileEnum.fromFlatIndex(index);
-				System.out.printf("Tile %s at %d:%d\n", tile.name(), x, y);
-				double sourceX = tile.getCol() * TILE_SIZE;
-				double sourceY = tile.getRow() * TILE_SIZE;
-
-				if ( index > 14 )
-				{
-					gc.drawImage(ImageLoader.getImage("/com/example/assets/tiles/Tileset-64x64.png"),
-							TileEnum.GRASS.getCol() * TILE_SIZE, TileEnum.GRASS.getRow() * TILE_SIZE, TILE_SIZE, TILE_SIZE,
-							x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-				}
-
-				switch (tile)
-				{
-					// Any interactable Tiles will be registered in GameMap
-					case ARTILLERY_TOWER:
-					{
-						gameModel.createTower(x, y, GameModel.TowerType.ARTILLERY);
-						break;
-					}
-					case ARCHERY_TOWER:
-					{
-						gameModel.createTower(x, y, GameModel.TowerType.ARCHER);
-						break;
-					}
-					case MAGE_TOWER:
-					{
-						gameModel.createTower(x, y, GameModel.TowerType.MAGE);
-						break;
-					}
-					case EMPTY_TOWER_TILE:
-					{
-						System.out.printf("empty lot at %d:%d\n", x, y);
-						gameModel.map.setTile(x, y,
-								new EmptyLotTile(x, y, ImageLoader.getImage("/com/example/assets/towers/TowerSlotwithoutbackground128.png")));
-						break;
-					}
-					// Other non-interactable Tiles will be drawn onto the grass background.
-					default:
-					{
-						gc.drawImage(ImageLoader.getImage("/com/example/assets/tiles/Tileset-64x64.png"),
-								sourceX, sourceY, TILE_SIZE, TILE_SIZE,
-								x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-						break;
-					}
-				}
-			}
-		}
-		// Output
-		canvas.snapshot(null, staticTiles);
-	}
-
-	/// For handling events from GameModel.
-	@Override
-	public void handle( GameEvent event )
-	{
-		switch (event.type)
-		{
-			case MESSAGE -> debugText.setText(((GameDataEvent<String>)event).data);
-		}
-	}
 }

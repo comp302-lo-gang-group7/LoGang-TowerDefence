@@ -148,7 +148,6 @@ public class MainMenuController extends Controller implements Initializable {
         });
     }
 
-    // Navigation methods remain unchanged
     @FXML
     public void goToNewGamePage() {
         Main.getViewManager().switchTo("/com/example/fxml/create_game_page.fxml");

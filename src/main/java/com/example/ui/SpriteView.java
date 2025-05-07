@@ -6,6 +6,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+
+// Deprecated
 public class SpriteView
 {
 	private final ImageView imageView = new ImageView();

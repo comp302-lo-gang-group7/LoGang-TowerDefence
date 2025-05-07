@@ -1,35 +1,55 @@
 package com.example.map;
 
-import com.example.controllers.GameScreenController;
-import com.example.ui.SpriteProvider;
-import com.example.ui.Sprite;
-import javafx.scene.image.Image;
+import com.example.utils.TileRenderer;
 
-public class Tile implements SpriteProvider
-{
-	private final int tileX, tileY;
-	private final Sprite sprite;
+public class Tile {
+    public TileView view;
+    public TileModel model;
+    private TileEnum towerType;
 
-	public Tile( int tileX, int tileY, Image image )
-	{
-		this.tileX = tileX;
-		this.tileY = tileY;
-		this.sprite = new Sprite(image, GameScreenController.TILE_SIZE * tileX, GameScreenController.TILE_SIZE * tileY);
-		// TODO: WHICH PART IS RESPONSIBLE FOR CONVERTING TILE COORDINATES INTO GLOBAL COORDINATES?
-	}
+    private boolean hasTower;
 
-	public int getTileX()
-	{
-		return tileX;
-	}
+    public Tile(TileView view, TileModel model) {
+        this.view = view;
+        this.model = model;
+        this.hasTower = false;
+    }
 
-	public int getTileY()
-	{
-		return tileY;
-	}
+    public boolean isBuildable() {
+        return view.getType() == TileEnum.EMPTY_TOWER_TILE && !hasTower;
+    }
 
-	public Sprite getSprite()
-	{
-		return sprite;
-	}
+    public void placeTower(TileEnum towerType, TileRenderer renderer) {
+        if (!isBuildable()) return;
+
+        view.setImage(renderer.createTileView(towerType).getImage());
+        view.setType(towerType);
+
+        this.model.setTowerType(towerType); // optional, see below
+        hasTower = true;
+    }
+
+
+    public void removeTower(TileRenderer renderer) {
+        // Set back to lot
+        view.setImage(renderer.createTileView(TileEnum.EMPTY_TOWER_TILE).getImage());
+        view.setType(TileEnum.EMPTY_TOWER_TILE);
+        hasTower = false;
+        towerType = null;
+    }
+
+    public boolean hasTower() {
+        return hasTower;
+    }
+
+
+    public void setTowerType(TileEnum towerType) {
+        this.towerType = towerType;
+    }
+
+    public TileEnum getTowerType() {
+        return towerType;
+    }
+
 }
+

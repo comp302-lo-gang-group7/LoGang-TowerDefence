@@ -1,8 +1,10 @@
 package com.example.map;
 
 
+import java.util.Set;
+
 /**
- * Enum used by TileFactory to create tiles.
+ * Enum used to create tiles.
  * Each enum constant holds:
  * - row index from tileset
  * - column index from tileset
@@ -54,6 +56,32 @@ public enum TileEnum {
     private final int col;
     private final int flatIndex;
 
+    // Walkable path enums
+    public static final Set<TileEnum> PATH_TILES = Set.of(
+            TileEnum.TOP_LEFT_PATH_CORNER,
+            TileEnum.DOWN_CURVING_PATH,
+            TileEnum.TOP_RIGHT_PATH_CORNER,
+            TileEnum.VERTICAL_UPPER_PATH_END,
+            TileEnum.RIGHT_CURVING_PATH,
+            TileEnum.LEFT_CURVING_PATH,
+            TileEnum.VERTICAL_PATH,
+            TileEnum.BOTTOM_LEFT_PATH_CORNER,
+            TileEnum.UP_CURVING_PATH,
+            TileEnum.BOTTOM_RIGHT_PATH_CORNER,
+            TileEnum.VERTICAL_LOWER_PATH_END,
+            TileEnum.HORIZONTAL_LEFT_PATH_END,
+            TileEnum.HORIZONTAL_PATH,
+            TileEnum.HORIZONTAL_RIGHT_PATH_END
+    );
+
+    // Castle tile enums
+    public static final Set<TileEnum> CASTLE_TILES = Set.of(
+            TileEnum.CASTLE_TOP_LEFT,
+            TileEnum.CASTLE_TOP_RIGHT,
+            TileEnum.CASTLE_BOTTOM_LEFT,
+            TileEnum.CASTLE_BOTTOM_RIGHT
+    );
+
     TileEnum(int row, int col, int flatIndex) {
         this.row = row;
         this.col = col;
@@ -78,3 +106,4 @@ public enum TileEnum {
         throw new IllegalArgumentException("No tile found for row: " + row + ", col: " + col);
     }
 }
+
