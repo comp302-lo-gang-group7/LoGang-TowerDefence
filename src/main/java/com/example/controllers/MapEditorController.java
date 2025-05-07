@@ -3,43 +3,43 @@ package com.example.controllers;
 import com.example.main.Main;
 import com.example.map.TileEnum;
 import com.example.map.TileView;
+import com.example.storage_manager.MapStorageManager;
 import com.example.utils.MapEditorUtils;
 import com.example.utils.TileRenderer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.StackPane;
-import javafx.scene.control.Label;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 
 public class MapEditorController implements Initializable {
-    @FXML private GridPane mapGrid;
     @FXML private GridPane paletteGrid;
     @FXML private Button homeBtn;
     @FXML private Button editModeBtn;
     @FXML private Button deleteModeBtn;
     @FXML private Button clearMapBtn;
     @FXML private Button saveMapBtn;
-    @FXML private ComboBox<String> mapSelectionCombo;
     @FXML private ImageView homeImage;
     @FXML private ImageView editModeImage;
     @FXML private ImageView deleteModeImage;
     @FXML private ImageView clearMapImage;
     @FXML private ImageView saveMapImage;
+    @FXML private Button newMapBtn, deleteMapBtn;
+
+    @FXML private ComboBox<String> mapSelectionCombo;
+    @FXML private GridPane mapGrid;
+
+    private TileRenderer tileRenderer;
+    private TileView[][] mapTileViews;
 
     private static final int TILE_SIZE = 64;
     private static final int MAP_ROWS = 9;
@@ -68,10 +68,8 @@ public class MapEditorController implements Initializable {
     private int windowWidth  = mapWidth + paletteWidth;
     private int windowHeight = mapHeight;
 
-    // Tile management
-    private TileRenderer tileRenderer;
+    // Tile management;
     private TileView defaultGrassTile;
-    private TileView[][] mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
 
     // Selection state
     private TileView selectedTileView;
@@ -96,44 +94,102 @@ public class MapEditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Resize window to fit the map editor
+        // 1) Resize and renderer
         Main.getViewManager().resizeWindow(windowWidth, windowHeight);
-
-        // Initialize the TileRenderer
         tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
-        // Initialize UI elements
+        // 2) Allocate the backing array
+        mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
+
+        // 3) Build the static UI
         setupButtonImages();
-        setupMapSelectionComboBox();
         createTilePalette();
         createMapGrid();
 
-        // Set initial editor mode
+        // 4) Wire up the combo exactly once
+        setupMapSelectionComboBox();
+
+        // 5) If there's at least one saved map, select & load it
+        List<String> maps = MapStorageManager.listAvailableMaps();
+        if (!maps.isEmpty()) {
+            String first = maps.get(0);
+            mapSelectionCombo.setValue(first);
+            loadMapIntoGrid(first);
+        }
+
+        // 6) Kick off in EDIT mode
         currentMode = EditorMode.EDIT;
         updateModeButtonStyles();
+        setupMapManagementButtons();
     }
 
-    private void setupMapSelectionComboBox() {
-        // Populate dropdown with example maps
-        mapSelectionCombo.getItems().addAll(
-                "Forest Path",
-                "Castle Defense",
-                "River Crossing",
-                "Mountain Pass",
-                "Desert Ambush",
-                "Jungle Trail"
-        );
+    /**
+     * After loading tiles into mapTileViews, scan for any 2×2 blocks
+     * of “group” tiles (e.g. your castle quadrants) and register them
+     * in groupTileMap so dragging one corner will move all four.
+     */
+    private void detectGroupsFromLoaded() {
+        groupTileMap.clear();
+        boolean[][] used = new boolean[MAP_ROWS][MAP_COLS];
 
-        // Style the dropdown
+        // anything in bottom-two‐rows of tileset & first two cols is a “group” piece
+        Predicate<TileEnum> isGroupPiece = t ->
+                t.getRow() >= PALETTE_ROWS - 2 && t.getCol() < 2;
+
+        for (int r = 0; r < MAP_ROWS - 1; r++) {
+            for (int c = 0; c < MAP_COLS - 1; c++) {
+                if (used[r][c]) continue;
+
+                TileEnum t00 = mapTileViews[r][c].getType();
+                TileEnum t01 = mapTileViews[r][c+1].getType();
+                TileEnum t10 = mapTileViews[r+1][c].getType();
+                TileEnum t11 = mapTileViews[r+1][c+1].getType();
+
+                if (isGroupPiece.test(t00)
+                        && isGroupPiece.test(t01)
+                        && isGroupPiece.test(t10)
+                        && isGroupPiece.test(t11))
+                {
+                    // check they form a contiguous 2×2 in the tileset
+                    int sr = t00.getRow(), sc = t00.getCol();
+                    if (t01.getRow()==sr && t01.getCol()==sc+1
+                            && t10.getRow()==sr+1 && t10.getCol()==sc
+                            && t11.getRow()==sr+1 && t11.getCol()==sc+1)
+                    {
+                        String key = "group_" + r + "_" + c;
+                        Set<String> coords = new HashSet<>();
+                        coords.add(tileKey(r,c));
+                        coords.add(tileKey(r,c+1));
+                        coords.add(tileKey(r+1,c));
+                        coords.add(tileKey(r+1,c+1));
+                        groupTileMap.put(key, coords);
+
+                        used[r][c]     = true;
+                        used[r][c+1]   = true;
+                        used[r+1][c]   = true;
+                        used[r+1][c+1] = true;
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void setupMapSelectionComboBox() {
+        // allow typing a new map name
+        mapSelectionCombo.setEditable(true);
+
+        // populate with saved maps
+        refreshMapList();
+
+        // style as before…
         mapSelectionCombo.setStyle("-fx-background-color: #555555; -fx-text-fill: white;");
 
-        // Custom cell factory for dropdown items
-        mapSelectionCombo.setCellFactory(param -> new ListCell<String>() {
+        mapSelectionCombo.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-
-                if (item != null && !empty) {
+                if (!empty && item != null) {
                     setText(item);
                     setStyle("-fx-background-color: #333333; -fx-text-fill: white;");
                 } else {
@@ -141,22 +197,110 @@ public class MapEditorController implements Initializable {
                 }
             }
         });
-
-        // Style the dropdown button
-        mapSelectionCombo.setButtonCell(new ListCell<String>() {
+        mapSelectionCombo.setButtonCell(new ListCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-
-                if (item != null && !empty) {
+                if (!empty && item != null) {
                     setText(item);
                     setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
                 } else {
-                    setText("Choose a map...");
+                    setText("Choose or enter a map…");
                     setStyle("-fx-text-fill: #CCCCCC; -fx-font-style: italic;");
                 }
             }
         });
+
+        // when the user selects or types and presses Enter, load that map
+        mapSelectionCombo.setOnAction(evt -> {
+            String name = mapSelectionCombo.getEditor().getText().trim();
+            if (name.isEmpty()) return;
+
+            // if new, create an empty map immediately
+            if (!MapStorageManager.listAvailableMaps().contains(name)) {
+                MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, name);
+                refreshMapList();
+                mapSelectionCombo.setValue(name);
+            }
+
+            // then load it
+            loadMapIntoGrid(name);
+        });
+    }
+
+    private void refreshMapList() {
+        List<String> maps = MapStorageManager.listAvailableMaps();
+        mapSelectionCombo.getItems().setAll(maps);
+    }
+
+    private void loadMapIntoGrid(String mapName) {
+        try {
+            TileView[][] loaded = MapStorageManager.loadMap(mapName);
+            // assume mapTileViews and mapGrid already sized MAP_ROWS×MAP_COLS
+            for (int r = 0; r < MAP_ROWS; r++) {
+                for (int c = 0; c < MAP_COLS; c++) {
+                    TileView tv = loaded[r][c];
+                    tv.setFitWidth(TILE_SIZE);
+                    tv.setFitHeight(TILE_SIZE);
+                    tv.setPreserveRatio(false);
+
+                    // replace the node in your grid cell
+                    Pane cell = (Pane) getNodeByRowColumnIndex(r, c, mapGrid);
+                    cell.getChildren().setAll(tv);
+                    mapTileViews[r][c] = tv;
+
+                    // re-apply any drag/drop or click handlers you have
+                    setupDragAndDrop(cell, tv, r, c);
+                    detectGroupsFromLoaded();
+                }
+            }
+        } catch (IOException e) {
+            MapEditorUtils.showErrorAlert(
+                    "Load Failed",
+                    "Could not load map \"" + mapName + "\".",
+                    Objects.toString(e.getMessage(), "Unknown error"),
+                    this
+            );
+        }
+    }
+
+    // helper to find the Pane at (row,col) in a GridPane
+    private javafx.scene.Node getNodeByRowColumnIndex(final int row, final int column, GridPane grid) {
+        for (javafx.scene.Node node : grid.getChildren()) {
+            Integer r = GridPane.getRowIndex(node), c = GridPane.getColumnIndex(node);
+            if (r != null && c != null && r == row && c == column) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    @FXML
+    private void saveMap() {
+        String mapName = mapSelectionCombo.getEditor().getText().trim();
+        if (mapName.isEmpty()) {
+            MapEditorUtils.showErrorAlert(
+                    "Missing Map Name",
+                    "Please enter a map name before saving.",
+                    "You can type a new name or pick an existing one from the dropdown.",
+                    this
+            );
+            return;
+        }
+
+        try {
+            MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, mapName);
+            refreshMapList();
+            mapSelectionCombo.setValue(mapName);
+            MapEditorUtils.showInfoAlert("Map Saved", "Successfully saved \"" + mapName + "\".", this);
+        } catch (Exception e) {
+            MapEditorUtils.showErrorAlert(
+                    "Save Failed",
+                    "Could not save map \"" + mapName + "\".",
+                    e.getMessage(),
+                    this
+            );
+        }
     }
 
     private void setupButtonImages() {
@@ -723,45 +867,6 @@ public class MapEditorController implements Initializable {
         }
     }
 
-
-    @FXML
-    private void saveMap() {
-        MapEditorUtils.animateButtonClick(
-                saveMapBtn,
-                saveMapImage,
-                BUTTON_BLUE_PRESSED,
-                this
-        );
-
-        String mapName = mapSelectionCombo.getValue();
-        if (mapName == null || mapName.trim().isEmpty()) {
-            MapEditorUtils.showErrorAlert(
-                    "Missing Map Name",
-                    "Please select or enter a name for the map before saving.",
-                    "You can do this from the dropdown menu at the top.",
-                    this
-            );
-            return;
-        }
-
-        try {
-            com.example.storage_manager.MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, mapName.trim());
-            MapEditorUtils.showInfoAlert(
-                    "Map Saved",
-                    "Map saved successfully",
-                    this
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-            MapEditorUtils.showErrorAlert(
-                    "Save Failed",
-                    "Could not save the map.",
-                    "Error: " + e.getMessage(),
-                    this
-            );
-        }
-    }
-
     @FXML
     public void goToHome() {
         boolean canLeave = true;
@@ -825,6 +930,59 @@ public class MapEditorController implements Initializable {
                 resetTileToGrass(r, c);
             }
             groupTileMap.remove(groupKey);
+        }
+    }
+
+    private void setupMapManagementButtons() {
+        newMapBtn.setOnAction(e -> {
+            TextInputDialog dlg = new TextInputDialog();
+            dlg.setTitle("Create New Map");
+            dlg.setHeaderText("Enter a name for your new map:");
+            dlg.setContentText("Map name:");
+            dlg.showAndWait().ifPresent(name -> {
+                name = name.trim();
+                if (name.isEmpty()) {
+                    MapEditorUtils.showErrorAlert("Invalid Name",
+                            "Map name cannot be empty.", null, this);
+                } else if (MapStorageManager.listAvailableMaps().contains(name)) {
+                    MapEditorUtils.showErrorAlert("Name Exists",
+                            "A map called \"" + name + "\" already exists.", null, this);
+                } else {
+                    // save an empty grid
+                    MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, name);
+                    refreshMapList();
+                    mapSelectionCombo.setValue(name);
+                    clearGrid();  // reset all tiles to grass
+                }
+            });
+        });
+
+        deleteMapBtn.setOnAction(e -> {
+            String selected = mapSelectionCombo.getValue();
+            if (selected == null) {
+                MapEditorUtils.showErrorAlert("No Selection",
+                        "Please select a map to delete.", null, this);
+                return;
+            }
+            boolean confirm = MapEditorUtils.showCustomConfirmDialog(
+                    "Delete Map",
+                    "Are you sure you want to permanently delete \"" + selected + "\"?",
+                    this
+            );
+            if (confirm) {
+                MapStorageManager.deleteMap(selected);
+                refreshMapList();
+                mapSelectionCombo.getSelectionModel().clearSelection();
+                clearGrid();
+            }
+        });
+    }
+
+    private void clearGrid() {
+        for (int r = 0; r < MAP_ROWS; r++) {
+            for (int c = 0; c < MAP_COLS; c++) {
+                resetTileToGrass(r, c);
+            }
         }
     }
 }

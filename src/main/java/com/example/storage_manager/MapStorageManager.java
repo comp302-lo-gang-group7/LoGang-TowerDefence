@@ -2,23 +2,28 @@ package com.example.storage_manager;
 
 import com.example.map.TileEnum;
 import com.example.map.TileView;
+import com.example.utils.TileRenderer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Pane;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MapStorageManager {
 
     private static final int TILE_SIZE = 64;
     private static final Path MAP_DIRECTORY = Paths.get("cot", "data", "maps");
+
+    // reuse a single renderer so grass-stitching logic lives in one place
+    private static final TileRenderer RENDERER =
+            new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
     /**
      * Saves the given map as a JSON file to cot/data/maps.
@@ -43,17 +48,18 @@ public class MapStorageManager {
 
         Path outputPath = MAP_DIRECTORY.resolve(mapName + ".json");
         try {
-            Files.createDirectories(MAP_DIRECTORY); // Ensure directories exist
-            mapper.writerWithDefaultPrettyPrinter().writeValue(outputPath.toFile(), root);
-            System.out.println("Map saved to: " + outputPath.toAbsolutePath());
+            Files.createDirectories(MAP_DIRECTORY);
+            mapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(outputPath.toFile(), root);
         } catch (IOException e) {
-            System.err.println("Error saving map: " + e.getMessage());
-            e.printStackTrace();
+            throw new UncheckedIOException("Error saving map", e);
         }
     }
 
     /**
-     * Loads a map JSON file from cot/data/maps.
+     * Loads a map JSON file from cot/data/maps, returning a TileView[][]
+     * where each TileView is produced by your TileRenderer (so you get
+     * grass-underlay, seams-fixing, etc.).
      */
     public static TileView[][] loadMap(String mapName) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -68,11 +74,6 @@ public class MapStorageManager {
         int cols = root.get("cols").asInt();
         JsonNode tiles = root.get("tiles");
 
-        Image tileset = new Image(Objects.requireNonNull(MapStorageManager.class.getResourceAsStream(
-                "/com/example/assets/tiles/Tileset-64x64.png"
-        )));
-        PixelReader reader = tileset.getPixelReader();
-
         TileView[][] map = new TileView[rows][cols];
 
         for (int r = 0; r < rows; r++) {
@@ -81,26 +82,45 @@ public class MapStorageManager {
                 int flatIndex = rowNode.get(c).asInt();
                 TileEnum type = TileEnum.fromFlatIndex(flatIndex);
 
-                int rowInSet = type.getRow();
-                int colInSet = type.getCol();
+                // **use the renderer** instead of manual slicing
+                TileView tv = RENDERER.createTileView(type);
+                tv.setFitWidth(TILE_SIZE);
+                tv.setFitHeight(TILE_SIZE);
+                tv.setPreserveRatio(false);
 
-                WritableImage tileImage = new WritableImage(
-                        reader,
-                        colInSet * TILE_SIZE,
-                        rowInSet * TILE_SIZE,
-                        TILE_SIZE,
-                        TILE_SIZE
-                );
-
-                TileView tile = new TileView(tileImage, type);
-                tile.setFitWidth(TILE_SIZE);
-                tile.setFitHeight(TILE_SIZE);
-                tile.setPreserveRatio(false);
-
-                map[r][c] = tile;
+                map[r][c] = tv;
             }
         }
 
         return map;
+    }
+
+    public static boolean deleteMap(String mapName) {
+        Path file = MAP_DIRECTORY.resolve(mapName + ".json");
+        try {
+            return Files.deleteIfExists(file);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Could not delete map " + mapName, e);
+        }
+    }
+
+    /**
+     * Returns a list of all available map names (without the .json extension)
+     * found in the maps directory.
+     */
+    public static List<String> listAvailableMaps() {
+        try {
+            Files.createDirectories(MAP_DIRECTORY);
+            List<String> mapNames = new ArrayList<>();
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(MAP_DIRECTORY, "*.json")) {
+                for (Path entry : stream) {
+                    String fileName = entry.getFileName().toString();
+                    mapNames.add(fileName.substring(0, fileName.length() - 5));
+                }
+            }
+            return mapNames;
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to list map files", e);
+        }
     }
 }
