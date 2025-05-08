@@ -8,10 +8,13 @@ import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -19,8 +22,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Popup;
 
 import java.io.IOException;
@@ -35,13 +36,18 @@ public class GameScreenController extends Controller {
 	@FXML private Label goldLabel;
 	@FXML private Label healthLabel;
 	@FXML private Label waveLabel;
-	@FXML private Button speedUp, optionsButton, exitButton;
+	@FXML private Button speedUp, pauseButton, exitButton;
+	private GameManager gameManager;
+	private boolean isPaused = false;
+
 
 	private static final int TILE_SIZE = 64;
 
     private Tile[][] tiles;
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
+	private boolean isFast;
+	private Parent pauseOverlay;
 
 	public void init( String mapName, int startingGold) {
 		contextMenu.setAutoHide(true);
@@ -96,10 +102,12 @@ public class GameScreenController extends Controller {
 		List<Entity> allEntities = gameModel.getEntities();
 
 		// 3) Hook up & start the GameManager loop
-		GameManager mgr = new GameManager(gameCanvas, allEntities, gameModel);
-		mgr.spawnGoblin();
-		mgr.spawnWarrior();
-		mgr.start();
+		GameManager.initialize(gameCanvas, allEntities, gameModel);
+
+		this.gameManager = GameManager.getInstance();
+		gameManager.spawnGoblin();
+		gameManager.spawnWarrior();
+		gameManager.start();
 	}
 
 
@@ -238,15 +246,48 @@ public class GameScreenController extends Controller {
 
 
 	@FXML
-	public void goToSettings() {
-		Main.getViewManager().switchTo("/com/example/fxml/settings.fxml");
-		Main.getViewManager().resizeWindowDefault();
+	public void pauseGame() {
+		if (gameManager == null) return;
+
+		if (!isPaused) {
+			gameManager.pause();
+			isPaused = true;
+
+			try {
+				pauseOverlay = FXMLLoader.load(
+						getClass().getResource("/com/example/fxml/pause_menu.fxml")
+				);
+				gameArea.getChildren().add(pauseOverlay);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+
+		} else {
+			// resume
+			gameManager.resume();
+			isPaused = false;
+
+			if (pauseOverlay != null) {
+				gameArea.getChildren().remove(pauseOverlay);
+				pauseOverlay = null;
+			}
+		}
 	}
 
-	public void speedUp(ActionEvent actionEvent) {
 
+	@FXML
+	public void speedUp(ActionEvent event) {
+		if (gameManager == null) return;
+
+		isFast = !isFast;
+		double speed = isFast ? 2.0 : 1.0;
+		gameManager.setGameSpeed(speed);
+
+		// Optional: change the button’s icon or tooltip
+		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
+		System.out.println("Game speed set to " + speed + "×");
 	}
-
+	
 	// helper for radial menu
 	private static class Option {
 		final String label;
@@ -277,9 +318,8 @@ public class GameScreenController extends Controller {
 		exitView.setFitHeight(32);
 
 		speedUp.setGraphic(speedView);
-		optionsButton.setGraphic(optionsView);
+		pauseButton.setGraphic(optionsView);
 		exitButton.setGraphic(exitView);
 	}
-
 
 }
