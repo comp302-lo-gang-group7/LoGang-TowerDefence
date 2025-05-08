@@ -54,14 +54,17 @@ public class GameMap {
 						}
 					}
 				} else if (TileEnum.CASTLE_TILES.contains(type)) {
-					// vertical gradient: deeper (higher dy) => larger weight
-					double centerX = (TILE_SIZE - 1) / 2.0;
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
 						for (int dx = 0; dx < TILE_SIZE; dx++) {
-							double weightX = Math.max(0, GOAL_WEIGHT - Math.abs(dx - centerX));
-							double factorY = dy / (double)(TILE_SIZE - 1);
-							int w = (int)Math.max(1, Math.round(weightX * factorY));
-							expandedGrid[originY + dy][originX + dx] = w;
+							int y = originY + dy;
+							int x = originX + dx;
+							if (dy < TILE_SIZE / 2) {
+								// Upper half of tile: block movement
+								expandedGrid[y][x] = -1;
+							} else {
+								// Bottom half: goal weight
+								expandedGrid[y][x] = GOAL_WEIGHT;
+							}
 						}
 					}
 				} else {

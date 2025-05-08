@@ -69,6 +69,12 @@ public class GameConfigController implements Initializable {
 	@FXML
 	private Button homeBtn;
 
+	@FXML
+	private TextField goldInput;
+
+	private int startingGold = 1000;
+
+
 	private final ObservableList<String> savedMaps = FXCollections.observableArrayList();
 
 	// To track if dialog result was confirmed
@@ -76,7 +82,7 @@ public class GameConfigController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		goldInput.setText("1000");
 		savedMaps.setAll(MapStorageManager.listAvailableMaps());
 		savedMapsListView.setItems(savedMaps);
 
@@ -173,13 +179,11 @@ public class GameConfigController implements Initializable {
 			);
 
 			if (confirmed) {
-				// Show loading notification with wooden styling
-				showWoodenAlert(
-						"Map Loading",
-						"Loading saved map: " + selectedMapName
-				);
+				try {
+					startingGold = Integer.parseInt(goldInput.getText().trim());
+				} catch (NumberFormatException ignored) { }
 
-				Main.getViewManager().switchToGameScreen(selectedMapName);
+				Main.getViewManager().switchToGameScreen(selectedMapName, startingGold);
 			}
 		}
 	}

@@ -23,8 +23,8 @@
     </StackPane>
 
     <!-- 2) HUD Overlay (anchored top-left) -->
-    <VBox fx:id="hudOverlay" alignment="TOP_LEFT" mouseTransparent="true">
-        <Label fx:id="goldLabel" text="1230" style="-fx-background-color: lightblue; -fx-padding: 5 10;" />
+    <VBox fx:id="hudOverlay" alignment="TOP_LEFT" pickOnBounds="false">
+        <Label fx:id="goldLabel" style="-fx-background-color: lightblue; -fx-padding: 5 10;" />
         <Label fx:id="healthLabel" text="10/10" style="-fx-background-color: lightcoral; -fx-padding: 5 10;" />
         <Label fx:id="waveLabel" text="1/10" style="-fx-background-color: lightsteelblue; -fx-padding: 5 10;" />
     </VBox>
