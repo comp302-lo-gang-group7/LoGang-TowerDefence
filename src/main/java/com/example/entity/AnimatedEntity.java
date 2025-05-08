@@ -49,17 +49,14 @@ public class AnimatedEntity extends Entity {
 
     @Override
     public void update(double dt) {
-        // incorporate the global game‐speed into our local dt
-        double scaledDt = dt * GameManager.getInstance().getGameSpeedMultiplier();
-
-        // 1) animation (uses scaledDt so frames play faster/slower)
-        frameTimer += scaledDt;
+        // 1) animation
+        frameTimer += dt;
         if (frameTimer >= frameDuration) {
             frameTimer -= frameDuration;
             currentFrame = (currentFrame + 1) % frames.length;
         }
 
-        // 2) movement along path (also uses scaledDt)
+        // 2) movement
         if (waypointIndex < path.size()) {
             Point target = path.get(waypointIndex);
             double dx = target.x() - x, dy = target.y() - y;
@@ -69,16 +66,14 @@ public class AnimatedEntity extends Entity {
                 y = target.y();
                 waypointIndex++;
             } else {
-                // speed is in pixels/sec, so multiply by scaledDt
-                double moveDistance = speed * scaledDt;
+                // speed is in px/sec, dt already incorporates game‐speed
+                double moveDistance = speed * dt;
                 if (moveDistance > dist) moveDistance = dist;
                 x += dx / dist * moveDistance;
                 y += dy / dist * moveDistance;
             }
         }
     }
-
-
 
     @Override
     public void render(GraphicsContext gc) {
