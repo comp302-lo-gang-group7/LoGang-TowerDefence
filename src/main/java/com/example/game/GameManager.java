@@ -17,11 +17,29 @@ public class GameManager {
     private final List<Entity> entities;
     private long lastTime = 0;
     private GameModel gameModel;
+    private boolean paused = false;
+    private double gameSpeedMultiplier = 1.0; // default speed
+    private AnimationTimer gameLoop;
+    private static GameManager instance;
 
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
 
-    public GameManager(Canvas canvas, List<Entity> entities, GameModel model) {
+    public static void initialize(Canvas canvas, List<Entity> entities, GameModel model) {
+        if (instance != null) {
+            instance.stop();
+        }
+        instance = new GameManager(canvas, entities, model);
+    }
+
+    public static GameManager getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("GameManager has not been initialized.");
+        }
+        return instance;
+    }
+
+    private GameManager(Canvas canvas, List<Entity> entities, GameModel model) {
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
         this.entities = entities;
@@ -29,33 +47,57 @@ public class GameManager {
     }
 
     public void start() {
-        new AnimationTimer() {
+        gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (lastTime == 0) lastTime = now;
-                double dt = (now - lastTime) / 1e9;
+                if (lastTime == 0) {
+                    lastTime = now;
+                    return;
+                }
+                double rawDt = (now - lastTime) / 1e9;
                 lastTime = now;
 
-                // update phase
-                for (Entity e : entities) {
-                    e.update(dt);
+                if (paused) {
+                    // reset baseline so we never “catch up” on resume
+                    lastTime = now;
+                    return;
                 }
 
-                // render phase
+                // pass rawDt to every entity—
+                // they’ll apply the speed multiplier themselves
+                for (Entity e : entities) {
+                    e.update(rawDt);
+                }
+
+                // render
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-                // Debug: Draw path if enabled
                 if (DEBUG_PATH) {
                     drawDebugPaths();
                 }
 
-                // Draw entities
                 for (Entity e : entities) {
                     e.render(gc);
                 }
             }
-        }.start();
+        };
+        gameLoop.start();
     }
+
+    public void pause() {
+        paused = true;
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public void setGameSpeed(double multiplier) {
+        if (multiplier > 0) {
+            this.gameSpeedMultiplier = multiplier;
+        }
+    }
+
 
     private void drawDebugPaths() {
         // Draw paths for debugging
@@ -102,5 +144,15 @@ public class GameManager {
         Warrior warrior = new Warrior(path, 40, 100);
 
         this.entities.add(warrior);
+    }
+
+    public void stop() {
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
+    }
+
+    public double getGameSpeedMultiplier() {
+        return gameSpeedMultiplier;
     }
 }

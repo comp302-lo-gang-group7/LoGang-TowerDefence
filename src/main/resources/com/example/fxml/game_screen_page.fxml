@@ -35,7 +35,7 @@
                 style="-fx-background-color: transparent;
                    -fx-background-size: contain;
                    -fx-border-color: transparent;" />
-        <Button fx:id="optionsButton" onAction="#goToSettings"
+        <Button fx:id="pauseButton" onAction="#pauseGame"
                 style="-fx-background-color: transparent;
                    -fx-background-size: contain;
                    -fx-border-color: transparent;" />
