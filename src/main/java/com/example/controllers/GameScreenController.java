@@ -140,11 +140,25 @@ public class GameScreenController extends Controller {
 		double cx0 = containerSize / 2;
 		double cy0 = containerSize / 2;
 
-		Circle outerRing = new Circle(cx0, cy0, pathRadius);
-		outerRing.setFill(Color.TRANSPARENT);
-		outerRing.setStroke(Color.web("#87bfbe"));
-		outerRing.setStrokeWidth(2);
-		container.getChildren().add(outerRing);
+		Circle ring = new Circle(cx0, cy0, pathRadius);
+		Circle outerBorder = new Circle(cx0, cy0, pathRadius + 1);
+		Circle innerBorder = new Circle(cx0, cy0, pathRadius - 1);
+
+		ring.setFill(Color.TRANSPARENT);
+		outerBorder.setFill(Color.TRANSPARENT);
+		innerBorder.setFill(Color.TRANSPARENT);
+
+		ring.setStroke(Color.web("#87bfbe"));
+		outerBorder.setStroke(Color.web("#000000"));
+		innerBorder.setStroke(Color.web("#000000"));
+
+		ring.setStrokeWidth(4);
+		outerBorder.setStrokeWidth(1);
+		innerBorder.setStrokeWidth(1);
+
+		container.getChildren().add(ring);
+		container.getChildren().add(outerBorder);
+		container.getChildren().add(innerBorder);
 
 		for (int i = 0; i < options.size(); i++) {
 			Option opt = options.get(i);
