@@ -4,12 +4,10 @@ import com.example.controllers.GameScreenController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * The view manager is used to request screen changes. Whenever a screen is to be loaded into the scene, the view manager handles that process.
@@ -72,14 +70,14 @@ public class ViewManager {
         }
     }
 
-    public void switchToGameScreen( String mapName )
+    public void switchToGameScreen( String mapName, int startingGold )
     {
         try {
             // Load new fxml page
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
             Parent content = fxmlLoader.load();
 
-            ((GameScreenController)fxmlLoader.getController()).init(mapName);
+            ((GameScreenController)fxmlLoader.getController()).init(mapName, startingGold);
 
             // Get the current root layout which contains the title bar
             VBox root = (VBox) scene.getRoot();

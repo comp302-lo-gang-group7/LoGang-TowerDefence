@@ -79,16 +79,33 @@ public class AnimatedEntity extends Entity {
 
     @Override
     public void render(GraphicsContext gc) {
-        // Get the sprite dimensions
+        // 1. Draw the sprite centered on entity position
         double spriteWidth = frames[currentFrame].getWidth();
         double spriteHeight = frames[currentFrame].getHeight();
-
-        // Center the sprite on the entity position
         double drawX = x - spriteWidth / 2;
         double drawY = y - spriteHeight / 2;
 
         gc.drawImage(frames[currentFrame], drawX, drawY);
+
+        // 2. Draw smaller health bar just above the bottom of the sprite
+        double barWidth = spriteWidth * 0.3;     // narrower
+        double barHeight = 3;                    // thinner
+        double barX = drawX + (spriteWidth - barWidth) / 2;
+        double barY = drawY + (spriteHeight * 0.7);  // closer to sprite bottom
+
+        double healthRatio = Math.max(0, Math.min(1, hp / 100.0));
+        double filledWidth = barWidth * healthRatio;
+
+        // Background (dark red)
+        gc.setFill(javafx.scene.paint.Color.web("#330000"));
+        gc.fillRoundRect(barX, barY, barWidth, barHeight, barHeight, barHeight);
+
+        // Foreground (green)
+        gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
+        gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
     }
+
+
 
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);

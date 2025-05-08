@@ -43,10 +43,10 @@ public class GameScreenController extends Controller {
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
 
-	public void init( String mapName ) {
+	public void init( String mapName, int startingGold) {
 		contextMenu.setAutoHide(true);
+		goldLabel.setText(String.format("%d", startingGold));
 		setupButtonIcons();
-		updateHud();
 
 		// load map data
         TileView[][] mapTiles;
@@ -244,12 +244,6 @@ public class GameScreenController extends Controller {
 			this.action = action;
 			this.iconPath = iconPath;
 		}
-	}
-
-	private void updateHud() {
-		goldLabel.setText("1230"); // example
-		healthLabel.setText("10/10");
-		waveLabel.setText("2/10");
 	}
 
 	private void setupButtonIcons() {
