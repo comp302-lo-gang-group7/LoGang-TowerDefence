@@ -58,31 +58,27 @@ public class GameManager {
                 lastTime = now;
 
                 if (paused) {
-                    // reset baseline so we never “catch up” on resume
                     lastTime = now;
                     return;
                 }
 
-                // pass rawDt to every entity—
-                // they’ll apply the speed multiplier themselves
+                // apply your multiplier here once
+                double dt = rawDt * gameSpeedMultiplier;
+
+                // pass the _scaled_ dt to every entity
                 for (Entity e : entities) {
-                    e.update(rawDt);
+                    e.update(dt);
                 }
 
-                // render
+                // render as before…
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
-                if (DEBUG_PATH) {
-                    drawDebugPaths();
-                }
-
-                for (Entity e : entities) {
-                    e.render(gc);
-                }
+                if (DEBUG_PATH) drawDebugPaths();
+                for (Entity e : entities) e.render(gc);
             }
         };
         gameLoop.start();
     }
+
 
     public void pause() {
         paused = true;
