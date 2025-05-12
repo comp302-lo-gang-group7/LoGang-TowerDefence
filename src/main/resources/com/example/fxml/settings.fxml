@@ -34,17 +34,11 @@
       <top>
          <StackPane>
             <Rectangle width="640" height="60" 
-                       style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
+                      style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="GAME SETTINGS" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
-               <effect>
-                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
-               </effect>
-            </Text>
          </StackPane>
       </top>
    </BorderPane>
