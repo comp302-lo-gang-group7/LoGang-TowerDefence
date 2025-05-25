@@ -10,6 +10,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
+import javafx.scene.text.Text;
+import javafx.scene.layout.HBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -63,7 +65,19 @@ public class MainMenuController extends Controller implements Initializable {
         
         StackPane iconContainer = new StackPane(iconRegion);
         iconContainer.setPrefWidth(24);
-        settingsBtn.getGraphic().lookup("HBox").getChildren().add(0, iconContainer);
+        
+        // Create text for settings button
+        Text settingsText = new Text("Settings");
+        settingsText.setStyle("-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-font-weight: bold;");
+        settingsText.setFill(javafx.scene.paint.Color.web("#e8d9b5"));
+        
+        // Create HBox for icon and text
+        HBox content = new HBox(10);
+        content.setAlignment(javafx.geometry.Pos.CENTER);
+        content.getChildren().addAll(iconContainer, settingsText);
+        
+        // Set the HBox as the button's graphic
+        settingsBtn.setGraphic(content);
     }
     
     private void addSvgIconToButton(Button button, String svgPathContent, double size) {
