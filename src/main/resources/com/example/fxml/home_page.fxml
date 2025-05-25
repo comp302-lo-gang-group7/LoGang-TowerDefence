@@ -12,6 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ListView?>
 
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
            fx:controller="com.example.controllers.MainMenuController" 
@@ -110,13 +111,35 @@
                   </VBox>
                </VBox>
                
-               <!-- Other menu buttons -->
-               <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
-                      prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
-                      style="-fx-font-size: 20px;" />
+               <!-- Load Game button and its sub-options -->
+               <VBox alignment="CENTER" spacing="8.0">
+                  <Button fx:id="loadGameBtn" text="Load Game" onAction="#toggleLoadGameOptions" 
+                         prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                         style="-fx-font-size: 20px;" />
+                  
+                  <!-- Load game options container (initially invisible) -->
+                  <VBox fx:id="loadGameOptions" alignment="CENTER" spacing="6.0" visible="false" managed="false">
+                     <ListView fx:id="savedGamesListView" prefWidth="320.0" prefHeight="200.0"
+                              style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748;
+                                     -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;
+                                     -fx-font-size: 16px; -fx-text-fill: #e8d9b5;" />
+                     <HBox alignment="CENTER" spacing="10.0">
+                        <Button fx:id="loadSelectedBtn" text="Load Selected" onAction="#loadSelectedGame"
+                               prefWidth="155.0" prefHeight="45.0" styleClass="submenu-button"
+                               style="-fx-font-size: 18px;" />
+                        <Button fx:id="deleteSelectedBtn" text="Delete Selected" onAction="#deleteSelectedGame"
+                               prefWidth="155.0" prefHeight="45.0" styleClass="submenu-button"
+                               style="-fx-font-size: 18px;" />
+                     </HBox>
+                  </VBox>
+               </VBox>
+               
+               <!-- Map Editor button -->
                <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
                       prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
                       style="-fx-font-size: 20px;" />
+               
+               <!-- Quit button -->
                <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
                       prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
                       style="-fx-font-size: 20px;" />
@@ -169,10 +192,10 @@
             <Rectangle width="80" height="80" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
             <Button fx:id="settingsBtn" onAction="#goToSettings" 
-                    prefWidth="80" prefHeight="80"
-                    style="-fx-background-color: transparent;">
+                    maxWidth="80" maxHeight="80"
+                    style="-fx-background-color: transparent; -fx-padding: 0;">
                <graphic>
-                  <ImageView fitWidth="78" fitHeight="78">
+                  <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
                      <Image url="@../assets/ui/settings_icon.png" />
                   </ImageView>
                </graphic>
