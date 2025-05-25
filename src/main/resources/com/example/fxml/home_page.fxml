@@ -168,17 +168,15 @@
          <StackPane alignment="BOTTOM_LEFT">
             <Rectangle width="80" height="80" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
-            <StackPane>
-               <Button fx:id="settingsBtn" onAction="#goToSettings" 
-                      style="-fx-background-color: transparent; -fx-background-insets: 0; 
-                             -fx-background-radius: 0; -fx-padding: 0;">
-                  <graphic>
-                     <ImageView fitWidth="75" fitHeight="75">
-                        <Image url="@../assets/ui/settings_icon.png" />
-                     </ImageView>
-                  </graphic>
-               </Button>
-            </StackPane>
+            <Button fx:id="settingsBtn" onAction="#goToSettings" 
+                    prefWidth="80" prefHeight="80"
+                    style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitWidth="78" fitHeight="78">
+                     <Image url="@../assets/ui/settings_icon.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
          </StackPane>
       </left>
       <bottom>
