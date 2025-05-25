@@ -90,17 +90,32 @@
                <Insets top="20.0" right="10.0" bottom="20.0" left="10.0" />
             </padding>
                
-            <!-- Buttons without icons (added in controller) -->
-            <Button fx:id="newGameBtn" text="Start New Game" onAction="#goToNewGamePage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="settingsBtn" text="Settings" onAction="#goToSettings" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+            <!-- Main menu buttons -->
+            <VBox alignment="CENTER" spacing="8.0">
+               <!-- Start New Game button and its sub-options -->
+               <VBox alignment="CENTER" spacing="6.0">
+                  <Button fx:id="newGameBtn" text="Start New Game" onAction="#toggleNewGameOptions" 
+                         prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                  
+                  <!-- Sub-options container (initially invisible) -->
+                  <VBox fx:id="newGameOptions" alignment="CENTER" spacing="4.0" visible="false" managed="false">
+                     <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage" 
+                            prefWidth="200.0" prefHeight="32.0" styleClass="submenu-button" />
+                     <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage" 
+                            prefWidth="200.0" prefHeight="32.0" styleClass="submenu-button" />
+                  </VBox>
+               </VBox>
+               
+               <!-- Other menu buttons -->
+               <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
+                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+               <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
+                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+               <Button fx:id="settingsBtn" text="Settings" onAction="#goToSettings" 
+                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+               <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
+                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+            </VBox>
          </VBox>
       </StackPane>
          

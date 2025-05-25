@@ -7,6 +7,9 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.animation.TranslateTransition;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,10 +20,15 @@ import java.util.ResourceBundle;
 public class MainMenuController extends Controller implements Initializable {
     
     @FXML private Button newGameBtn;
+    @FXML private Button defaultGameBtn;
+    @FXML private Button customGameBtn;
     @FXML private Button loadGameBtn;
     @FXML private Button mapEditorBtn;
     @FXML private Button settingsBtn;
     @FXML private Button quitBtn;
+    @FXML private VBox newGameOptions;
+    
+    private boolean newGameOptionsVisible = false;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -29,6 +37,9 @@ public class MainMenuController extends Controller implements Initializable {
         
         // Add styling and animation
         setupButtonAnimations();
+        
+        // Add sub-menu button styling
+        setupSubMenuButtonStyle();
     }
     
     private void setupButtonIcons() {
@@ -146,6 +157,78 @@ public class MainMenuController extends Controller implements Initializable {
                 button.setScaleY(1.0);
             }
         });
+    }
+
+    private void setupSubMenuButtonStyle() {
+        String subMenuButtonCss = 
+            "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+            "-fx-background-radius: 6; " +
+            "-fx-text-fill: #e8d9b5; " +
+            "-fx-font-size: 14px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-font-family: 'Segoe UI'; " +
+            "-fx-padding: 6 12 6 12; " +
+            "-fx-border-color: linear-gradient(#8a673c, #705236); " +
+            "-fx-border-width: 1.5; " +
+            "-fx-border-radius: 6; " +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
+        
+        String subMenuHoverCss = 
+            "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
+            "-fx-background-radius: 6; " +
+            "-fx-text-fill: #f5ead9; " +
+            "-fx-font-size: 14px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-font-family: 'Segoe UI'; " +
+            "-fx-padding: 6 12 6 12; " +
+            "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
+            "-fx-border-width: 1.5; " +
+            "-fx-border-radius: 6; " +
+            "-fx-cursor: hand; " +
+            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0.0, 0, 1);";
+        
+        String subMenuPressedCss = 
+            "-fx-background-color: linear-gradient(#4e331f, #3d2819); " +
+            "-fx-background-radius: 6; " +
+            "-fx-text-fill: #d9c9a0; " +
+            "-fx-font-size: 14px; " +
+            "-fx-font-weight: bold; " +
+            "-fx-font-family: 'Segoe UI'; " +
+            "-fx-padding: 7 12 5 12; " +
+            "-fx-border-color: #6b4c2e; " +
+            "-fx-border-width: 1.5; " +
+            "-fx-border-radius: 6; " +
+            "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.3), 3, 0.0, 0, 1);";
+        
+        setupButtonStyle(defaultGameBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
+        setupButtonStyle(customGameBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
+    }
+    
+    @FXML
+    public void toggleNewGameOptions() {
+        newGameOptionsVisible = !newGameOptionsVisible;
+        newGameOptions.setVisible(newGameOptionsVisible);
+        newGameOptions.setManaged(newGameOptionsVisible);
+        
+        // Animate the transition
+        TranslateTransition tt = new TranslateTransition(Duration.millis(200), newGameOptions);
+        if (newGameOptionsVisible) {
+            newGameOptions.setTranslateY(-10);
+            tt.setToY(0);
+        } else {
+            tt.setToY(-10);
+        }
+        tt.play();
+    }
+
+    @FXML
+    public void goToDefaultGamePage() {
+        Main.getViewManager().switchTo("/com/example/fxml/game_screen_page.fxml");
+    }
+
+    @FXML
+    public void goToCustomGamePage() {
+        Main.getViewManager().switchTo("/com/example/fxml/create_game_page.fxml");
     }
 
     @FXML
