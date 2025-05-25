@@ -78,7 +78,7 @@
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Menu panel backdrop -->
-         <Rectangle width="320" height="260" arcWidth="15" arcHeight="15" 
+         <Rectangle width="500" height="400" arcWidth="20" arcHeight="20" 
                     style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
@@ -86,34 +86,40 @@
          </Rectangle>
             
          <!-- Button container -->
-         <VBox alignment="CENTER" spacing="12.0" maxWidth="280.0">
+         <VBox alignment="CENTER" spacing="15.0" maxWidth="440.0">
             <padding>
-               <Insets top="20.0" right="10.0" bottom="20.0" left="10.0" />
+               <Insets top="25.0" right="15.0" bottom="25.0" left="15.0" />
             </padding>
                
             <!-- Main menu buttons -->
-            <VBox alignment="CENTER" spacing="8.0">
+            <VBox alignment="CENTER" spacing="12.0">
                <!-- Start New Game button and its sub-options -->
-               <VBox alignment="CENTER" spacing="6.0">
+               <VBox alignment="CENTER" spacing="8.0">
                   <Button fx:id="newGameBtn" text="Start New Game" onAction="#toggleNewGameOptions" 
-                         prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                         prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                         style="-fx-font-size: 20px;" />
                   
                   <!-- Sub-options container (initially invisible) -->
-                  <VBox fx:id="newGameOptions" alignment="CENTER" spacing="4.0" visible="false" managed="false">
+                  <VBox fx:id="newGameOptions" alignment="CENTER" spacing="6.0" visible="false" managed="false">
                      <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage" 
-                            prefWidth="200.0" prefHeight="32.0" styleClass="submenu-button" />
+                            prefWidth="320.0" prefHeight="45.0" styleClass="submenu-button"
+                            style="-fx-font-size: 18px;" />
                      <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage" 
-                            prefWidth="200.0" prefHeight="32.0" styleClass="submenu-button" />
+                            prefWidth="320.0" prefHeight="45.0" styleClass="submenu-button"
+                            style="-fx-font-size: 18px;" />
                   </VBox>
                </VBox>
                
                <!-- Other menu buttons -->
                <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
-                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                      prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                      style="-fx-font-size: 20px;" />
                <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
-                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                      prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                      style="-fx-font-size: 20px;" />
                <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
-                      prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                      prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                      style="-fx-font-size: 20px;" />
             </VBox>
          </VBox>
       </StackPane>

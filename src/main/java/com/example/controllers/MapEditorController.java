@@ -71,8 +71,8 @@ public class MapEditorController implements Initializable {
     private TileView[][] mapTileViews;
 
     private static final int TILE_SIZE = 64;
-    private static final int MAP_ROWS = 14;
-    private static final int MAP_COLS = 25;
+    private static final int MAP_ROWS = 9;
+    private static final int MAP_COLS = 16;
     private static final int PALETTE_ROWS = 8;
     private static final int PALETTE_COLS = 4;
     private static final double WHITE_THRESHOLD = 0.90;

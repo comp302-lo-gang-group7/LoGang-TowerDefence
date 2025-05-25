@@ -76,7 +76,7 @@
       <!-- Game options panel -->
       <StackPane>
          <!-- Options panel backdrop -->
-         <Rectangle width="320" height="200" arcWidth="15" arcHeight="15" 
+         <Rectangle width="500" height="300" arcWidth="20" arcHeight="20" 
                     style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
@@ -84,18 +84,21 @@
          </Rectangle>
             
          <!-- Button container -->
-         <VBox alignment="CENTER" spacing="20.0" maxWidth="280.0">
+         <VBox alignment="CENTER" spacing="25.0" maxWidth="440.0">
             <padding>
-               <Insets top="25.0" right="10.0" bottom="25.0" left="10.0" />
+               <Insets top="30.0" right="15.0" bottom="30.0" left="15.0" />
             </padding>
                
             <!-- Game mode buttons -->
             <Button fx:id="defaultGameBtn" text="Create Default Game" onAction="#goToDefaultGamePage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                    prefWidth="360.0" prefHeight="55.0" styleClass="menu-button" 
+                    style="-fx-font-size: 20px;" />
             <Button fx:id="customGameBtn" text="Create Custom Game" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                    prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                    style="-fx-font-size: 20px;" />
             <Button fx:id="backBtn" text="Back to Main Menu" onAction="#goToHomePage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                    prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                    style="-fx-font-size: 20px;" />
          </VBox>
       </StackPane>
    </VBox>
@@ -104,7 +107,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="640" height="40" 
+            <Rectangle width="1600" height="60" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
