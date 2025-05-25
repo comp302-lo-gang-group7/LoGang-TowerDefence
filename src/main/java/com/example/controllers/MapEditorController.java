@@ -954,9 +954,8 @@ public class MapEditorController implements Initializable {
             );
         }
 
-
         if (canLeave) {
-            Main.getViewManager().resizeWindow(640, 450);
+            Main.getViewManager().resizeWindow(1600, 900);
             Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
         }
     }

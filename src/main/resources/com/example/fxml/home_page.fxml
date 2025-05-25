@@ -154,28 +154,34 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane alignment="TOP_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </top>
       <right>
          <StackPane alignment="TOP_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </right>
       <left>
          <StackPane alignment="BOTTOM_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
             <Button fx:id="settingsBtn" onAction="#goToSettings" 
-                    style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;" />
+                    style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;">
+               <graphic>
+                  <ImageView fitWidth="50" fitHeight="50">
+                     <Image url="@../assets/ui/settings_icon.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
          </StackPane>
       </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </bottom>
    </BorderPane>
