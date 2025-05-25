@@ -71,8 +71,8 @@ public class MapEditorController implements Initializable {
     private TileView[][] mapTileViews;
 
     private static final int TILE_SIZE = 64;
-    private static final int MAP_ROWS = 9;
-    private static final int MAP_COLS = 16;
+    private static final int MAP_ROWS = 14;
+    private static final int MAP_COLS = 25;
     private static final int PALETTE_ROWS = 8;
     private static final int PALETTE_COLS = 4;
     private static final double WHITE_THRESHOLD = 0.90;
@@ -99,7 +99,7 @@ public class MapEditorController implements Initializable {
 
     // Tile management;
     private TileView defaultGrassTile;
-
+    //
     // Selection state
     private TileView selectedTileView;
     private TileEnum selectedTileType;
@@ -154,14 +154,14 @@ public class MapEditorController implements Initializable {
 
     /**
      * After loading tiles into mapTileViews, scan for any 2×2 blocks
-     * of “group” tiles (e.g. your castle quadrants) and register them
+     * of "group" tiles (e.g. your castle quadrants) and register them
      * in groupTileMap so dragging one corner will move all four.
      */
     private void detectGroupsFromLoaded() {
         groupTileMap.clear();
         boolean[][] used = new boolean[MAP_ROWS][MAP_COLS];
 
-        // anything in bottom-two‐rows of tileset & first two cols is a “group” piece
+        // anything in bottom-two‐rows of tileset & first two cols is a "group" piece
         Predicate<TileEnum> isGroupPiece = t ->
                 t.getRow() >= PALETTE_ROWS - 2 && t.getCol() < 2;
 

@@ -8,7 +8,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <StackPane fx:id="gameArea" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.example.controllers.GameScreenController">
+           fx:controller="com.example.controllers.GameScreenController"
+           prefWidth="1600.0" prefHeight="900.0">
 
     <!-- 1) Game Layers -->
     <StackPane>
@@ -24,9 +25,9 @@
 
     <!-- 2) HUD Overlay (anchored top-left) -->
     <VBox fx:id="hudOverlay" alignment="TOP_LEFT" pickOnBounds="false">
-        <Label fx:id="goldLabel" style="-fx-background-color: lightblue; -fx-padding: 5 10;" />
-        <Label fx:id="healthLabel" text="10/10" style="-fx-background-color: lightcoral; -fx-padding: 5 10;" />
-        <Label fx:id="waveLabel" text="1/10" style="-fx-background-color: lightsteelblue; -fx-padding: 5 10;" />
+        <Label fx:id="goldLabel" style="-fx-background-color: lightblue; -fx-padding: 10 20; -fx-font-size: 18px;" />
+        <Label fx:id="healthLabel" text="10/10" style="-fx-background-color: lightcoral; -fx-padding: 10 20; -fx-font-size: 18px;" />
+        <Label fx:id="waveLabel" text="1/10" style="-fx-background-color: lightsteelblue; -fx-padding: 10 20; -fx-font-size: 18px;" />
     </VBox>
 
     <!-- 2) Top-right menu buttons -->

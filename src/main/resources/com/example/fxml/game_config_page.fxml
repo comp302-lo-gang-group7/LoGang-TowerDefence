@@ -14,11 +14,11 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.control.TextField?>
-<StackPane prefHeight="450.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.GameConfigController">
+<StackPane prefHeight="900.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.GameConfigController">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitHeight="450" fitWidth="640">
+      <ImageView fitHeight="900" fitWidth="1600">
          <Image url="@../assets/home_page_grass.png"/>
       </ImageView>
    </StackPane>
@@ -27,12 +27,12 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="640">
+            <Rectangle height="80" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="1600">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;" text="DEFAULT GAME CONFIG">
+            <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 42px; -fx-font-weight: bold;" text="DEFAULT GAME CONFIG">
                <effect>
                   <DropShadow color="#00000080" height="3" radius="1" width="3" />
                </effect>
