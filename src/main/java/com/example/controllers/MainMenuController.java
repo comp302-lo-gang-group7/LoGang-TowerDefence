@@ -4,6 +4,7 @@ import com.example.main.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.layout.StackPane;
@@ -12,6 +13,10 @@ import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
 import javafx.scene.text.Text;
 import javafx.scene.layout.HBox;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -29,8 +34,14 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML private Button settingsBtn;
     @FXML private Button quitBtn;
     @FXML private VBox newGameOptions;
+    @FXML private VBox loadGameOptions;
+    @FXML private ListView<String> savedGamesListView;
+    @FXML private Button loadSelectedBtn;
+    @FXML private Button deleteSelectedBtn;
     
     private boolean newGameOptionsVisible = false;
+    private boolean loadGameOptionsVisible = false;
+    private ObservableList<String> savedGames;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -42,6 +53,9 @@ public class MainMenuController extends Controller implements Initializable {
         
         // Add sub-menu button styling
         setupSubMenuButtonStyle();
+        
+        // Initialize saved games list
+        setupSavedGamesList();
     }
     
     private void setupButtonIcons() {
@@ -238,8 +252,48 @@ public class MainMenuController extends Controller implements Initializable {
         setupButtonStyle(customGameBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
     }
     
+    private void setupSavedGamesList() {
+        // Create observable list for saved games
+        savedGames = FXCollections.observableArrayList();
+        
+        // Add example saved games with date/time
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        savedGames.addAll(
+            "Desert Map - " + dateFormat.format(new Date()),
+            "Mountain Pass - Level 7 - " + dateFormat.format(new Date(System.currentTimeMillis() - 172800000)),
+            "Tutorial Map - " + dateFormat.format(new Date(System.currentTimeMillis() - 259200000)),
+            "Custom Map 1 - " + dateFormat.format(new Date(System.currentTimeMillis() - 432000000))
+        );
+        
+        // Set items to ListView
+        savedGamesListView.setItems(savedGames);
+        
+        // Select first item by default
+        if (!savedGames.isEmpty()) {
+            savedGamesListView.getSelectionModel().selectFirst();
+        }
+        
+        // Disable load/delete buttons if no selection
+        loadSelectedBtn.setDisable(savedGames.isEmpty());
+        deleteSelectedBtn.setDisable(savedGames.isEmpty());
+        
+        // Add listener for selection changes
+        savedGamesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            boolean hasSelection = (newVal != null);
+            loadSelectedBtn.setDisable(!hasSelection);
+            deleteSelectedBtn.setDisable(!hasSelection);
+        });
+        
+        // Style the load/delete buttons
+        setupButtonStyle(loadSelectedBtn, getSubMenuButtonCss(), getSubMenuHoverCss(), getSubMenuPressedCss());
+        setupButtonStyle(deleteSelectedBtn, getSubMenuButtonCss(), getSubMenuHoverCss(), getSubMenuPressedCss());
+    }
+    
     @FXML
     public void toggleNewGameOptions() {
+        if (loadGameOptionsVisible) {
+            toggleLoadGameOptions(); // Close load game options if open
+        }
         newGameOptionsVisible = !newGameOptionsVisible;
         newGameOptions.setVisible(newGameOptionsVisible);
         newGameOptions.setManaged(newGameOptionsVisible);
@@ -253,6 +307,47 @@ public class MainMenuController extends Controller implements Initializable {
             tt.setToY(-10);
         }
         tt.play();
+    }
+
+    @FXML
+    public void toggleLoadGameOptions() {
+        if (newGameOptionsVisible) {
+            toggleNewGameOptions(); // Close new game options if open
+        }
+        loadGameOptionsVisible = !loadGameOptionsVisible;
+        loadGameOptions.setVisible(loadGameOptionsVisible);
+        loadGameOptions.setManaged(loadGameOptionsVisible);
+        
+        // Animate the transition
+        TranslateTransition tt = new TranslateTransition(Duration.millis(200), loadGameOptions);
+        if (loadGameOptionsVisible) {
+            loadGameOptions.setTranslateY(-10);
+            tt.setToY(0);
+        } else {
+            tt.setToY(-10);
+        }
+        tt.play();
+    }
+
+    @FXML
+    public void loadSelectedGame() {
+        String selectedGame = savedGamesListView.getSelectionModel().getSelectedItem();
+        if (selectedGame != null) {
+            // Extract map name from the selected item (remove date/time part)
+            String mapName = selectedGame.split(" - ")[0];
+            Main.getViewManager().switchToGameScreen(mapName, 1000); // Using default 1000 gold
+        }
+    }
+
+    @FXML
+    public void deleteSelectedGame() {
+        String selectedGame = savedGamesListView.getSelectionModel().getSelectedItem();
+        if (selectedGame != null) {
+            savedGames.remove(selectedGame);
+            if (!savedGames.isEmpty()) {
+                savedGamesListView.getSelectionModel().selectFirst();
+            }
+        }
     }
 
     @FXML
@@ -288,6 +383,49 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML
     public void terminateApplication() { 
         Main.getViewManager().terminateApplication();
+    }
+
+    private String getSubMenuButtonCss() {
+        return "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+               "-fx-background-radius: 6; " +
+               "-fx-text-fill: #e8d9b5; " +
+               "-fx-font-size: 14px; " +
+               "-fx-font-weight: bold; " +
+               "-fx-font-family: 'Segoe UI'; " +
+               "-fx-padding: 6 12 6 12; " +
+               "-fx-border-color: linear-gradient(#8a673c, #705236); " +
+               "-fx-border-width: 1.5; " +
+               "-fx-border-radius: 6; " +
+               "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
+    }
+
+    private String getSubMenuHoverCss() {
+        return "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
+               "-fx-background-radius: 6; " +
+               "-fx-text-fill: #f5ead9; " +
+               "-fx-font-size: 14px; " +
+               "-fx-font-weight: bold; " +
+               "-fx-font-family: 'Segoe UI'; " +
+               "-fx-padding: 6 12 6 12; " +
+               "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
+               "-fx-border-width: 1.5; " +
+               "-fx-border-radius: 6; " +
+               "-fx-cursor: hand; " +
+               "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0.0, 0, 1);";
+    }
+
+    private String getSubMenuPressedCss() {
+        return "-fx-background-color: linear-gradient(#4e331f, #3d2819); " +
+               "-fx-background-radius: 6; " +
+               "-fx-text-fill: #d9c9a0; " +
+               "-fx-font-size: 14px; " +
+               "-fx-font-weight: bold; " +
+               "-fx-font-family: 'Segoe UI'; " +
+               "-fx-padding: 7 12 5 12; " +
+               "-fx-border-color: #6b4c2e; " +
+               "-fx-border-width: 1.5; " +
+               "-fx-border-radius: 6; " +
+               "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.3), 3, 0.0, 0, 1);";
     }
 }
 
