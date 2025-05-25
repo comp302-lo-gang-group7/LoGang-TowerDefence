@@ -178,6 +178,9 @@
          <StackPane alignment="BOTTOM_LEFT">
             <Rectangle width="40" height="40" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Button fx:id="settingsBtn" onAction="#goToSettings" 
+                    style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;">
+            </Button>
          </StackPane>
       </left>
       <bottom>
