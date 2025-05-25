@@ -171,7 +171,7 @@
             <Button fx:id="settingsBtn" onAction="#goToSettings" 
                     style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;">
                <graphic>
-                  <ImageView fitWidth="50" fitHeight="50">
+                  <ImageView fitWidth="65" fitHeight="65" preserveRatio="true">
                      <Image url="@../assets/ui/settings_icon.png" />
                   </ImageView>
                </graphic>
