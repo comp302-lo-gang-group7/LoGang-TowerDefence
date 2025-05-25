@@ -130,22 +130,6 @@
       </StackPane>
    </VBox>
     
-   <!-- Settings button in bottom right -->
-   <StackPane alignment="BOTTOM_RIGHT" pickOnBounds="false">
-      <padding>
-         <Insets bottom="50.0" right="20.0" />
-      </padding>
-      <Button fx:id="settingsBtn" onAction="#goToSettings" 
-              prefWidth="140.0" prefHeight="36.0" styleClass="menu-button">
-         <graphic>
-            <HBox spacing="10" alignment="CENTER">
-               <Text fill="#e8d9b5" text="Settings" 
-                     style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-font-weight: bold;" />
-            </HBox>
-         </graphic>
-      </Button>
-   </StackPane>
-    
    <!-- Decorative green footer bar -->
    <BorderPane pickOnBounds="false">
       <bottom>
@@ -168,21 +152,20 @@
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
          </StackPane>
       </top>
-      <left>
-         <StackPane alignment="CENTER">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            <Button fx:id="settingsBtn" onAction="#goToSettings" 
-                    style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;">
-            </Button>
-         </StackPane>
-      </left>
       <right>
          <StackPane alignment="TOP_RIGHT">
             <Rectangle width="40" height="40" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
          </StackPane>
       </right>
+      <left>
+         <StackPane alignment="BOTTOM_LEFT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Button fx:id="settingsBtn" onAction="#goToSettings" 
+                    style="-fx-background-color: transparent; -fx-background-insets: 0; -fx-background-radius: 0; -fx-padding: 0;" />
+         </StackPane>
+      </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
             <Rectangle width="40" height="40" 

@@ -58,14 +58,15 @@ public class MainMenuController extends Controller implements Initializable {
         
         Region iconRegion = new Region();
         iconRegion.setShape(settingsIcon);
-        iconRegion.setMinSize(28, 28);
-        iconRegion.setPrefSize(28, 28);
-        iconRegion.setMaxSize(28, 28);
+        iconRegion.setMinSize(26, 26);
+        iconRegion.setPrefSize(26, 26);
+        iconRegion.setMaxSize(26, 26);
         iconRegion.setStyle("-fx-background-color: #d9c9a0;");
         
         StackPane iconContainer = new StackPane(iconRegion);
         iconContainer.setPrefSize(40, 40);
         iconContainer.setMaxSize(40, 40);
+        iconContainer.setAlignment(javafx.geometry.Pos.CENTER);
         
         // Add hover effect for the settings icon
         settingsBtn.setOnMouseEntered(e -> {
@@ -80,6 +81,8 @@ public class MainMenuController extends Controller implements Initializable {
             iconRegion.setScaleY(1.0);
         });
         
+        settingsBtn.setPrefSize(40, 40);
+        settingsBtn.setMaxSize(40, 40);
         settingsBtn.setGraphic(iconContainer);
     }
     
