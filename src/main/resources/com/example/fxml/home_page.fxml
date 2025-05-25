@@ -168,14 +168,8 @@
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
          </StackPane>
       </top>
-      <right>
-         <StackPane alignment="TOP_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-         </StackPane>
-      </right>
       <left>
-         <StackPane alignment="BOTTOM_LEFT">
+         <StackPane alignment="CENTER">
             <Rectangle width="40" height="40" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
             <Button fx:id="settingsBtn" onAction="#goToSettings" 
@@ -183,6 +177,12 @@
             </Button>
          </StackPane>
       </left>
+      <right>
+         <StackPane alignment="TOP_RIGHT">
+            <Rectangle width="40" height="40" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+         </StackPane>
+      </right>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
             <Rectangle width="40" height="40" 

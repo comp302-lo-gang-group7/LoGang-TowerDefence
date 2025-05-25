@@ -58,10 +58,14 @@ public class MainMenuController extends Controller implements Initializable {
         
         Region iconRegion = new Region();
         iconRegion.setShape(settingsIcon);
-        iconRegion.setMinSize(24, 24);
-        iconRegion.setPrefSize(24, 24);
-        iconRegion.setMaxSize(24, 24);
+        iconRegion.setMinSize(28, 28);
+        iconRegion.setPrefSize(28, 28);
+        iconRegion.setMaxSize(28, 28);
         iconRegion.setStyle("-fx-background-color: #d9c9a0;");
+        
+        StackPane iconContainer = new StackPane(iconRegion);
+        iconContainer.setPrefSize(40, 40);
+        iconContainer.setMaxSize(40, 40);
         
         // Add hover effect for the settings icon
         settingsBtn.setOnMouseEntered(e -> {
@@ -76,7 +80,7 @@ public class MainMenuController extends Controller implements Initializable {
             iconRegion.setScaleY(1.0);
         });
         
-        settingsBtn.setGraphic(iconRegion);
+        settingsBtn.setGraphic(iconContainer);
     }
     
     private void addSvgIconToButton(Button button, String svgPathContent, double size) {
