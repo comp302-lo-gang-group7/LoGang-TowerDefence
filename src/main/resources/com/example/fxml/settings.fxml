@@ -50,11 +50,11 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="20.0">
+   <VBox alignment="CENTER" spacing="30.0">
       <!-- Title with stylized rectangle backdrop -->
       <StackPane>
          <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle width="500" height="60" arcWidth="20" arcHeight="20" 
+         <Rectangle width="500" height="90" arcWidth="20" arcHeight="20" 
                     style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
             <effect>
                <DropShadow color="#00000099" height="15" radius="7" width="15" />
@@ -72,7 +72,7 @@
       <!-- Settings panel -->
       <StackPane>
          <!-- Settings panel backdrop -->
-         <Rectangle width="520" height="290" arcWidth="15" arcHeight="15" 
+         <Rectangle width="500" height="400" arcWidth="20" arcHeight="20" 
                     style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
@@ -171,7 +171,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="1600" height="60" 
+            <Rectangle width="1600" height="80" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
@@ -185,26 +185,26 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane alignment="TOP_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </top>
       <right>
          <StackPane alignment="TOP_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </right>
       <left>
          <StackPane alignment="BOTTOM_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </bottom>
    </BorderPane>
