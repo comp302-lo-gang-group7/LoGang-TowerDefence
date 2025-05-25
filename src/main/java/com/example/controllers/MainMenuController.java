@@ -72,9 +72,9 @@ public class MainMenuController extends Controller implements Initializable {
         
         Region iconRegion = new Region();
         iconRegion.setShape(settingsIcon);
-        iconRegion.setMinSize(52, 52);
-        iconRegion.setPrefSize(52, 52);
-        iconRegion.setMaxSize(52, 52);
+        iconRegion.setMinSize(39, 39);
+        iconRegion.setPrefSize(39, 39);
+        iconRegion.setMaxSize(39, 39);
         iconRegion.setStyle("-fx-background-color: #d9c9a0;");
         
         StackPane iconContainer = new StackPane(iconRegion);
@@ -130,10 +130,10 @@ public class MainMenuController extends Controller implements Initializable {
             "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
             "-fx-background-radius: 8; " +
             "-fx-text-fill: #e8d9b5; " +
-            "-fx-font-size: 16px; " +
+            "-fx-font-size: 24px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 8 15 8 15; " +
+            "-fx-padding: 12 20 12 20; " +
             "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
@@ -143,10 +143,10 @@ public class MainMenuController extends Controller implements Initializable {
             "-fx-background-color: linear-gradient(#94704c, #705236); " +
             "-fx-background-radius: 8; " +
             "-fx-text-fill: #f5ead9; " +
-            "-fx-font-size: 16px; " +
+            "-fx-font-size: 24px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 8 15 8 15; " +
+            "-fx-padding: 12 20 12 20; " +
             "-fx-border-color: linear-gradient(#c6965f, #b88d5a); " +
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
@@ -157,10 +157,10 @@ public class MainMenuController extends Controller implements Initializable {
             "-fx-background-color: linear-gradient(#5d4228, #4e3822); " +
             "-fx-background-radius: 8; " +
             "-fx-text-fill: #d9c9a0; " +
-            "-fx-font-size: 16px; " +
+            "-fx-font-size: 24px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 9 15 7 15; " +
+            "-fx-padding: 13 20 11 20; " +
             "-fx-border-color: #7d5a3c; " +
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
