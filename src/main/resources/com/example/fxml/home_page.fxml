@@ -56,7 +56,7 @@
          </padding>
          
          <!-- Main menu buttons -->
-         <Button fx:id="newGameBtn" text="Start New Game" onAction="#goToCreateGamePage" 
+         <Button fx:id="newGameBtn" text="Start New Game" onAction="#goToNewGamePage" 
                 prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
                 style="-fx-font-size: 20px;" />
          
