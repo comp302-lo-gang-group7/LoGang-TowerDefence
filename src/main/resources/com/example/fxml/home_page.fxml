@@ -56,13 +56,32 @@
          </padding>
          
          <!-- Main menu buttons -->
-         <Button fx:id="newGameBtn" text="Start New Game" onAction="#goToNewGamePage" 
+         <Button fx:id="newGameBtn" text="Start New Game" onAction="#toggleNewGameOptions" 
                 prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
                 style="-fx-font-size: 20px;" />
          
-         <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
+         <!-- New Game Options -->
+         <VBox fx:id="newGameOptions" visible="false" managed="false" spacing="10.0">
+            <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage"
+                    prefWidth="300.0" prefHeight="40.0" styleClass="sub-menu-button" />
+            <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage"
+                    prefWidth="300.0" prefHeight="40.0" styleClass="sub-menu-button" />
+         </VBox>
+         
+         <Button fx:id="loadGameBtn" text="Load Game" onAction="#toggleLoadGameOptions" 
                 prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
                 style="-fx-font-size: 20px;" />
+         
+         <!-- Load Game Options -->
+         <VBox fx:id="loadGameOptions" visible="false" managed="false" spacing="10.0">
+            <ListView fx:id="savedGamesListView" prefHeight="150.0" prefWidth="300.0" />
+            <HBox spacing="10.0" alignment="CENTER">
+               <Button fx:id="loadSelectedBtn" text="Load" onAction="#loadSelectedGame"
+                       prefWidth="145.0" prefHeight="40.0" styleClass="sub-menu-button" />
+               <Button fx:id="deleteSelectedBtn" text="Delete" onAction="#deleteSelectedGame"
+                       prefWidth="145.0" prefHeight="40.0" styleClass="sub-menu-button" />
+            </HBox>
+         </VBox>
          
          <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
                 prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"

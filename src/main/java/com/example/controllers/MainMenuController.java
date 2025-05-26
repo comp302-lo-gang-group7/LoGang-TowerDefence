@@ -11,8 +11,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.animation.TranslateTransition;
 import javafx.util.Duration;
-import javafx.scene.text.Text;
-import javafx.scene.layout.HBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.text.SimpleDateFormat;
@@ -212,47 +210,49 @@ public class MainMenuController extends Controller implements Initializable {
 
     private void setupSubMenuButtonStyle() {
         String subMenuButtonCss = 
-            "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
+            "-fx-background-color: linear-gradient(#5d7542, #4a5e35); " +
             "-fx-background-radius: 6; " +
             "-fx-text-fill: #e8d9b5; " +
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
             "-fx-padding: 6 12 6 12; " +
-            "-fx-border-color: linear-gradient(#8a673c, #705236); " +
+            "-fx-border-color: linear-gradient(#6b8a3c, #597236); " +
             "-fx-border-width: 1.5; " +
             "-fx-border-radius: 6; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
         
         String subMenuHoverCss = 
-            "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
+            "-fx-background-color: linear-gradient(#6b8a3c, #597236); " +
             "-fx-background-radius: 6; " +
             "-fx-text-fill: #f5ead9; " +
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
             "-fx-padding: 6 12 6 12; " +
-            "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
+            "-fx-border-color: linear-gradient(#7d9e48, #6b8a3c); " +
             "-fx-border-width: 1.5; " +
             "-fx-border-radius: 6; " +
             "-fx-cursor: hand; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0.0, 0, 1);";
         
         String subMenuPressedCss = 
-            "-fx-background-color: linear-gradient(#4e331f, #3d2819); " +
+            "-fx-background-color: linear-gradient(#4a5e35, #3d4d2b); " +
             "-fx-background-radius: 6; " +
             "-fx-text-fill: #d9c9a0; " +
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
             "-fx-padding: 7 12 5 12; " +
-            "-fx-border-color: #6b4c2e; " +
+            "-fx-border-color: #5d7542; " +
             "-fx-border-width: 1.5; " +
             "-fx-border-radius: 6; " +
             "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.3), 3, 0.0, 0, 1);";
         
         setupButtonStyle(defaultGameBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
         setupButtonStyle(customGameBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
+        setupButtonStyle(loadSelectedBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
+        setupButtonStyle(deleteSelectedBtn, subMenuButtonCss, subMenuHoverCss, subMenuPressedCss);
     }
     
     private void setupSavedGamesList() {
@@ -286,10 +286,6 @@ public class MainMenuController extends Controller implements Initializable {
             loadSelectedBtn.setDisable(!hasSelection);
             deleteSelectedBtn.setDisable(!hasSelection);
         });
-        
-        // Style the load/delete buttons
-        setupButtonStyle(loadSelectedBtn, getSubMenuButtonCss(), getSubMenuHoverCss(), getSubMenuPressedCss());
-        setupButtonStyle(deleteSelectedBtn, getSubMenuButtonCss(), getSubMenuHoverCss(), getSubMenuPressedCss());
     }
     
     @FXML
@@ -364,11 +360,6 @@ public class MainMenuController extends Controller implements Initializable {
     }
 
     @FXML
-    public void goToNewGamePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/create_game_page.fxml");
-    }
-
-    @FXML
     public void goToLoadGamePage() {
         Main.getViewManager().switchTo("/com/example/fxml/load_game_page.fxml");
     }
@@ -386,49 +377,6 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML
     public void terminateApplication() { 
         Main.getViewManager().terminateApplication();
-    }
-
-    private String getSubMenuButtonCss() {
-        return "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
-               "-fx-background-radius: 6; " +
-               "-fx-text-fill: #e8d9b5; " +
-               "-fx-font-size: 14px; " +
-               "-fx-font-weight: bold; " +
-               "-fx-font-family: 'Segoe UI'; " +
-               "-fx-padding: 6 12 6 12; " +
-               "-fx-border-color: linear-gradient(#8a673c, #705236); " +
-               "-fx-border-width: 1.5; " +
-               "-fx-border-radius: 6; " +
-               "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
-    }
-
-    private String getSubMenuHoverCss() {
-        return "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
-               "-fx-background-radius: 6; " +
-               "-fx-text-fill: #f5ead9; " +
-               "-fx-font-size: 14px; " +
-               "-fx-font-weight: bold; " +
-               "-fx-font-family: 'Segoe UI'; " +
-               "-fx-padding: 6 12 6 12; " +
-               "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
-               "-fx-border-width: 1.5; " +
-               "-fx-border-radius: 6; " +
-               "-fx-cursor: hand; " +
-               "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0.0, 0, 1);";
-    }
-
-    private String getSubMenuPressedCss() {
-        return "-fx-background-color: linear-gradient(#4e331f, #3d2819); " +
-               "-fx-background-radius: 6; " +
-               "-fx-text-fill: #d9c9a0; " +
-               "-fx-font-size: 14px; " +
-               "-fx-font-weight: bold; " +
-               "-fx-font-family: 'Segoe UI'; " +
-               "-fx-padding: 7 12 5 12; " +
-               "-fx-border-color: #6b4c2e; " +
-               "-fx-border-width: 1.5; " +
-               "-fx-border-radius: 6; " +
-               "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.3), 3, 0.0, 0, 1);";
     }
 }
 
