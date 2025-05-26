@@ -51,24 +51,6 @@
 
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="30.0">
-      <!-- Title with stylized rectangle backdrop -->
-      <StackPane>
-         <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle width="500" height="90" arcWidth="20" arcHeight="20" 
-                    style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="15" radius="7" width="15" />
-            </effect>
-         </Rectangle>
-         
-         <Text fill="#f0e3c8" text="Game Preferences" 
-               style="-fx-font-family: 'Segoe UI'; -fx-font-size: 28px; -fx-font-weight: bold;">
-            <effect>
-               <DropShadow color="#00000080" height="5" radius="2" width="5" />
-            </effect>
-         </Text>
-      </StackPane>
-         
       <!-- Settings panel -->
       <StackPane>
          <!-- Settings panel backdrop -->
