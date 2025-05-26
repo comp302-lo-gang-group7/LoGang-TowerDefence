@@ -39,7 +39,7 @@
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="SETTINGS" 
+            <Text fill="#e8f4d9" text="GAME PREFERENCES" 
                   style="-fx-font-family: 'Segoe UI'; -fx-font-size: 42px; -fx-font-weight: bold;">
                <effect>
                   <DropShadow color="#00000080" height="3" radius="1" width="3" />
