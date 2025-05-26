@@ -61,11 +61,17 @@
                 style="-fx-font-size: 20px;" />
          
          <!-- New Game Options -->
-         <VBox fx:id="newGameOptions" visible="false" managed="false" spacing="10.0">
-            <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage"
-                    prefWidth="300.0" prefHeight="40.0" styleClass="sub-menu-button" />
-            <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage"
-                    prefWidth="300.0" prefHeight="40.0" styleClass="sub-menu-button" />
+         <VBox fx:id="newGameOptions" visible="false" managed="false" spacing="10.0" alignment="CENTER">
+            <StackPane>
+               <Rectangle width="300.0" height="100.0" arcWidth="10" arcHeight="10"
+                         style="-fx-fill: rgba(66, 43, 26, 0.9); -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+               <VBox spacing="10.0" alignment="CENTER">
+                  <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage"
+                          prefWidth="280.0" prefHeight="35.0" styleClass="sub-menu-button" />
+                  <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage"
+                          prefWidth="280.0" prefHeight="35.0" styleClass="sub-menu-button" />
+               </VBox>
+            </StackPane>
          </VBox>
          
          <Button fx:id="loadGameBtn" text="Load Game" onAction="#toggleLoadGameOptions" 
@@ -73,14 +79,21 @@
                 style="-fx-font-size: 20px;" />
          
          <!-- Load Game Options -->
-         <VBox fx:id="loadGameOptions" visible="false" managed="false" spacing="10.0">
-            <ListView fx:id="savedGamesListView" prefHeight="150.0" prefWidth="300.0" />
-            <HBox spacing="10.0" alignment="CENTER">
-               <Button fx:id="loadSelectedBtn" text="Load" onAction="#loadSelectedGame"
-                       prefWidth="145.0" prefHeight="40.0" styleClass="sub-menu-button" />
-               <Button fx:id="deleteSelectedBtn" text="Delete" onAction="#deleteSelectedGame"
-                       prefWidth="145.0" prefHeight="40.0" styleClass="sub-menu-button" />
-            </HBox>
+         <VBox fx:id="loadGameOptions" visible="false" managed="false" spacing="10.0" alignment="CENTER">
+            <StackPane>
+               <Rectangle width="300.0" height="200.0" arcWidth="10" arcHeight="10"
+                         style="-fx-fill: rgba(66, 43, 26, 0.9); -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+               <VBox spacing="10.0" alignment="CENTER" padding="10">
+                  <ListView fx:id="savedGamesListView" prefHeight="130.0" prefWidth="280.0" 
+                           style="-fx-background-color: rgba(66, 43, 26, 0.7); -fx-text-fill: #e8d9b5; -fx-control-inner-background: rgba(66, 43, 26, 0.7);" />
+                  <HBox spacing="10.0" alignment="CENTER">
+                     <Button fx:id="loadSelectedBtn" text="Load" onAction="#loadSelectedGame"
+                             prefWidth="135.0" prefHeight="35.0" styleClass="sub-menu-button" />
+                     <Button fx:id="deleteSelectedBtn" text="Delete" onAction="#deleteSelectedGame"
+                             prefWidth="135.0" prefHeight="35.0" styleClass="sub-menu-button" />
+                  </HBox>
+               </VBox>
+            </StackPane>
          </VBox>
          
          <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 

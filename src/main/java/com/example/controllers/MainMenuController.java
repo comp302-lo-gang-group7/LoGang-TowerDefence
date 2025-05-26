@@ -210,41 +210,41 @@ public class MainMenuController extends Controller implements Initializable {
 
     private void setupSubMenuButtonStyle() {
         String subMenuButtonCss = 
-            "-fx-background-color: linear-gradient(#5d7542, #4a5e35); " +
+            "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
             "-fx-background-radius: 6; " +
             "-fx-text-fill: #e8d9b5; " +
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
             "-fx-padding: 6 12 6 12; " +
-            "-fx-border-color: linear-gradient(#6b8a3c, #597236); " +
+            "-fx-border-color: linear-gradient(#8a673c, #705236); " +
             "-fx-border-width: 1.5; " +
             "-fx-border-radius: 6; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
         
         String subMenuHoverCss = 
-            "-fx-background-color: linear-gradient(#6b8a3c, #597236); " +
+            "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
             "-fx-background-radius: 6; " +
             "-fx-text-fill: #f5ead9; " +
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
             "-fx-padding: 6 12 6 12; " +
-            "-fx-border-color: linear-gradient(#7d9e48, #6b8a3c); " +
+            "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
             "-fx-border-width: 1.5; " +
             "-fx-border-radius: 6; " +
             "-fx-cursor: hand; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 5, 0.0, 0, 1);";
         
         String subMenuPressedCss = 
-            "-fx-background-color: linear-gradient(#4a5e35, #3d4d2b); " +
+            "-fx-background-color: linear-gradient(#4e331f, #3d2819); " +
             "-fx-background-radius: 6; " +
             "-fx-text-fill: #d9c9a0; " +
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
             "-fx-padding: 7 12 5 12; " +
-            "-fx-border-color: #5d7542; " +
+            "-fx-border-color: #6b4c2e; " +
             "-fx-border-width: 1.5; " +
             "-fx-border-radius: 6; " +
             "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.3), 3, 0.0, 0, 1);";
