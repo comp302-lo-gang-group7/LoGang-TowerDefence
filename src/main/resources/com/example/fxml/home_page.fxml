@@ -66,6 +66,9 @@
                <Rectangle width="300.0" height="100.0" arcWidth="10" arcHeight="10"
                          style="-fx-fill: rgba(66, 43, 26, 0.9); -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
                <VBox spacing="10.0" alignment="CENTER">
+                  <padding>
+                     <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+                  </padding>
                   <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage"
                           prefWidth="280.0" prefHeight="35.0" styleClass="sub-menu-button" />
                   <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage"
@@ -83,7 +86,10 @@
             <StackPane>
                <Rectangle width="300.0" height="200.0" arcWidth="10" arcHeight="10"
                          style="-fx-fill: rgba(66, 43, 26, 0.9); -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-               <VBox spacing="10.0" alignment="CENTER" padding="10">
+               <VBox spacing="10.0" alignment="CENTER">
+                  <padding>
+                     <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+                  </padding>
                   <ListView fx:id="savedGamesListView" prefHeight="130.0" prefWidth="280.0" 
                            style="-fx-background-color: rgba(66, 43, 26, 0.7); -fx-text-fill: #e8d9b5; -fx-control-inner-background: rgba(66, 43, 26, 0.7);" />
                   <HBox spacing="10.0" alignment="CENTER">
