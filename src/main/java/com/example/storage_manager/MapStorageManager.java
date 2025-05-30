@@ -60,6 +60,8 @@ public class MapStorageManager {
      * Loads a map JSON file from cot/data/maps, returning a TileView[][]
      * where each TileView is produced by your TileRenderer (so you get
      * grass-underlay, seams-fixing, etc.).
+     * @requires: mapName.json exists in the cot/data/maps folder
+     * @effects: returns a TileVew[][] map, with each tile as specified in the .json
      */
     public static TileView[][] loadMap(String mapName) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
