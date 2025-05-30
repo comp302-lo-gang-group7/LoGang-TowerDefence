@@ -10,7 +10,7 @@ module com.example.game {
 	exports com.example.entity;
 
 	exports com.example.map;
-	opens com.example.map to javafx.fxml, com.fasterxml.jackson.databind;
+	opens com.example.map to javafx.fxml, com.fasterxml.jackson.databind, org.junit.platform.commons, org.mockito;
 
 	exports com.example.main;
 	opens com.example.main to javafx.fxml;

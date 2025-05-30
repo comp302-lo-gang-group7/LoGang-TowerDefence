@@ -86,10 +86,13 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
                 <configuration>
                     <argLine>
                         --add-exports org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
                         --add-exports org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
+                        --add-opens com.example.game/com.example.map=org.junit.platform.commons
+                        --add-opens com.example.game/com.example.map=org.mockito
                     </argLine>
                 </configuration>
             </plugin>
