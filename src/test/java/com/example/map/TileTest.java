@@ -2,15 +2,13 @@ package com.example.map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -19,18 +17,18 @@ import com.example.utils.TileRenderer;
 @ExtendWith(MockitoExtension.class)
 class TileTest {
     @Mock
-    private TileModel mockModel;
-    @Mock
     private TileRenderer mockRenderer;
     
     private Tile tile;
     private TileView tileView;
+    private TileModel tileModel;
 
     @BeforeEach
     void setUp() {
-        // Create a real TileView with null image (fine for testing)
+        // Create real instances
         tileView = new TileView(null, TileEnum.EMPTY_TOWER_TILE);
-        tile = new Tile(tileView, mockModel);
+        tileModel = new TileModel(0, 0);
+        tile = new Tile(tileView, tileModel);
     }
 
     @Test
@@ -44,7 +42,7 @@ class TileTest {
 
         // Assert
         assertEquals(TileEnum.ARTILLERY_TOWER, tileView.getType());
-        verify(mockModel).setTowerType(TileEnum.ARTILLERY_TOWER);
+        assertEquals(TileEnum.ARTILLERY_TOWER, tileModel.getTowerType());
         assertTrue(tile.hasTower());
     }
 
@@ -58,7 +56,7 @@ class TileTest {
 
         // Assert
         assertEquals(TileEnum.GRASS, tileView.getType());
-        verify(mockModel, never()).setTowerType(any());
+        assertNull(tileModel.getTowerType());
         assertFalse(tile.hasTower());
     }
 
@@ -70,14 +68,15 @@ class TileTest {
         when(mockRenderer.createTileView(any())).thenReturn(mockTowerView);
         tile.placeTower(TileEnum.ARTILLERY_TOWER, mockRenderer);
         
-        // Reset verification counts
-        clearInvocations(mockModel);
+        // Remember the initial state
+        TileEnum initialType = tileView.getType();
 
         // Act - Try to place another tower
         tile.placeTower(TileEnum.MAGE_TOWER, mockRenderer);
 
         // Assert
-        assertEquals(TileEnum.ARTILLERY_TOWER, tileView.getType());
-        verify(mockModel, never()).setTowerType(any());
+        assertEquals(initialType, tileView.getType());
+        assertEquals(TileEnum.ARTILLERY_TOWER, tileModel.getTowerType());
+        assertTrue(tile.hasTower());
     }
 } 
