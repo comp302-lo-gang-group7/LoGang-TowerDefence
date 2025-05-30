@@ -12,7 +12,22 @@ public class PathFinder {
     private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
 
     private static final Random random = new Random();
-
+    /**
+     * requires:
+     *   – grid is non-null, rectangular (all rows same length), and contains only integer weights;
+     *   – start and goal are non-null and lie within the bounds of grid;
+     *   – positive weights denote traversable tiles, zero or negative weights denote obstacles.
+     *
+     * modifies:
+     *   – internal priority queue, distance and predecessor arrays, and the static Random seed;
+     *
+     * effects:
+     *   – Runs a Dijkstra/A*‐style search (with small random noise) from start to goal over 4-connected neighbors.
+     *   – Returns a (possibly empty) List<Point> “trimmed” to at most 20–100 visits of GOAL_WEIGHT tiles:
+     *       • if goal is reachable, the returned list begins at start, follows a valid 4-connected path through
+     *         only positive-weight tiles, and ends at the goal or earlier if too many GOAL_WEIGHT tiles appear;
+     *       • if goal is unreachable, returns an empty list (prev[goal] == null).
+     */
     public static List<Point> findPath(int[][] grid, Point start, Point goal) {
         int h = grid.length, w = grid[0].length;
         double[][] dist = new double[h][w];
