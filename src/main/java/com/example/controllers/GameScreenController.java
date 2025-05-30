@@ -285,7 +285,6 @@ public class GameScreenController extends Controller {
 
 		// Optional: change the button’s icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
-		System.out.println("Game speed set to " + speed + "×");
 	}
 	
 	// helper for radial menu
