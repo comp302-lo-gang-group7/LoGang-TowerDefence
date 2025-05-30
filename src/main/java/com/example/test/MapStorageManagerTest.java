@@ -4,10 +4,17 @@ import com.example.map.TileView;
 import com.example.storage_manager.MapStorageManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import java.util.UUID;
+import javafx.scene.image.Image;
+import javafx.scene.image.WritableImage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,4 +65,105 @@ public class MapStorageManagerTest
 		assertThrows(IllegalArgumentException.class, () ->
 				loadTestMap("{\"rows\":1, \"cols\":1, \"tiles\": [ [1984] ]}"));
 	}
+
+    private TileView stubTile(TileEnum type) {
+        Image px = new WritableImage(1, 1);
+        return new TileView(px, type);
+    }
+
+    @AfterEach
+    void cleanUp() {
+        for (Path p : createdFiles) {
+            try {
+                Files.deleteIfExists(p);
+            } catch (IOException ignored) {
+                // test artefacts – safe to ignore
+            }
+        }
+        createdFiles.clear();
+    }
+
+	private final List<Path> createdFiles = new ArrayList<>();
+
+	@Test
+    void saveMap_validRoundTrip() throws Exception {
+        String mapName = "saveMapValid_" + UUID.randomUUID();     // unique every run
+
+        TileView[][] tiles = {
+                { stubTile(TileEnum.GRASS), stubTile(TileEnum.HORIZONTAL_PATH) },
+                { stubTile(TileEnum.VERTICAL_PATH), stubTile(TileEnum.GRASS) }
+        };
+
+        MapStorageManager.saveMap(tiles, 2, 2, mapName);
+
+        Path out = MapStorageManager.getMapDirectory().resolve(mapName + ".json");
+        createdFiles.add(out);                                    // register for cleanup
+
+        assertAll("file written",
+                () -> assertTrue(Files.exists(out)),
+                () -> assertTrue(Files.size(out) > 0, "file should not be empty")
+        );
+
+        // quick JSON sanity-check
+        ObjectMapper om = new ObjectMapper();
+        JsonNode root = om.readTree(out.toFile());
+        assertEquals(2, root.get("rows").asInt());
+        assertEquals(2, root.get("cols").asInt());
+
+        // full round-trip using loadMap
+        TileView[][] roundTrip = MapStorageManager.loadMap(mapName);
+        assertEquals(TileEnum.GRASS, roundTrip[0][0].getType());
+        assertEquals(TileEnum.HORIZONTAL_PATH, roundTrip[0][1].getType());
+        assertEquals(TileEnum.VERTICAL_PATH, roundTrip[1][0].getType());
+        assertEquals(TileEnum.GRASS, roundTrip[1][1].getType());
+    }
+
+	 @Test
+    void saveMap_overwriteReplacesContent() throws Exception {
+        String mapName = "saveMapOverwrite_" + UUID.randomUUID();
+
+        TileView[][] first = {
+                { stubTile(TileEnum.GRASS), stubTile(TileEnum.GRASS) },
+                { stubTile(TileEnum.GRASS), stubTile(TileEnum.GRASS) }
+        };
+
+        MapStorageManager.saveMap(first, 2, 2, mapName);
+
+        TileView[][] second = {
+                { stubTile(TileEnum.HORIZONTAL_PATH), stubTile(TileEnum.HORIZONTAL_PATH) },
+                { stubTile(TileEnum.HORIZONTAL_PATH), stubTile(TileEnum.HORIZONTAL_PATH) }
+        };
+
+        MapStorageManager.saveMap(second, 2, 2, mapName);   // overwrite
+
+        Path out = MapStorageManager.getMapDirectory().resolve(mapName + ".json");
+        createdFiles.add(out);
+
+        TileView[][] roundTrip = MapStorageManager.loadMap(mapName);
+        // every tile should now be HORIZONTAL_PATH
+        for (TileView[] row : roundTrip)
+            for (TileView tv : row)
+                assertEquals(TileEnum.HORIZONTAL_PATH, tv.getType(),
+                        "old content still present → overwrite failed");
+    }
+
+	 @Test
+    void saveMap_emptyMapProducesEmptyJson() throws Exception {
+        String mapName = "saveMapEmpty_" + UUID.randomUUID();
+
+        MapStorageManager.saveMap(new TileView[0][0], 0, 0, mapName);
+
+        Path out = MapStorageManager.getMapDirectory().resolve(mapName + ".json");
+        createdFiles.add(out);
+
+        assertTrue(Files.exists(out));
+
+        ObjectMapper om = new ObjectMapper();
+        JsonNode root = om.readTree(out.toFile());
+        assertEquals(0, root.get("rows").asInt());
+        assertEquals(0, root.get("cols").asInt());
+        assertTrue(root.get("tiles").isEmpty());
+    }
+
+
 }
