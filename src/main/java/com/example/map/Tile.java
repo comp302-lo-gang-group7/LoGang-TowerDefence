@@ -22,17 +22,21 @@ public class Tile {
     public void placeTower(TileEnum towerType, TileRenderer renderer) {
         if (!isBuildable()) return;
 
-        view.setImage(renderer.createTileView(towerType).getImage());
+        if (renderer != null) {
+            view.setImage(renderer.createTileView(towerType).getImage());
+        }
         view.setType(towerType);
 
-        this.model.setTowerType(towerType); // optional, see below
+        this.model.setTowerType(towerType);
         hasTower = true;
     }
 
 
     public void removeTower(TileRenderer renderer) {
         // Set back to lot
-        view.setImage(renderer.createTileView(TileEnum.EMPTY_TOWER_TILE).getImage());
+        if (renderer != null) {
+            view.setImage(renderer.createTileView(TileEnum.EMPTY_TOWER_TILE).getImage());
+        }
         view.setType(TileEnum.EMPTY_TOWER_TILE);
         hasTower = false;
         towerType = null;

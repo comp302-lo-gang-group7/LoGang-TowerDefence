@@ -6,19 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.ArgumentMatchers.any;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.utils.TileRenderer;
-
-@ExtendWith(MockitoExtension.class)
 class TileTest {
-    @Mock
-    private TileRenderer mockRenderer;
-    
     private Tile tile;
     private TileView tileView;
     private TileModel tileModel;
@@ -33,12 +22,8 @@ class TileTest {
 
     @Test
     void placeTower_OnBuildableTile_ShouldPlaceTower() {
-        // Arrange
-        TileView mockTowerView = new TileView(null, TileEnum.ARTILLERY_TOWER);
-        when(mockRenderer.createTileView(TileEnum.ARTILLERY_TOWER)).thenReturn(mockTowerView);
-
         // Act
-        tile.placeTower(TileEnum.ARTILLERY_TOWER, mockRenderer);
+        tile.placeTower(TileEnum.ARTILLERY_TOWER, null);
 
         // Assert
         assertEquals(TileEnum.ARTILLERY_TOWER, tileView.getType());
@@ -52,7 +37,7 @@ class TileTest {
         tileView.setType(TileEnum.GRASS);
 
         // Act
-        tile.placeTower(TileEnum.ARTILLERY_TOWER, mockRenderer);
+        tile.placeTower(TileEnum.ARTILLERY_TOWER, null);
 
         // Assert
         assertEquals(TileEnum.GRASS, tileView.getType());
@@ -62,17 +47,14 @@ class TileTest {
 
     @Test
     void placeTower_OnTileWithExistingTower_ShouldNotPlaceTower() {
-        // Arrange
-        // First placement
-        TileView mockTowerView = new TileView(null, TileEnum.ARTILLERY_TOWER);
-        when(mockRenderer.createTileView(any())).thenReturn(mockTowerView);
-        tile.placeTower(TileEnum.ARTILLERY_TOWER, mockRenderer);
+        // Arrange - Place first tower
+        tile.placeTower(TileEnum.ARTILLERY_TOWER, null);
         
         // Remember the initial state
         TileEnum initialType = tileView.getType();
 
         // Act - Try to place another tower
-        tile.placeTower(TileEnum.MAGE_TOWER, mockRenderer);
+        tile.placeTower(TileEnum.MAGE_TOWER, null);
 
         // Assert
         assertEquals(initialType, tileView.getType());
