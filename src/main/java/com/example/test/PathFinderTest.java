@@ -57,7 +57,7 @@ public class PathFinderTest {
     public void testTrimmingOnGoalWeightAbundance() {
         final int length=200;
         int[][] grid= new int[1][length];
-        for (int i=0; i<length; i++) {
+        for (int i=0; i<length; i++){
             grid[0][i]=96;
         }
         Point start= new Point(0, 0);
