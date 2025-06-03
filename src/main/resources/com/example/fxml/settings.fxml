@@ -18,11 +18,11 @@
 
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
            fx:controller="com.example.controllers.SettingsController"
-           prefWidth="640.0" prefHeight="450.0">
+           prefWidth="1600.0" prefHeight="900.0">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
+      <ImageView fitWidth="1600" fitHeight="900" preserveRatio="false">
          <image>
             <Image url="@../assets/home_page_grass.png" />
          </image>
@@ -33,40 +33,28 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle width="640" height="60" 
+            <Rectangle width="1600" height="80" 
                       style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
+            <Text fill="#e8f4d9" text="GAME PREFERENCES" 
+                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 42px; -fx-font-weight: bold;">
+               <effect>
+                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
+               </effect>
+            </Text>
          </StackPane>
       </top>
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="20.0">
-      <!-- Title with stylized rectangle backdrop -->
-      <StackPane>
-         <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle width="500" height="60" arcWidth="20" arcHeight="20" 
-                    style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="15" radius="7" width="15" />
-            </effect>
-         </Rectangle>
-         
-         <Text fill="#f0e3c8" text="Game Preferences" 
-               style="-fx-font-family: 'Segoe UI'; -fx-font-size: 28px; -fx-font-weight: bold;">
-            <effect>
-               <DropShadow color="#00000080" height="5" radius="2" width="5" />
-            </effect>
-         </Text>
-      </StackPane>
-         
+   <VBox alignment="CENTER" spacing="30.0">
       <!-- Settings panel -->
       <StackPane>
          <!-- Settings panel backdrop -->
-         <Rectangle width="520" height="290" arcWidth="15" arcHeight="15" 
+         <Rectangle width="500" height="400" arcWidth="20" arcHeight="20" 
                     style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
@@ -165,7 +153,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="640" height="40" 
+            <Rectangle width="1600" height="80" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
@@ -179,26 +167,26 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane alignment="TOP_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </top>
       <right>
          <StackPane alignment="TOP_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </right>
       <left>
          <StackPane alignment="BOTTOM_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </bottom>
    </BorderPane>

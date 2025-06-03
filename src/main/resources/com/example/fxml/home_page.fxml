@@ -11,14 +11,16 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ListView?>
 
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
            fx:controller="com.example.controllers.MainMenuController" 
-           prefWidth="640.0" prefHeight="450.0">
+           prefWidth="1600.0" prefHeight="900.0">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
+      <ImageView fitWidth="1600" fitHeight="900" preserveRatio="false">
          <image>
             <Image url="@../assets/home_page_grass.png" />
          </image>
@@ -29,14 +31,14 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle width="640" height="60" 
+            <Rectangle width="1600" height="80" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="WOODLAND TOWER DEFENSE" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
+            <Text fill="#e8f4d9" text="CLASH OF TOWERS" 
+                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 42px; -fx-font-weight: bold;">
                <effect>
                   <DropShadow color="#00000080" height="3" radius="1" width="3" />
                </effect>
@@ -47,63 +49,62 @@
 
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="30.0">
-      <!-- Title with stylized rectangle backdrop -->
-      <StackPane>
-         <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle width="500" height="90" arcWidth="20" arcHeight="20" 
-                    style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="15" radius="7" width="15" />
-            </effect>
-         </Rectangle>
+      <!-- Button container -->
+      <VBox alignment="CENTER" spacing="15.0" maxWidth="440.0">
+         <padding>
+            <Insets top="25.0" right="15.0" bottom="25.0" left="15.0" />
+         </padding>
          
-         <!-- Game title with wooden-like effect -->
-         <VBox alignment="CENTER" spacing="5">
-            <Text fill="#f0e3c8" text="Clash of Towers" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 40px; -fx-font-weight: bold;">
-               <effect>
-                  <DropShadow color="#00000080" height="5" radius="2" width="5" />
-               </effect>
-            </Text>
-            <Text fill="#d9c9a0" text="Strategic Tower Defense Game" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-style: italic;">
-               <effect>
-                  <DropShadow color="#00000080" height="2" radius="1" width="2" />
-               </effect>
-            </Text>
+         <!-- Main menu buttons -->
+         <Button fx:id="newGameBtn" text="Start New Game" onAction="#toggleNewGameOptions" 
+                prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                style="-fx-font-size: 20px;" />
+         
+         <!-- New Game Options -->
+         <VBox fx:id="newGameOptions" visible="false" managed="false" spacing="10.0" alignment="CENTER">
+            <VBox spacing="10.0" alignment="CENTER">
+               <padding>
+                  <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+               </padding>
+               <Button fx:id="defaultGameBtn" text="Default Game" onAction="#goToDefaultGamePage"
+                       prefWidth="300.0" prefHeight="45.0" styleClass="sub-menu-button"
+                       style="-fx-font-size: 16px;" />
+               <Button fx:id="customGameBtn" text="Custom Game" onAction="#goToCustomGamePage"
+                       prefWidth="300.0" prefHeight="45.0" styleClass="sub-menu-button"
+                       style="-fx-font-size: 16px;" />
+            </VBox>
          </VBox>
-      </StackPane>
          
-      <!-- Menu panel with wooden styling -->
-      <StackPane>
-         <!-- Menu panel backdrop -->
-         <Rectangle width="320" height="260" arcWidth="15" arcHeight="15" 
-                    style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
-            </effect>
-         </Rectangle>
-            
-         <!-- Button container -->
-         <VBox alignment="CENTER" spacing="12.0" maxWidth="280.0">
-            <padding>
-               <Insets top="20.0" right="10.0" bottom="20.0" left="10.0" />
-            </padding>
-               
-            <!-- Buttons without icons (added in controller) -->
-            <Button fx:id="newGameBtn" text="Start New Game" onAction="#goToNewGamePage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="settingsBtn" text="Settings" onAction="#goToSettings" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+         <Button fx:id="loadGameBtn" text="Load Game" onAction="#toggleLoadGameOptions" 
+                prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                style="-fx-font-size: 20px;" />
+         
+         <!-- Load Game Options -->
+         <VBox fx:id="loadGameOptions" visible="false" managed="false" spacing="10.0" alignment="CENTER">
+            <VBox spacing="10.0" alignment="CENTER">
+               <padding>
+                  <Insets top="10.0" right="10.0" bottom="10.0" left="10.0" />
+               </padding>
+               <ListView fx:id="savedGamesListView" prefHeight="130.0" prefWidth="280.0" 
+                        style="-fx-background-color: rgba(66, 43, 26, 0.9); -fx-text-fill: #e8d9b5; -fx-control-inner-background: rgba(66, 43, 26, 0.9);" />
+               <HBox spacing="10.0" alignment="CENTER">
+                  <Button fx:id="loadSelectedBtn" text="Load" onAction="#loadSelectedGame"
+                          prefWidth="135.0" prefHeight="35.0" styleClass="sub-menu-button" />
+                  <Button fx:id="deleteSelectedBtn" text="Delete" onAction="#deleteSelectedGame"
+                          prefWidth="135.0" prefHeight="35.0" styleClass="sub-menu-button" />
+               </HBox>
+            </VBox>
          </VBox>
-      </StackPane>
          
+         <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
+                prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                style="-fx-font-size: 20px;" />
+         
+         <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
+                prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
+                style="-fx-font-size: 20px;" />
+      </VBox>
+      
       <!-- Game version info -->
       <StackPane>
          <Rectangle width="200" height="24" arcWidth="10" arcHeight="10" 
@@ -120,7 +121,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="640" height="40" 
+            <Rectangle width="1600" height="40" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
@@ -134,26 +135,35 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane alignment="TOP_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </top>
       <right>
          <StackPane alignment="TOP_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </right>
       <left>
          <StackPane alignment="BOTTOM_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
+            <Button fx:id="settingsBtn" onAction="#goToSettings" 
+                    maxWidth="80" maxHeight="80"
+                    style="-fx-background-color: transparent; -fx-padding: 0;">
+               <graphic>
+                  <ImageView fitWidth="80" fitHeight="80" preserveRatio="true">
+                     <Image url="@../assets/ui/settings_icon.png" />
+                  </ImageView>
+               </graphic>
+            </Button>
          </StackPane>
       </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="80" height="80" 
+                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 3;" />
          </StackPane>
       </bottom>
    </BorderPane>
