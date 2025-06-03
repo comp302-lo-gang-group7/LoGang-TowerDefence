@@ -33,23 +33,33 @@ public class GameMap {
 				int originY = ty * TILE_SIZE;
 
 				if (TileEnum.PATH_TILES.contains(type)) {
-					int mid = TILE_SIZE / 2;  // 32 for a 64×64 tile
+					int mid = TILE_SIZE / 2;
 
 					// 1) Draw the center row at peak weight
 					for (int dx = 0; dx < TILE_SIZE; dx++) {
 						expandedGrid[originY + mid][originX + dx] = PEAK_WEIGHT;
 					}
+
 					// 2) Draw the center column at peak weight
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
 						expandedGrid[originY + dy][originX + mid] = PEAK_WEIGHT;
 					}
 
-					// 3) Optionally fill the rest of the tile's walkable area with a minimal weight (e.g., 1)
+					// 3) Add diagonals
+					for (int d = 0; d < TILE_SIZE; d++) {
+						// Top-left to bottom-right diagonal
+						expandedGrid[originY + d][originX + d] = PEAK_WEIGHT;
+
+						// Top-right to bottom-left diagonal
+						expandedGrid[originY + d][originX + (TILE_SIZE - 1 - d)] = PEAK_WEIGHT;
+					}
+
+					// 4) Fill the rest with minimal weight
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
 						for (int dx = 0; dx < TILE_SIZE; dx++) {
 							int y = originY + dy, x = originX + dx;
-							if (expandedGrid[y][x] == 0) {       // untouched
-								expandedGrid[y][x] = 1;          // bare‐minimum walkable
+							if (expandedGrid[y][x] == 0) {
+								expandedGrid[y][x] = 1;
 							}
 						}
 					}
