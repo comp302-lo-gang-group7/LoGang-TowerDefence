@@ -3,8 +3,8 @@ package com.example.utils;
 import java.util.*;
 
 public class PathFinder {
-    private static final int[] DX = {0, 1, 0, -1};
-    private static final int[] DY = {-1, 0, 1, 0};
+    private static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1 };
+    private static final int[] DY = { -1, -1, 0, 1, 1, 1, 0, -1 };
 
     private static final int TILE_SIZE    = 64;
     private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
@@ -50,10 +50,10 @@ public class PathFinder {
             double baseCost = dist[cy][cx];
 
             // Randomize neighbor directions
-            int[] dirs = {0, 1, 2, 3};
+            int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
             shuffleArray(dirs);
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 8; i++) {
                 int dir = dirs[i];
                 int nx = cx + DX[dir], ny = cy + DY[dir];
                 if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
@@ -63,6 +63,9 @@ public class PathFinder {
                 // Add slight noise to encourage variation in paths
                 double noise = random.nextDouble() * 5; // tweak range as needed
                 double stepCost = (GOAL_WEIGHT - weight) + noise;
+                if (Math.abs(DX[dir]) + Math.abs(DY[dir]) == 2) {
+                    stepCost *= 1.4; // approx sqrt(2) for diagonals
+                }
                 double nd = baseCost + stepCost;
 
                 if (nd < dist[ny][nx]) {
