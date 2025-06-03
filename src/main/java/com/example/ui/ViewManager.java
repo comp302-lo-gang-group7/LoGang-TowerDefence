@@ -114,6 +114,6 @@ public class ViewManager {
     }
 
     public void resizeWindowDefault() {
-        this.resizeWindow(1600, 900);
+        this.resizeWindow(640, 450);
     }
 }

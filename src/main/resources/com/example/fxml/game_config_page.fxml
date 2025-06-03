@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Text?>
+
+<?import javafx.scene.control.TextField?>
+<StackPane prefHeight="450.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.GameConfigController">
+
+   <!-- Background with grass image -->
+   <StackPane>
+      <ImageView fitHeight="450" fitWidth="640">
+         <Image url="@../assets/home_page_grass.png"/>
+      </ImageView>
+   </StackPane>
+
+   <!-- Decorative green header bar -->
+   <BorderPane pickOnBounds="false">
+      <top>
+         <StackPane>
+            <Rectangle height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="640">
+               <effect>
+                  <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
+               </effect>
+            </Rectangle>
+            <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;" text="DEFAULT GAME CONFIG">
+               <effect>
+                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
+               </effect>
+            </Text>
+         </StackPane>
+      </top>
+   </BorderPane>
+
+   <!-- Main content -->
+   <VBox alignment="CENTER" spacing="30.0">
+      <!-- Title with stylized rectangle backdrop -->
+      <StackPane>
+         <!-- Title backdrop - Wooden-styled rectangle -->
+         <Rectangle arcHeight="20" arcWidth="20" height="70" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="500">
+            <effect>
+               <DropShadow color="#00000099" height="15" radius="7" width="15" />
+            </effect>
+         </Rectangle>
+
+         <!-- Game title with wooden-like effect -->
+         <VBox alignment="CENTER" spacing="5">
+            <Text fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;" text="Available Maps">
+               <effect>
+                  <DropShadow color="#00000080" height="5" radius="2" width="5" />
+               </effect>
+            </Text>
+            <Text fill="#d9c9a0" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-style: italic;" text="Select a map to be used in the new game">
+               <effect>
+                  <DropShadow color="#00000080" height="2" radius="1" width="2" />
+               </effect>
+            </Text>
+         </VBox>
+      </StackPane>
+
+      <!-- Game list panel -->
+      <StackPane>
+         <!-- Panel backdrop -->
+         <Rectangle arcHeight="15" arcWidth="15" height="240" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="500">
+            <effect>
+               <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
+            </effect>
+         </Rectangle>
+
+         <!-- Save game list -->
+         <VBox alignment="CENTER" maxWidth="460" spacing="15">
+            <padding>
+               <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+
+            <!-- ListView for saved games -->
+            <ListView fx:id="savedMapsListView" prefHeight="140" prefWidth="420"
+                      style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748;
+                     -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
+
+            <!-- Starting Gold Input -->
+            <HBox alignment="CENTER_LEFT" spacing="10">
+               <Text text="Starting Gold:" fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" />
+               <TextField fx:id="goldInput" promptText="1000" prefWidth="120"
+                          style="-fx-background-color: #e8d9b5; -fx-text-fill: #4e331f;
+                          -fx-font-size: 14px; -fx-font-family: 'Segoe UI';" />
+            </HBox>
+
+            <!-- Action buttons -->
+            <HBox alignment="CENTER" spacing="20">
+               <Button fx:id="homeBtn" onAction="#goToHomePage" prefHeight="35" prefWidth="140"
+                       style="-fx-background-color: linear-gradient(#6b4c2e, #4e331f);
+                       -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI';
+                       -fx-font-size: 14px; -fx-font-weight: bold;
+                       -fx-border-color: #8a673c; -fx-border-width: 2;
+                       -fx-border-radius: 5; -fx-background-radius: 5;"
+                       text="Back to Home" />
+               <Button fx:id="loadBtn" onAction="#loadSelectedMap" prefHeight="35" prefWidth="140"
+                       style="-fx-background-color: linear-gradient(#6b4c2e, #4e331f);
+                       -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI';
+                       -fx-font-size: 14px; -fx-font-weight: bold;
+                       -fx-border-color: #8a673c; -fx-border-width: 2;
+                       -fx-border-radius: 5; -fx-background-radius: 5;"
+                       text="Load Map" />
+            </HBox>
+         </VBox>
+      </StackPane>
+   </VBox>
+
+   <!-- Decorative green footer bar -->
+   <BorderPane pickOnBounds="false">
+      <bottom>
+         <StackPane>
+            <Rectangle height="40" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="640">
+               <effect>
+                  <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
+               </effect>
+            </Rectangle>
+         </StackPane>
+      </bottom>
+   </BorderPane>
+
+   <!-- Corner decorative elements -->
+   <BorderPane pickOnBounds="false">
+      <top>
+         <StackPane alignment="TOP_LEFT">
+            <Rectangle height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" width="40" />
+         </StackPane>
+      </top>
+      <right>
+         <StackPane alignment="TOP_RIGHT">
+            <Rectangle height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" width="40" />
+         </StackPane>
+      </right>
+      <left>
+         <StackPane alignment="BOTTOM_LEFT">
+            <Rectangle height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" width="40" />
+         </StackPane>
+      </left>
+      <bottom>
+         <StackPane alignment="BOTTOM_RIGHT">
+            <Rectangle height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" width="40" />
+         </StackPane>
+      </bottom>
+   </BorderPane>
+</StackPane>

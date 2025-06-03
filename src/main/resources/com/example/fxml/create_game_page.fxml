@@ -13,11 +13,11 @@
 
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
            fx:controller="com.example.controllers.CreateGameController"
-           prefWidth="1600.0" prefHeight="900.0">
+           prefWidth="640.0" prefHeight="450.0">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitWidth="1600" fitHeight="900" preserveRatio="false">
+      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
          <image>
             <Image url="@../assets/home_page_grass.png" />
          </image>
@@ -28,14 +28,14 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle width="1600" height="80" 
+            <Rectangle width="640" height="60" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
             <Text fill="#e8f4d9" text="CREATE NEW GAME" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 42px; -fx-font-weight: bold;">
+                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
                <effect>
                   <DropShadow color="#00000080" height="3" radius="1" width="3" />
                </effect>
@@ -76,7 +76,7 @@
       <!-- Game options panel -->
       <StackPane>
          <!-- Options panel backdrop -->
-         <Rectangle width="500" height="300" arcWidth="20" arcHeight="20" 
+         <Rectangle width="320" height="200" arcWidth="15" arcHeight="15" 
                     style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
@@ -84,21 +84,18 @@
          </Rectangle>
             
          <!-- Button container -->
-         <VBox alignment="CENTER" spacing="25.0" maxWidth="440.0">
+         <VBox alignment="CENTER" spacing="20.0" maxWidth="280.0">
             <padding>
-               <Insets top="30.0" right="15.0" bottom="30.0" left="15.0" />
+               <Insets top="25.0" right="10.0" bottom="25.0" left="10.0" />
             </padding>
                
             <!-- Game mode buttons -->
             <Button fx:id="defaultGameBtn" text="Create Default Game" onAction="#goToDefaultGamePage" 
-                    prefWidth="360.0" prefHeight="55.0" styleClass="menu-button" 
-                    style="-fx-font-size: 20px;" />
+                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <Button fx:id="customGameBtn" text="Create Custom Game" 
-                    prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
-                    style="-fx-font-size: 20px;" />
+                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <Button fx:id="backBtn" text="Back to Main Menu" onAction="#goToHomePage" 
-                    prefWidth="360.0" prefHeight="55.0" styleClass="menu-button"
-                    style="-fx-font-size: 20px;" />
+                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
          </VBox>
       </StackPane>
    </VBox>
@@ -107,7 +104,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="1600" height="60" 
+            <Rectangle width="640" height="40" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
