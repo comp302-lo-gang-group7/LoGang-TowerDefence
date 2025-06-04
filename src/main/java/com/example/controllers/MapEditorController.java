@@ -317,10 +317,10 @@ public class MapEditorController implements Initializable {
             }
         } catch (IOException e) {
             MapEditorUtils.showErrorAlert(
-                    "Load Failed",
-                    "Could not load map",
-                    "Could not load map \"" + mapName + "\": " + e.getMessage(),
-                    this
+                "Load Failed",
+                "Map Load Error",
+                "Could not load map \"" + mapName + "\": " + e.getMessage(),
+                this
             );
         }
     }
@@ -341,9 +341,9 @@ public class MapEditorController implements Initializable {
         String mapName = mapSelectionCombo.getValue();
         if (mapName == null || mapName.trim().isEmpty()) {
             MapEditorUtils.showErrorAlert(
-                "No Map Name", 
+                "No Map Name",
                 "Missing Map Name",
-                "Please enter a map name in the dropdown.\nType a name and press Enter to create a new map.", 
+                "Please enter a map name in the dropdown.\nType a name and press Enter to create a new map.",
                 this
             );
             return;
@@ -351,14 +351,16 @@ public class MapEditorController implements Initializable {
 
         try {
             MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, mapName);
-            MapEditorUtils.showInfoAlert("Map Saved", 
-                "Map \"" + mapName + "\" has been saved successfully.", 
-                this);
+            MapEditorUtils.showInfoAlert(
+                "Map Saved",
+                "Map \"" + mapName + "\" has been saved successfully.",
+                this
+            );
         } catch (Exception e) {
             MapEditorUtils.showErrorAlert(
-                "Save Failed", 
+                "Save Failed",
                 "Save Error",
-                "Could not save map \"" + mapName + "\": " + e.getMessage(), 
+                "Could not save map \"" + mapName + "\": " + e.getMessage(),
                 this
             );
         }
@@ -1108,11 +1110,21 @@ public class MapEditorController implements Initializable {
         okButton.setOnAction(e -> {
             String mapName = nameField.getText().trim();
             if (mapName.isEmpty()) {
-                MapEditorUtils.showErrorAlert("Invalid Name", "Map name cannot be empty.", this);
+                MapEditorUtils.showErrorAlert(
+                    "Invalid Name",
+                    "Empty Map Name",
+                    "Map name cannot be empty.",
+                    this
+                );
                 return;
             }
             if (MapStorageManager.mapExists(mapName)) {
-                MapEditorUtils.showErrorAlert("Name Exists", "A map with this name already exists.", this);
+                MapEditorUtils.showErrorAlert(
+                    "Name Exists",
+                    "Duplicate Map Name",
+                    "A map with this name already exists.",
+                    this
+                );
                 return;
             }
             clearGrid();
