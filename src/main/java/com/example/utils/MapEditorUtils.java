@@ -153,6 +153,7 @@ public class MapEditorUtils {
         
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
+        StyleManager.refreshMainSceneCursor();
     }
 
     public static void showErrorAlert(String title, String message, Object controller) {
@@ -215,6 +216,7 @@ public class MapEditorUtils {
         dialog.setOnShowing(e -> StyleManager.applyCustomCursorToWindow(dialog.getDialogPane().getScene().getWindow()));
 
         dialog.showAndWait();
+        StyleManager.refreshMainSceneCursor();
     }
 
     /**
@@ -310,6 +312,7 @@ public class MapEditorUtils {
         
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
+        StyleManager.refreshMainSceneCursor();
         
         // Return result
         return dialogConfirmed;

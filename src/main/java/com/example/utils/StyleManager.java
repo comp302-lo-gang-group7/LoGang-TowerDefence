@@ -175,10 +175,28 @@ public class StyleManager {
      * Apply custom cursor to any window
      */
     public static void applyCustomCursorToWindow(Window window) {
-        if (customCursor != null && window instanceof Stage) {
-            Stage stage = (Stage) window;
-            stage.getScene().setCursor(customCursor);
-            applyCustomCursorRecursively(stage.getScene().getRoot());
+        if (window != null && window.getScene() != null && customCursor != null) {
+            window.getScene().setCursor(customCursor);
+            applyCustomCursorRecursively(window.getScene().getRoot());
+        }
+    }
+
+    /**
+     * Re-applies the custom cursor to the main application scene.
+     * This is useful after modal dialogs close to ensure the main window's cursor is correct.
+     */
+    public static void refreshMainSceneCursor() {
+        try {
+            javafx.scene.Scene mainScene = com.example.main.Main.getViewManager().getScene();
+            if (mainScene != null && customCursor != null) {
+                mainScene.setCursor(customCursor);
+                if (mainScene.getRoot() != null) {
+                    applyCustomCursorRecursively(mainScene.getRoot());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error refreshing main scene cursor: " + e.getMessage());
+            // Optionally log e.printStackTrace() if more detail is needed
         }
     }
 
