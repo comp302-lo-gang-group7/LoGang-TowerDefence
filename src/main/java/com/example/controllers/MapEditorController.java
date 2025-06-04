@@ -7,11 +7,19 @@ import com.example.storage_manager.MapStorageManager;
 import com.example.utils.MapEditorUtils;
 import com.example.utils.RoadValidator;
 import com.example.utils.TileRenderer;
+import com.example.utils.MapValidator;
+
+import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
@@ -24,8 +32,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.cell.ComboBoxListCell;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -344,14 +350,15 @@ public class MapEditorController implements Initializable {
         List<Point2D> disconnectedRoads = RoadValidator.findDisconnectedRoads(mapTileViews);
         
         if (!disconnectedRoads.isEmpty()) {
+            // Use the existing wooden-styled error alert that matches the game's aesthetic
             MapEditorUtils.showErrorAlert(
-                    "Invalid Road Connections",
-                    "Some road tiles are not properly connected.",
-                    "Please fix the highlighted road tiles before saving.",
-                    this
+                "Invalid Road Connections",
+                "Disconnected Road Tiles",
+                "Some road tiles are not properly connected. Please fix the highlighted paths before saving.",
+                this
             );
             
-            // Highlight all disconnected roads for better visibility
+            // Highlight the disconnected roads
             highlightDisconnectedRoads(disconnectedRoads);
             return false;
         }
@@ -363,20 +370,40 @@ public class MapEditorController implements Initializable {
      * Highlights disconnected road tiles to help identify issues
      */
     private void highlightDisconnectedRoads(List<Point2D> disconnectedRoads) {
-        // Highlight each problematic tile
+        // Add a subtle pulsing animation to the disconnected tiles for better visibility
+        List<TileView> highlightedTiles = new ArrayList<>();
+        
         for (Point2D p : disconnectedRoads) {
             int col = (int) p.getX();
             int row = (int) p.getY();
-            mapTileViews[row][col].showErrorHighlight();
+            
+            TileView tileView = mapTileViews[row][col];
+            
+            // Store reference to highlighted tiles
+            highlightedTiles.add(tileView);
+            
+            // Add a red pulsing glow effect
+            DropShadow errorEffect = new DropShadow();
+            errorEffect.setColor(Color.RED);
+            errorEffect.setRadius(10);
+            errorEffect.setSpread(0.7);
+            tileView.setEffect(errorEffect);
+            
+            // Add subtle animation for better visibility
+            FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
+            fade.setFromValue(0.7);
+            fade.setToValue(1.0);
+            fade.setCycleCount(6); // Pulse 3 times (back and forth)
+            fade.setAutoReverse(true);
+            fade.play();
         }
         
-        // Schedule removal of highlights after 5 seconds
+        // Remove highlights after 5 seconds
         PauseTransition pause = new PauseTransition(Duration.seconds(5));
         pause.setOnFinished(e -> {
-            for (Point2D p : disconnectedRoads) {
-                int col = (int) p.getX();
-                int row = (int) p.getY();
-                mapTileViews[row][col].removeErrorHighlight();
+            for (TileView tile : highlightedTiles) {
+                tile.setEffect(null);
+                tile.setOpacity(1.0);
             }
         });
         pause.play();
@@ -388,7 +415,7 @@ public class MapEditorController implements Initializable {
         if (mapName.isEmpty()) {
             MapEditorUtils.showErrorAlert(
                     "Missing Map Name",
-                    "Please enter a map name before saving.",
+                    "Please Enter a Map Name",
                     "You can type a new name or pick an existing one from the dropdown.",
                     this
             );
@@ -408,7 +435,7 @@ public class MapEditorController implements Initializable {
         } catch (Exception e) {
             MapEditorUtils.showErrorAlert(
                     "Save Failed",
-                    "Could not save map \"" + mapName + "\".",
+                    "Could Not Save Map",
                     e.getMessage(),
                     this
             );
