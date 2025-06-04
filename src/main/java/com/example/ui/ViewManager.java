@@ -61,6 +61,18 @@ public class ViewManager {
                 }
             });
 
+            // Add listener for stage focus changes to re-apply cursor
+            this.stage.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal) { // Main stage gained focus
+                    System.out.println("ViewManager: Main stage gained focus. Refreshing cursor.");
+                    refreshMainSceneCursor(); // This uses static scene and StyleManager.getCustomCursor()
+                } else { // Main stage lost focus
+                    System.out.println("ViewManager: Main stage lost focus.");
+                    // Consider if anything needs to be done when focus is lost.
+                    // For now, primarily concerned with regaining focus.
+                }
+            });
+
             stage.setScene(scene);
             stage.show();
             
