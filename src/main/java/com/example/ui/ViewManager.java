@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.ImageCursor;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 
@@ -34,6 +36,11 @@ public class ViewManager {
             
             // Create scene
             this.scene = new Scene(root);
+
+            // Load and set custom cursor
+            Image cursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/01.png"));
+            scene.setCursor(new ImageCursor(cursorImage));
+            
             stage.setScene(scene);
             
         } catch (IOException e) {
