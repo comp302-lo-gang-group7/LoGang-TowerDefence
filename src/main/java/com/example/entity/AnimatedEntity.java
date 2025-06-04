@@ -73,6 +73,8 @@ public class AnimatedEntity extends Entity {
                 y += dy / dist * moveDistance;
             }
         }
+
+        //System.out.printf("%.2f %.2f\n", x, y);
     }
 
     @Override
