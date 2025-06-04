@@ -190,6 +190,7 @@ public class GameScreenController extends Controller {
 							"-fx-padding: 0;" +
 							"-fx-border-color: transparent;"
 			);
+			btn.getStyleClass().add("menu-button");
 
 			btn.setLayoutX(bx);
 			btn.setLayoutY(by);
@@ -283,7 +284,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button’s icon or tooltip
+		// Optional: change the button's icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}
