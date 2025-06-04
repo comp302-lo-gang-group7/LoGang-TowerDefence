@@ -17,6 +17,7 @@ import java.io.IOException;
 public class ViewManager {
     private final Stage stage;
     private static Scene scene;
+    private static Parent titleBar;
 
     public ViewManager(Stage stage) {
         this.stage = stage;
@@ -24,7 +25,7 @@ public class ViewManager {
         try {
             // Load custom title bar
             FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
-            Parent titleBar = titleBarLoader.load();
+            titleBar = titleBarLoader.load();
             
             // Load initial content (home page)
             FXMLLoader contentLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/home_page.fxml"));
@@ -35,13 +36,14 @@ public class ViewManager {
             root.getChildren().addAll(titleBar, content);
             
             // Create scene
-            this.scene = new Scene(root);
+            scene = new Scene(root);
 
             // Set cursor using StyleManager
             scene.setCursor(StyleManager.getCustomCursor());
             applyCustomCursorToAll(root);
             
             stage.setScene(scene);
+            stage.show();
             
         } catch (IOException e) {
             System.out.printf("An IOException occurred during ViewManager initialization, error: %s%n", e);
@@ -70,14 +72,17 @@ public class ViewManager {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent content = fxmlLoader.load();
             
-            // Get the current root layout which contains the title bar
-            VBox root = (VBox) scene.getRoot();
+            // Create new root container
+            VBox root = new VBox();
             
-            // Keep the title bar and replace the content
-            root.getChildren().set(1, content);
+            // Add title bar and new content
+            root.getChildren().addAll(titleBar, content);
+            
+            // Set the new root to the scene
+            scene.setRoot(root);
             
             // Ensure cursor is set on new content
-            applyCustomCursorToAll(content);
+            applyCustomCursorToAll(root);
             
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
@@ -91,19 +96,24 @@ public class ViewManager {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
             Parent content = fxmlLoader.load();
 
-            ((GameScreenController)fxmlLoader.getController()).init(mapName, startingGold);
+            // Initialize the controller with map data
+            GameScreenController controller = fxmlLoader.getController();
+            controller.init(mapName, startingGold);
 
-            // Get the current root layout which contains the title bar
-            VBox root = (VBox) scene.getRoot();
-
-            // Keep the title bar and replace the content
-            root.getChildren().set(1, content);
-
+            // Create new root container
+            VBox root = new VBox();
+            
+            // Add title bar and new content
+            root.getChildren().addAll(titleBar, content);
+            
+            // Set the new root to the scene
+            scene.setRoot(root);
+            
             // Ensure cursor is set on new content
-            applyCustomCursorToAll(content);
+            applyCustomCursorToAll(root);
 
         } catch (IOException e) {
-            System.out.printf("An IOException occurred during switch to FXML path com/example/fxml/game_screen_page.fxml, error: %s%n", e);
+            System.out.printf("An IOException occurred during switch to game screen, error: %s%n", e);
             e.printStackTrace();
         }
     }
@@ -115,7 +125,7 @@ public class ViewManager {
      */
     public void resizeWindow(int width, int height) {
         stage.setWidth(width);
-        stage.setHeight(height + 25); // Updated from 30 to 25 for smaller title bar
+        stage.setHeight(height + 25); // Add height for title bar
     }
 
     public void terminateApplication() {
