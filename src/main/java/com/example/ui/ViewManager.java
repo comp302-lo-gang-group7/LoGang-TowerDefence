@@ -48,12 +48,14 @@ public class ViewManager {
             // AGGRESSIVE: Force cursor on every mouse move on the main scene
             scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
                 if (StyleManager.getCustomCursor() != null) {
+                    // Ensure the scene itself has the cursor
                     if (scene.getCursor() != StyleManager.getCustomCursor()) {
                         scene.setCursor(StyleManager.getCustomCursor());
                     }
-                    // Optionally, be even more aggressive by re-applying to root on move:
-                    // if (scene.getRoot() != null) { applyCustomCursorToAll(scene.getRoot()); }
-                    // For now, let's see if just setting on scene is enough to avoid too much performance hit.
+                    // Aggressively re-apply to all nodes in the root of the scene
+                    if (scene.getRoot() != null) {
+                        applyCustomCursorToAll(scene.getRoot());
+                    }
                 }
             });
 
