@@ -51,7 +51,7 @@ import javafx.stage.StageStyle;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
-public class MapEditorController implements Initializable {
+public class MapEditorController extends Controller implements Initializable {
     @FXML private GridPane paletteGrid;
     @FXML private Button homeBtn;
     @FXML private Button editModeBtn;
