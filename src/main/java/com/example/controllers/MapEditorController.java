@@ -58,6 +58,11 @@ public class MapEditorController implements Initializable {
     @FXML private Button deleteModeBtn;
     @FXML private Button clearMapBtn;
     @FXML private Button saveMapBtn;
+    @FXML private ImageView homeImage;
+    @FXML private ImageView editModeImage;
+    @FXML private ImageView deleteModeImage;
+    @FXML private ImageView clearMapImage;
+    @FXML private ImageView saveMapImage;
     @FXML private Button newMapBtn, deleteMapBtn;
 
     @FXML private ComboBox<String> mapSelectionCombo;
@@ -131,7 +136,7 @@ public class MapEditorController implements Initializable {
 
             // 4) Build the static UI
             setupMapManagementButtons();  // Do this first
-            setupButtons();              // Apply button styling
+            setupButtonImages();          // Apply button styling
             createTilePalette();
             createMapGrid();
 
@@ -317,10 +322,10 @@ public class MapEditorController implements Initializable {
             }
         } catch (IOException e) {
             MapEditorUtils.showErrorAlert(
-                "Load Failed",
-                "Map Load Error",
-                "Could not load map \"" + mapName + "\": " + e.getMessage(),
-                this
+                    "Load Failed",
+                    "Could not load map \"" + mapName + "\".",
+                    Objects.toString(e.getMessage(), "Unknown error"),
+                    this
             );
         }
     }
@@ -340,33 +345,35 @@ public class MapEditorController implements Initializable {
     public void saveMap() {
         String mapName = mapSelectionCombo.getValue();
         if (mapName == null || mapName.trim().isEmpty()) {
-            MapEditorUtils.showErrorAlert(
-                "No Map Name",
-                "Missing Map Name",
-                "Please enter a map name in the dropdown.\nType a name and press Enter to create a new map.",
-                this
-            );
+            MapEditorUtils.showErrorAlert("No Map Name", 
+                "Please enter a map name in the dropdown.", 
+                "Type a name and press Enter to create a new map.", 
+                this);
             return;
         }
 
         try {
             MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, mapName);
-            MapEditorUtils.showInfoAlert(
-                "Map Saved",
-                "Map \"" + mapName + "\" has been saved successfully.",
-                this
-            );
+            MapEditorUtils.showInfoAlert("Map Saved", 
+                "Map \"" + mapName + "\" has been saved successfully.", 
+                this);
         } catch (Exception e) {
-            MapEditorUtils.showErrorAlert(
-                "Save Failed",
-                "Save Error",
-                "Could not save map \"" + mapName + "\": " + e.getMessage(),
-                this
-            );
+            MapEditorUtils.showErrorAlert("Save Failed", 
+                "Could not save map \"" + mapName + "\".", 
+                e.getMessage(), 
+                this);
         }
     }
 
-    private void setupButtons() {
+    private void setupButtonImages() {
+        // Load button images using existing assets
+        String buttonPath = "/com/example/assets/ui/Button_Blue.png";
+        homeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        editModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        deleteModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        clearMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        saveMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+
         // Apply StyleManager to all buttons
         StyleManager.setupButtonWithCustomCursor(homeBtn);
         StyleManager.setupButtonWithCustomCursor(editModeBtn);
@@ -884,6 +891,14 @@ public class MapEditorController implements Initializable {
         );
 
         if (confirmed) {
+            // Visual feedback
+            MapEditorUtils.animateButtonClick(
+                clearMapBtn,
+                clearMapImage,
+                BUTTON_BLUE_PRESSED,
+                this
+            );
+
             // Clear all tiles
             for (int row = 0; row < MAP_ROWS; row++) {
                 for (int col = 0; col < MAP_COLS; col++) {
@@ -1110,21 +1125,11 @@ public class MapEditorController implements Initializable {
         okButton.setOnAction(e -> {
             String mapName = nameField.getText().trim();
             if (mapName.isEmpty()) {
-                MapEditorUtils.showErrorAlert(
-                    "Invalid Name",
-                    "Empty Map Name",
-                    "Map name cannot be empty.",
-                    this
-                );
+                MapEditorUtils.showErrorAlert("Invalid Name", "Map name cannot be empty.", this);
                 return;
             }
             if (MapStorageManager.mapExists(mapName)) {
-                MapEditorUtils.showErrorAlert(
-                    "Name Exists",
-                    "Duplicate Map Name",
-                    "A map with this name already exists.",
-                    this
-                );
+                MapEditorUtils.showErrorAlert("Name Exists", "A map with this name already exists.", this);
                 return;
             }
             clearGrid();

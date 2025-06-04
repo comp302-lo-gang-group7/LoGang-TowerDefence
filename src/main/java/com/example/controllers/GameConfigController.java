@@ -176,11 +176,7 @@ public class GameConfigController implements Initializable {
 	private void loadSelectedMap() {
 		String selectedMapName = savedMapsListView.getSelectionModel().getSelectedItem();
 		if (selectedMapName == null) {
-			MapEditorUtils.showInfoAlert(
-				"No Selection",
-				"Please select a map to load.",
-				this
-			);
+			MapEditorUtils.showInfoAlert("No Map Selected", "Please select a map to load.", this);
 			return;
 		}
 
@@ -195,12 +191,7 @@ public class GameConfigController implements Initializable {
 			try {
 				startingGold = Integer.parseInt(goldInput.getText().trim());
 			} catch (NumberFormatException e) {
-				MapEditorUtils.showErrorAlert(
-					"Invalid Gold",
-					"Invalid Input",
-					"Please enter a valid number for starting gold.",
-					this
-				);
+				MapEditorUtils.showErrorAlert("Invalid Gold Amount", "Please enter a valid number for starting gold.", this);
 				return;
 			}
 
