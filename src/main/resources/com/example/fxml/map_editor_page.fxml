@@ -29,6 +29,9 @@
             <HBox alignment="CENTER_RIGHT" spacing="10">
                 <!-- Home Button -->
                 <Button fx:id="homeBtn" onAction="#goToHome" text="HOME">
+                    <graphic>
+                        <ImageView fx:id="homeImage" fitWidth="24" fitHeight="24" preserveRatio="true" />
+                    </graphic>
                     <tooltip>
                         <Tooltip text="Return to home screen" />
                     </tooltip>
@@ -36,6 +39,9 @@
                 
                 <!-- Edit Mode Button -->
                 <Button fx:id="editModeBtn" onAction="#toggleEditMode" text="EDIT MODE">
+                    <graphic>
+                        <ImageView fx:id="editModeImage" fitWidth="24" fitHeight="24" preserveRatio="true" />
+                    </graphic>
                     <tooltip>
                         <Tooltip text="Switch to edit mode to place tiles" />
                     </tooltip>
@@ -43,6 +49,9 @@
                 
                 <!-- Delete Mode Button -->
                 <Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode" text="DELETE">
+                    <graphic>
+                        <ImageView fx:id="deleteModeImage" fitWidth="24" fitHeight="24" preserveRatio="true" />
+                    </graphic>
                     <tooltip>
                         <Tooltip text="Switch to delete mode to remove tiles" />
                     </tooltip>
@@ -50,6 +59,9 @@
 
                 <!-- Clear Map Button -->
                 <Button fx:id="clearMapBtn" onAction="#clearMap" text="CLEAR MAP">
+                    <graphic>
+                        <ImageView fx:id="clearMapImage" fitWidth="24" fitHeight="24" preserveRatio="true" />
+                    </graphic>
                     <tooltip>
                         <Tooltip text="Clear the entire map" />
                     </tooltip>
@@ -57,6 +69,9 @@
 
                 <!-- Save Map Button -->
                 <Button fx:id="saveMapBtn" onAction="#saveMap" text="SAVE">
+                    <graphic>
+                        <ImageView fx:id="saveMapImage" fitWidth="24" fitHeight="24" preserveRatio="true" />
+                    </graphic>
                     <tooltip>
                         <Tooltip text="Save the current map" />
                     </tooltip>

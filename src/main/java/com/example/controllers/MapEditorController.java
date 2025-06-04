@@ -136,6 +136,7 @@ public class MapEditorController implements Initializable {
 
             // 4) Build the static UI
             setupMapManagementButtons();  // Do this first
+            setupButtonImages();          // Apply button styling
             createTilePalette();
             createMapGrid();
 
@@ -365,7 +366,15 @@ public class MapEditorController implements Initializable {
     }
 
     private void setupButtonImages() {
-        // Only apply StyleManager to all buttons, do not set any images
+        // Load button images using existing assets
+        String buttonPath = "/com/example/assets/ui/Button_Blue.png";
+        homeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        editModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        deleteModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        clearMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        saveMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+
+        // Apply StyleManager to all buttons
         StyleManager.setupButtonWithCustomCursor(homeBtn);
         StyleManager.setupButtonWithCustomCursor(editModeBtn);
         StyleManager.setupButtonWithCustomCursor(deleteModeBtn);

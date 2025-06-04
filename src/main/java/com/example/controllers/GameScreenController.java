@@ -191,9 +191,6 @@ public class GameScreenController extends Controller {
 							"-fx-border-color: transparent;"
 			);
 
-			// Set custom cursor for tower selection buttons
-			btn.setCursor(com.example.utils.StyleManager.getCustomCursor());
-
 			btn.setLayoutX(bx);
 			btn.setLayoutY(by);
 			btn.setOnAction(evt -> {
@@ -286,7 +283,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button's icon or tooltip
+		// Optional: change the button’s icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}
