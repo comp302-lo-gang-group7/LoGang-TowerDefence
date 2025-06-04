@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 
@@ -44,6 +45,18 @@ public class ViewManager {
             }
             applyCustomCursorToAll(root);
             
+            // AGGRESSIVE: Force cursor on every mouse move on the main scene
+            scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+                if (StyleManager.getCustomCursor() != null) {
+                    if (scene.getCursor() != StyleManager.getCustomCursor()) {
+                        scene.setCursor(StyleManager.getCustomCursor());
+                    }
+                    // Optionally, be even more aggressive by re-applying to root on move:
+                    // if (scene.getRoot() != null) { applyCustomCursorToAll(scene.getRoot()); }
+                    // For now, let's see if just setting on scene is enough to avoid too much performance hit.
+                }
+            });
+
             stage.setScene(scene);
             stage.show();
             
