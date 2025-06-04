@@ -47,14 +47,16 @@ public class ViewManager {
             
             // AGGRESSIVE: Force cursor on every mouse move on the main scene
             scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+                System.out.println("ViewManager: MOUSE_MOVED on main scene. Active dialog context? Cursor: " + (scene.getCursor() != null ? scene.getCursor().toString() : "null")); // DIAGNOSTIC PRINT
                 if (StyleManager.getCustomCursor() != null) {
                     // Ensure the scene itself has the cursor
                     if (scene.getCursor() != StyleManager.getCustomCursor()) {
                         scene.setCursor(StyleManager.getCustomCursor());
+                        System.out.println("ViewManager: MOUSE_MOVED - Set main scene cursor."); // DIAGNOSTIC
                     }
                     // Aggressively re-apply to all nodes in the root of the scene
                     if (scene.getRoot() != null) {
-                        applyCustomCursorToAll(scene.getRoot());
+                        applyCustomCursorToAll(scene.getRoot()); // This should print from within if changes are made
                     }
                 }
             });
@@ -73,18 +75,27 @@ public class ViewManager {
 
     private static void applyCustomCursorToAll(Node node) {
         if (StyleManager.getCustomCursor() != null) {
-            node.setCursor(null); // Force reset on the node
-            node.setCursor(StyleManager.getCustomCursor());
-            
+            boolean changed = false;
+            if (node.getCursor() != StyleManager.getCustomCursor()) {
+                node.setCursor(null); // Force reset on the node
+                node.setCursor(StyleManager.getCustomCursor());
+                changed = true;
+            }
+            // System.out.println("applyCustomCursorToAll for node: " + node + (changed ? " - CURSOR SET" : " - cursor already set")); // Optional detailed logging
+
             if (node instanceof Parent) {
                 for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
                     applyCustomCursorToAll(child);
                 }
             }
         }
-        // Reinforce on the main scene after recursion
+        // Reinforce on the main scene after recursion - this part might be redundant if called from scene's MOUSE_MOVED
+        // but let's keep it for now.
         if (scene != null && StyleManager.getCustomCursor() != null) {
-            scene.setCursor(StyleManager.getCustomCursor());
+            if (scene.getCursor() != StyleManager.getCustomCursor()) {
+                // scene.setCursor(StyleManager.getCustomCursor()); // Already handled by the MOUSE_MOVED listener directly on scene
+                // System.out.println("ViewManager: applyCustomCursorToAll - Reinforced main scene cursor."); // DIAGNOSTIC
+            }
         }
     }
 
