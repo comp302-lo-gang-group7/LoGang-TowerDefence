@@ -1,17 +1,17 @@
 package com.example.controllers;
 
 import com.example.main.Main;
-import com.example.utils.StyleManager;
+import com.example.storage_manager.SaveGameManager;
 import com.example.utils.MapEditorUtils;
+import com.example.utils.StyleManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.animation.ScaleTransition;
-import javafx.util.Duration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  * Controller for the load game page. It displays saved games and provides functionality 
  * to load or delete them, or return to the home page.
  */
-public class LoadGameController implements Initializable {
+public class LoadGameController extends Controller implements Initializable {
     
     @FXML private ListView<String> savedGamesListView;
     @FXML private Button loadBtn;
