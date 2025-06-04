@@ -58,6 +58,7 @@ public class ViewManager {
 
     private static void applyCustomCursorToAll(Node node) {
         if (StyleManager.getCustomCursor() != null) {
+            node.setCursor(null); // Force reset on the node
             node.setCursor(StyleManager.getCustomCursor());
             
             if (node instanceof Parent) {
@@ -97,6 +98,8 @@ public class ViewManager {
             }
             applyCustomCursorToAll(root);
             
+            refreshMainSceneCursor(); // Use the full refresh logic
+            
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
             e.printStackTrace();
@@ -131,6 +134,8 @@ public class ViewManager {
                 scene.setCursor(StyleManager.getCustomCursor());
             }
             applyCustomCursorToAll(root);
+
+            refreshMainSceneCursor(); // Use the full refresh logic
 
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to game screen, error: %s%n", e);
@@ -170,8 +175,8 @@ public class ViewManager {
      */
     public static void refreshMainSceneCursor() {
         if (scene != null && StyleManager.getCustomCursor() != null) {
-            // Try forcing a cursor refresh by setting to null first
-            scene.setCursor(null);
+            System.out.println("ViewManager: Refreshing main scene cursor (force attempt).");
+            scene.setCursor(null); 
             scene.setCursor(StyleManager.getCustomCursor());
             if (scene.getRoot() != null) {
                 applyCustomCursorToAll(scene.getRoot());
@@ -179,7 +184,6 @@ public class ViewManager {
         } else if (scene == null) {
             System.err.println("ViewManager.refreshMainSceneCursor: Main scene is null.");
         } else {
-            // This case implies StyleManager.getCustomCursor() is null
             System.err.println("ViewManager.refreshMainSceneCursor: Custom cursor is null, cannot refresh.");
         }
     }
