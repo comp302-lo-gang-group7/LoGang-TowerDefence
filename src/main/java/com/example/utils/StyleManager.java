@@ -3,12 +3,12 @@ package com.example.utils;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Parent;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -180,12 +180,14 @@ public class StyleManager {
         ImageCursor cursor = getCustomCursor();
         if (cursor != null) {
             dialogPane.setCursor(cursor);
-            dialogPane.getScene().setCursor(cursor);
-            
-            // Apply to the dialog's window
-            Window window = dialogPane.getScene().getWindow();
-            if (window instanceof Stage) {
-                ((Stage) window).getScene().setCursor(cursor);
+            if (dialogPane.getScene() != null) {
+                dialogPane.getScene().setCursor(cursor);
+                
+                // Apply to the dialog's window
+                Window window = dialogPane.getScene().getWindow();
+                if (window instanceof Stage) {
+                    ((Stage) window).getScene().setCursor(cursor);
+                }
             }
         }
 
@@ -202,8 +204,8 @@ public class StyleManager {
         }
 
         // Recursively apply to all children
-        if (node instanceof javafx.scene.Parent) {
-            for (Node child : ((javafx.scene.Parent) node).getChildrenUnmodifiable()) {
+        if (node instanceof Parent) {
+            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
                 applyCustomCursorToChildren(child);
             }
         }
