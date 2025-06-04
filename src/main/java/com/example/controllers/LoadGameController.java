@@ -1,7 +1,6 @@
 package com.example.controllers;
 
 import com.example.main.Main;
-import com.example.storage_manager.SaveGameManager;
 import com.example.utils.MapEditorUtils;
 import com.example.utils.StyleManager;
 import javafx.collections.FXCollections;
