@@ -1,5 +1,6 @@
 package com.example.utils;
 
+import com.example.controllers.MapEditorController;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
