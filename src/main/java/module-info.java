@@ -6,6 +6,7 @@ module com.example.game {
 	requires jdk.jdi;
 	requires com.fasterxml.jackson.databind;
 	requires org.junit.jupiter.api;
+	requires java.desktop;
 
 	exports com.example.entity;
 
