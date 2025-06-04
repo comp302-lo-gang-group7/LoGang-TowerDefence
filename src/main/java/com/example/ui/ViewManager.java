@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.ImageCursor;
 import javafx.scene.image.Image;
+import javafx.scene.Cursor;
 
 import java.io.IOException;
 
@@ -17,11 +18,21 @@ import java.io.IOException;
 public class ViewManager {
     private final Stage stage;
     private static Scene scene;
+    private static ImageCursor customCursor;
 
     public ViewManager(Stage stage) {
         this.stage = stage;
 
         try {
+            // Load and create custom cursor
+            try {
+                Image cursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+                customCursor = new ImageCursor(cursorImage);
+            } catch (Exception e) {
+                System.out.println("Failed to load cursor image: " + e.getMessage());
+                customCursor = null;
+            }
+
             // Load custom title bar
             FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
             Parent titleBar = titleBarLoader.load();
@@ -37,9 +48,11 @@ public class ViewManager {
             // Create scene
             this.scene = new Scene(root);
 
-            // Load and set custom cursor
-            Image cursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/01.png"));
-            scene.setCursor(new ImageCursor(cursorImage));
+            // Set cursor on both scene and root node
+            if (customCursor != null) {
+                scene.setCursor(customCursor);
+                root.setCursor(customCursor);
+            }
             
             stage.setScene(scene);
             
@@ -51,7 +64,6 @@ public class ViewManager {
             unexpectedError.printStackTrace();
         }
     }
-
 
     public void switchTo(String fxmlPath) {
         try {
@@ -65,11 +77,10 @@ public class ViewManager {
             // Keep the title bar and replace the content
             root.getChildren().set(1, content);
             
-//            // If this is the GameScreen scene, inject mouse click event filter
-//            if (fxmlLoader.getController() instanceof GameScreenController) {
-//                GameScreenController gameScreenController = fxmlLoader.getController();
-//                scene.addEventFilter(MouseEvent.MOUSE_CLICKED, gameScreenController.getOnMouseClickedFilter());
-//            }
+            // Ensure cursor is set on new content
+            if (customCursor != null) {
+                content.setCursor(customCursor);
+            }
             
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
@@ -77,8 +88,7 @@ public class ViewManager {
         }
     }
 
-    public void switchToGameScreen( String mapName, int startingGold )
-    {
+    public void switchToGameScreen(String mapName, int startingGold) {
         try {
             // Load new fxml page
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
@@ -91,6 +101,11 @@ public class ViewManager {
 
             // Keep the title bar and replace the content
             root.getChildren().set(1, content);
+
+            // Ensure cursor is set on new content
+            if (customCursor != null) {
+                content.setCursor(customCursor);
+            }
 
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path com/example/fxml/game_screen_page.fxml, error: %s%n", e);
