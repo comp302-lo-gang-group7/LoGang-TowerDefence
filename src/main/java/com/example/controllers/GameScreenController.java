@@ -6,6 +6,7 @@ import com.example.map.*;
 import com.example.main.Main;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
+import com.example.utils.StyleManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
