@@ -5,10 +5,13 @@ import com.example.map.TileEnum;
 import com.example.map.TileView;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.MapEditorUtils;
+import com.example.utils.RoadValidator;
 import com.example.utils.TileRenderer;
-
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
+import javafx.util.Duration;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.input.*;
@@ -30,6 +33,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -333,6 +337,51 @@ public class MapEditorController implements Initializable {
         return null;
     }
 
+    /**
+     * Validates that all road tiles are properly connected before saving
+     */
+    private boolean validateRoadConnections() {
+        List<Point2D> disconnectedRoads = RoadValidator.findDisconnectedRoads(mapTileViews);
+        
+        if (!disconnectedRoads.isEmpty()) {
+            MapEditorUtils.showErrorAlert(
+                    "Invalid Road Connections",
+                    "Some road tiles are not properly connected.",
+                    "Please fix the highlighted road tiles before saving.",
+                    this
+            );
+            
+            // Highlight all disconnected roads for better visibility
+            highlightDisconnectedRoads(disconnectedRoads);
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * Highlights disconnected road tiles to help identify issues
+     */
+    private void highlightDisconnectedRoads(List<Point2D> disconnectedRoads) {
+        // Highlight each problematic tile
+        for (Point2D p : disconnectedRoads) {
+            int col = (int) p.getX();
+            int row = (int) p.getY();
+            mapTileViews[row][col].showErrorHighlight();
+        }
+        
+        // Schedule removal of highlights after 5 seconds
+        PauseTransition pause = new PauseTransition(Duration.seconds(5));
+        pause.setOnFinished(e -> {
+            for (Point2D p : disconnectedRoads) {
+                int col = (int) p.getX();
+                int row = (int) p.getY();
+                mapTileViews[row][col].removeErrorHighlight();
+            }
+        });
+        pause.play();
+    }
+
     @FXML
     private void saveMap() {
         String mapName = mapSelectionCombo.getEditor().getText().trim();
@@ -344,6 +393,11 @@ public class MapEditorController implements Initializable {
                     this
             );
             return;
+        }
+        
+        // Validate road connections before saving
+        if (!validateRoadConnections()) {
+            return; // Stop save process if validation fails
         }
 
         try {
