@@ -201,10 +201,15 @@ public class GameScreenController extends Controller {
 			container.getChildren().add(btn);
 		}
 
-		// Apply the custom cursor to the container and all its children
-		com.example.utils.StyleManager.applyCustomCursorRecursively(container);
-
 		contextMenu.getContent().add(container);
+
+		// Apply the custom cursor after the popup is shown and its scene graph is ready
+		contextMenu.setOnShown(event -> {
+			if (!contextMenu.getContent().isEmpty() && contextMenu.getContent().get(0) instanceof Pane) {
+				Pane popupContainer = (Pane) contextMenu.getContent().get(0);
+				com.example.utils.StyleManager.applyCustomCursorRecursively(popupContainer);
+			}
+		});
 
 		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
 		double localY = tileY * TILE_SIZE + TILE_SIZE / 2.0;
