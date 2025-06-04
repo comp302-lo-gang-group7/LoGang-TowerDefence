@@ -2,15 +2,28 @@ package com.example.controllers;
 
 import com.example.game.GameManager;
 import com.example.main.Main;
+import com.example.utils.StyleManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-public class PauseMenuController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class PauseMenuController implements Initializable {
     @FXML private StackPane pauseRoot;
     @FXML private Button resumeBtn, settingsBtn, exitBtn;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Apply StyleManager to all buttons
+        StyleManager.setupButtonWithCustomCursor(resumeBtn);
+        StyleManager.setupButtonWithCustomCursor(settingsBtn);
+        StyleManager.setupButtonWithCustomCursor(exitBtn);
+    }
 
     @FXML
     public void handleResume(ActionEvent e) {

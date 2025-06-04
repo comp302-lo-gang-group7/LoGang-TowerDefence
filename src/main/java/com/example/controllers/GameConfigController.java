@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.example.main.Main;
 import com.example.storage_manager.MapStorageManager;
+import com.example.utils.StyleManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -102,12 +103,15 @@ public class GameConfigController implements Initializable {
 				}
 		);
 
-		// Setup button hover and click effects
-		setupButtonEffects(loadBtn);
-		setupButtonEffects(homeBtn);
+		// Setup buttons with StyleManager
+		StyleManager.setupButtonWithCustomCursor(loadBtn);
+		StyleManager.setupButtonWithCustomCursor(homeBtn);
 
 		// Style list cells
 		setupCustomListView();
+
+		// Set custom cursor for text field
+		goldInput.setCursor(StyleManager.getCustomCursor());
 	}
 
 	private void setupCustomListView() {
@@ -134,6 +138,9 @@ public class GameConfigController implements Initializable {
 							setStyle("-fx-background-color: transparent; -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; -fx-font-size: 14px;");
 						}
 					});
+
+					// Set custom cursor
+					setCursor(StyleManager.getCustomCursor());
 				}
 			}
 		});

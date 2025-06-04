@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.main.Main;
+import com.example.utils.StyleManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -46,10 +47,10 @@ public class SettingsController extends Controller implements Initializable {
         // Apply wooden style to checkboxes
         setupCheckboxes();
         
-        // Add wooden styling to all buttons
-        applyButtonStyle(saveBtn);
-        applyButtonStyle(resetBtn);
-        applyButtonStyle(homeBtn);
+        // Apply StyleManager to buttons
+        StyleManager.setupButtonWithCustomCursor(saveBtn);
+        StyleManager.setupButtonWithCustomCursor(resetBtn);
+        StyleManager.setupButtonWithCustomCursor(homeBtn);
     }
     
     private void setupComboBoxes() {
@@ -78,6 +79,7 @@ public class SettingsController extends Controller implements Initializable {
                             setText(item);
                             setTextFill(Color.web("#e8d9b5"));
                             setStyle("-fx-background-color: #5d4228; -fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 13px;");
+                            setCursor(StyleManager.getCustomCursor());
                         } else {
                             setText(null);
                         }
@@ -96,11 +98,15 @@ public class SettingsController extends Controller implements Initializable {
                     setText(item);
                     setTextFill(Color.web("#e8d9b5"));
                     setStyle("-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 13px;");
+                    setCursor(StyleManager.getCustomCursor());
                 } else {
                     setText(null);
                 }
             }
         });
+
+        // Set custom cursor for the ComboBox itself
+        comboBox.setCursor(StyleManager.getCustomCursor());
     }
     
     private void setupSliders() {
@@ -115,6 +121,10 @@ public class SettingsController extends Controller implements Initializable {
             int value = newVal.intValue();
             sfxVolumeLabel.setText(value + "%");
         });
+
+        // Set custom cursor for sliders
+        musicVolumeSlider.setCursor(StyleManager.getCustomCursor());
+        sfxVolumeSlider.setCursor(StyleManager.getCustomCursor());
     }
     
     private void setupCheckboxes() {
@@ -128,89 +138,18 @@ public class SettingsController extends Controller implements Initializable {
         autoSaveCb.setStyle(checkboxStyle);
         fullscreenCb.setStyle(checkboxStyle);
         showFpsCb.setStyle(checkboxStyle);
-    }
-    
-    private void applyButtonStyle(Button button) {
-        String buttonCss = 
-            "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
-            "-fx-background-radius: 8; " +
-            "-fx-text-fill: #e8d9b5; " +
-            "-fx-font-size: 14px; " +
-            "-fx-font-weight: bold; " +
-            "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 8 15 8 15; " +
-            "-fx-border-color: linear-gradient(#a07748, #8a673c); " +
-            "-fx-border-width: 2; " +
-            "-fx-border-radius: 8; " +
-            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 2);";
-        
-        String hoverCss = 
-            "-fx-background-color: linear-gradient(#94704c, #705236); " +
-            "-fx-background-radius: 8; " +
-            "-fx-text-fill: #f5ead9; " +
-            "-fx-font-size: 14px; " +
-            "-fx-font-weight: bold; " +
-            "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 8 15 8 15; " +
-            "-fx-border-color: linear-gradient(#c6965f, #b88d5a); " +
-            "-fx-border-width: 2; " +
-            "-fx-border-radius: 8; " +
-            "-fx-cursor: hand; " +
-            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 6, 0.0, 0, 2);";
-        
-        String pressedCss = 
-            "-fx-background-color: linear-gradient(#5d4228, #4e3822); " +
-            "-fx-background-radius: 8; " +
-            "-fx-text-fill: #d9c9a0; " +
-            "-fx-font-size: 14px; " +
-            "-fx-font-weight: bold; " +
-            "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 9 15 7 15; " + // Offset padding to simulate pressed effect
-            "-fx-border-color: #7d5a3c; " +
-            "-fx-border-width: 2; " +
-            "-fx-border-radius: 8; " +
-            "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
-        
-        // Set initial style
-        button.setStyle(buttonCss);
-        
-        // Add hover/exit listeners
-        button.setOnMouseEntered(e -> {
-            button.setStyle(hoverCss);
-            button.setScaleX(1.05);
-            button.setScaleY(1.05);
-        });
-        
-        button.setOnMouseExited(e -> {
-            button.setStyle(buttonCss);
-            button.setScaleX(1.0);
-            button.setScaleY(1.0);
-        });
-        
-        // Add pressed/released listeners
-        button.setOnMousePressed(e -> {
-            button.setStyle(pressedCss);
-            button.setScaleX(1.02);
-            button.setScaleY(1.02);
-        });
-        
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(hoverCss);
-                button.setScaleX(1.05);
-                button.setScaleY(1.05);
-            } else {
-                button.setStyle(buttonCss);
-                button.setScaleX(1.0);
-                button.setScaleY(1.0);
-            }
-        });
+
+        // Set custom cursor for checkboxes
+        showHintsCb.setCursor(StyleManager.getCustomCursor());
+        autoSaveCb.setCursor(StyleManager.getCustomCursor());
+        fullscreenCb.setCursor(StyleManager.getCustomCursor());
+        showFpsCb.setCursor(StyleManager.getCustomCursor());
     }
     
     @FXML
     public void saveSettings() {
         // This would actually save settings in a real implementation
-        showMessage("Settings saved successfully!");
+        MapEditorUtils.showInfoAlert("Settings Saved", "Settings saved successfully!", this);
     }
     
     @FXML
@@ -225,11 +164,6 @@ public class SettingsController extends Controller implements Initializable {
         fullscreenCb.setSelected(false);
         showFpsCb.setSelected(false);
         
-        showMessage("Settings reset to defaults.");
-    }
-    
-    private void showMessage(String message) {
-        // In a real implementation, you would show a proper dialog
-        System.out.println(message);
+        MapEditorUtils.showInfoAlert("Settings Reset", "Settings reset to defaults.", this);
     }
 }
