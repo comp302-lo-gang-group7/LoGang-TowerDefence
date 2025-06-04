@@ -29,4 +29,11 @@
     -fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);
     -fx-scale-x: 1.02;
     -fx-scale-y: 1.02;
+}
+
+.menu-button-active {
+    -fx-background-color: linear-gradient(#6b4c2e, #4e331f);
+    -fx-text-fill: #ffcc66;
+    -fx-border-color: #ffcc66;
+    -fx-effect: dropshadow(three-pass-box, rgba(255,204,102,0.4), 6, 0.0, 0, 2);
 } 
