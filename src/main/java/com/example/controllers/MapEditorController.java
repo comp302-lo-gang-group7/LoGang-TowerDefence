@@ -318,8 +318,8 @@ public class MapEditorController implements Initializable {
         } catch (IOException e) {
             MapEditorUtils.showErrorAlert(
                     "Load Failed",
-                    "Could not load map \"" + mapName + "\".",
-                    Objects.toString(e.getMessage(), "Unknown error"),
+                    "Could not load map",
+                    "Could not load map \"" + mapName + "\": " + e.getMessage(),
                     this
             );
         }
@@ -340,10 +340,12 @@ public class MapEditorController implements Initializable {
     public void saveMap() {
         String mapName = mapSelectionCombo.getValue();
         if (mapName == null || mapName.trim().isEmpty()) {
-            MapEditorUtils.showErrorAlert("No Map Name", 
-                "Please enter a map name in the dropdown.", 
-                "Type a name and press Enter to create a new map.", 
-                this);
+            MapEditorUtils.showErrorAlert(
+                "No Map Name", 
+                "Missing Map Name",
+                "Please enter a map name in the dropdown.\nType a name and press Enter to create a new map.", 
+                this
+            );
             return;
         }
 
@@ -353,10 +355,12 @@ public class MapEditorController implements Initializable {
                 "Map \"" + mapName + "\" has been saved successfully.", 
                 this);
         } catch (Exception e) {
-            MapEditorUtils.showErrorAlert("Save Failed", 
-                "Could not save map \"" + mapName + "\".", 
-                e.getMessage(), 
-                this);
+            MapEditorUtils.showErrorAlert(
+                "Save Failed", 
+                "Save Error",
+                "Could not save map \"" + mapName + "\": " + e.getMessage(), 
+                this
+            );
         }
     }
 
