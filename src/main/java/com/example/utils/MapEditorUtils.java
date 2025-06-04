@@ -1,6 +1,7 @@
 package com.example.utils;
 
 import com.example.ui.ViewManager;
+import com.example.main.Main;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -88,6 +89,11 @@ public class MapEditorUtils {
 
         // Create a new stage for our custom dialog
         Stage dialogStage = new Stage();
+        // Set owner
+        Stage mainAppStageInfo = com.example.main.Main.viewManager.getStage();
+        if (mainAppStageInfo != null) {
+            dialogStage.initOwner(mainAppStageInfo);
+        }
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.initStyle(StageStyle.UNDECORATED);
         dialogStage.setTitle(title);
@@ -166,6 +172,11 @@ public class MapEditorUtils {
         if (suppressDialogs) return;
 
         Dialog<ButtonType> dialog = new Dialog<>();
+        // Set owner
+        Stage mainAppStageError = com.example.main.Main.viewManager.getStage();
+        if (mainAppStageError != null) {
+            dialog.initOwner(mainAppStageError);
+        }
         dialog.setTitle(title);
         dialog.setHeaderText(null);
 
@@ -230,6 +241,11 @@ public class MapEditorUtils {
 
         // Create a new stage for our custom dialog
         Stage dialogStage = new Stage();
+        // Set owner
+        Stage mainAppStageConfirm = com.example.main.Main.viewManager.getStage();
+        if (mainAppStageConfirm != null) {
+            dialogStage.initOwner(mainAppStageConfirm);
+        }
         dialogStage.initModality(Modality.APPLICATION_MODAL);
         dialogStage.initStyle(StageStyle.UNDECORATED);
         dialogStage.setTitle(title);

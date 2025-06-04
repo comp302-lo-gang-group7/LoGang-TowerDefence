@@ -45,7 +45,8 @@ public class ViewManager {
             }
             applyCustomCursorToAll(root);
             
-            // AGGRESSIVE: Force cursor on every mouse move on the main scene
+            // REMOVING AGGRESSIVE MOUSE_MOVED LISTENER
+            /*
             scene.addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
                 System.out.println("ViewManager: MOUSE_MOVED on main scene. Active dialog context? Cursor: " + (scene.getCursor() != null ? scene.getCursor().toString() : "null")); // DIAGNOSTIC PRINT
                 if (StyleManager.getCustomCursor() != null) {
@@ -60,6 +61,7 @@ public class ViewManager {
                     }
                 }
             });
+            */
 
             // Add listener for stage focus changes to re-apply cursor
             this.stage.focusedProperty().addListener((obs, oldVal, newVal) -> {
