@@ -203,14 +203,6 @@ public class GameScreenController extends Controller {
 
 		contextMenu.getContent().add(container);
 
-		// Apply the custom cursor after the popup is shown and its scene graph is ready
-		contextMenu.setOnShown(event -> {
-			if (!contextMenu.getContent().isEmpty() && contextMenu.getContent().get(0) instanceof Pane) {
-				Pane popupContainer = (Pane) contextMenu.getContent().get(0);
-				com.example.utils.StyleManager.applyCustomCursorRecursively(popupContainer);
-			}
-		});
-
 		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
 		double localY = tileY * TILE_SIZE + TILE_SIZE / 2.0;
 		Point2D screenCenter = towerLayer.localToScreen(localX, localY);
@@ -291,7 +283,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button's icon or tooltip
+		// Optional: change the button’s icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}
