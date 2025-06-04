@@ -93,20 +93,12 @@ public class MapEditorUtils {
         alert.setHeaderText(null);
         alert.setContentText(content);
         
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        // Apply custom styling and cursor
+        StyleManager.setupAlertWithCustomCursor(alert);
         
-        // Apply custom cursor to the entire dialog
-        StyleManager.applyCustomCursorToWindow(stage);
-        
-        // Style the dialog pane and its content
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("menu-button");
-        dialogPane.getScene().getRoot().getStyleClass().add("menu-button");
-        
-        // Style the buttons
-        dialogPane.lookupButton(ButtonType.OK).getStyleClass().add("menu-button");
+        // Configure the dialog
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.initModality(Modality.APPLICATION_MODAL);
         
         alert.showAndWait();
     }
@@ -121,20 +113,12 @@ public class MapEditorUtils {
         alert.setHeaderText(null);
         alert.setContentText(content + (details != null ? "\n\nDetails: " + details : ""));
         
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        // Apply custom styling and cursor
+        StyleManager.setupAlertWithCustomCursor(alert);
         
-        // Apply custom cursor to the entire dialog
-        StyleManager.applyCustomCursorToWindow(stage);
-        
-        // Style the dialog pane and its content
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("menu-button");
-        dialogPane.getScene().getRoot().getStyleClass().add("menu-button");
-        
-        // Style the buttons
-        dialogPane.lookupButton(ButtonType.OK).getStyleClass().add("menu-button");
+        // Configure the dialog
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.initModality(Modality.APPLICATION_MODAL);
         
         alert.showAndWait();
     }
@@ -148,25 +132,14 @@ public class MapEditorUtils {
         alert.setHeaderText(null);
         alert.setContentText(content);
         
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.initModality(Modality.APPLICATION_MODAL);
+        // Apply custom styling and cursor
+        StyleManager.setupAlertWithCustomCursor(alert);
         
-        // Apply custom cursor to the entire dialog
-        StyleManager.applyCustomCursorToWindow(stage);
+        // Configure the dialog
+        alert.initStyle(StageStyle.UNDECORATED);
+        alert.initModality(Modality.APPLICATION_MODAL);
         
-        // Style the dialog pane and its content
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStyleClass().add("menu-button");
-        dialogPane.getScene().getRoot().getStyleClass().add("menu-button");
-        
-        // Style the buttons
-        dialogPane.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
-        dialogPane.lookupButton(ButtonType.OK).getStyleClass().add("menu-button");
-        dialogPane.lookupButton(ButtonType.CANCEL).getStyleClass().add("menu-button");
-        
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.OK;
+        return alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
     }
 
     /**

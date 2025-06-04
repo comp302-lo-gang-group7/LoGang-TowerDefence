@@ -144,6 +144,7 @@ public class GameScreenController extends Controller {
 
 		Pane container = new Pane();
 		container.setPrefSize(containerSize, containerSize);
+		StyleManager.applyCustomCursorRecursively(container);
 
 		double cx0 = containerSize / 2;
 		double cy0 = containerSize / 2;
@@ -191,6 +192,7 @@ public class GameScreenController extends Controller {
 							"-fx-border-color: transparent;"
 			);
 			btn.getStyleClass().add("menu-button");
+			StyleManager.setupButtonWithCustomCursor(btn);
 
 			btn.setLayoutX(bx);
 			btn.setLayoutY(by);
@@ -203,16 +205,13 @@ public class GameScreenController extends Controller {
 		}
 
 		contextMenu.getContent().add(container);
+		StyleManager.setupPopupWithCustomCursor(contextMenu);
 
-		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
-		double localY = tileY * TILE_SIZE + TILE_SIZE / 2.0;
-		Point2D screenCenter = towerLayer.localToScreen(localX, localY);
+		double screenX = tileX * TILE_SIZE + TILE_SIZE / 2;
+		double screenY = tileY * TILE_SIZE + TILE_SIZE / 2;
 
-		contextMenu.show(
-				towerLayer.getScene().getWindow(),
-				screenCenter.getX() - containerSize / 2,
-				screenCenter.getY() - containerSize / 2
-		);
+		Point2D point = gameArea.localToScreen(screenX - containerSize / 2, screenY - containerSize / 2);
+		contextMenu.show(gameArea, point.getX(), point.getY());
 	}
 
 
