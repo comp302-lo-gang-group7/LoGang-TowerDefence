@@ -94,7 +94,7 @@ public class MapEditorUtils {
         if (mainAppStageInfo != null) {
             dialogStage.initOwner(mainAppStageInfo);
         }
-        dialogStage.initModality(Modality.APPLICATION_MODAL);
+        // dialogStage.initModality(Modality.APPLICATION_MODAL); // TEMPORARILY COMMENTED OUT FOR DIAGNOSIS
         dialogStage.initStyle(StageStyle.UNDECORATED);
         dialogStage.setTitle(title);
         
