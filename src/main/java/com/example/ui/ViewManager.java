@@ -39,7 +39,9 @@ public class ViewManager {
             scene = new Scene(root);
 
             // Set cursor using StyleManager
-            scene.setCursor(StyleManager.getCustomCursor());
+            if (StyleManager.getCustomCursor() != null) {
+                scene.setCursor(StyleManager.getCustomCursor());
+            }
             applyCustomCursorToAll(root);
             
             stage.setScene(scene);
@@ -54,15 +56,19 @@ public class ViewManager {
         }
     }
 
-    private void applyCustomCursorToAll(Node node) {
-        // Set cursor on the node itself
-        node.setCursor(StyleManager.getCustomCursor());
-        
-        // If the node has children (is a Parent), recursively apply to all children
-        if (node instanceof Parent) {
-            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
-                applyCustomCursorToAll(child);
+    private static void applyCustomCursorToAll(Node node) {
+        if (StyleManager.getCustomCursor() != null) {
+            node.setCursor(StyleManager.getCustomCursor());
+            
+            if (node instanceof Parent) {
+                for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
+                    applyCustomCursorToAll(child);
+                }
             }
+        }
+        // Reinforce on the main scene after recursion
+        if (scene != null && StyleManager.getCustomCursor() != null) {
+            scene.setCursor(StyleManager.getCustomCursor());
         }
     }
 
@@ -76,12 +82,19 @@ public class ViewManager {
             VBox root = new VBox();
             
             // Add title bar and new content
+            if (titleBar == null) { // Defensive check in case titleBar wasn't loaded
+                 FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
+                 titleBar = titleBarLoader.load();
+            }
             root.getChildren().addAll(titleBar, content);
             
             // Set the new root to the scene
             scene.setRoot(root);
             
             // Ensure cursor is set on new content
+            if (StyleManager.getCustomCursor() != null) {
+                scene.setCursor(StyleManager.getCustomCursor());
+            }
             applyCustomCursorToAll(root);
             
         } catch (IOException e) {
@@ -103,13 +116,20 @@ public class ViewManager {
             // Create new root container
             VBox root = new VBox();
             
-            // Add title bar and new content
+             // Add title bar and new content
+            if (titleBar == null) { // Defensive check
+                 FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
+                 titleBar = titleBarLoader.load();
+            }
             root.getChildren().addAll(titleBar, content);
             
             // Set the new root to the scene
             scene.setRoot(root);
             
             // Ensure cursor is set on new content
+            if (StyleManager.getCustomCursor() != null) {
+                scene.setCursor(StyleManager.getCustomCursor());
+            }
             applyCustomCursorToAll(root);
 
         } catch (IOException e) {
@@ -142,5 +162,25 @@ public class ViewManager {
 
     public void resizeWindowDefault() {
         this.resizeWindow(640, 450);
+    }
+
+    /**
+     * Re-applies the custom cursor to the main application scene and all its nodes.
+     * This is useful after modal dialogs close or other focus changes.
+     */
+    public static void refreshMainSceneCursor() {
+        if (scene != null && StyleManager.getCustomCursor() != null) {
+            // Try forcing a cursor refresh by setting to null first
+            scene.setCursor(null);
+            scene.setCursor(StyleManager.getCustomCursor());
+            if (scene.getRoot() != null) {
+                applyCustomCursorToAll(scene.getRoot());
+            }
+        } else if (scene == null) {
+            System.err.println("ViewManager.refreshMainSceneCursor: Main scene is null.");
+        } else {
+            // This case implies StyleManager.getCustomCursor() is null
+            System.err.println("ViewManager.refreshMainSceneCursor: Custom cursor is null, cannot refresh.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.utils;
 
+import com.example.ui.ViewManager;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.geometry.Insets;
@@ -153,7 +154,7 @@ public class MapEditorUtils {
         
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
-        StyleManager.refreshMainSceneCursor();
+        ViewManager.refreshMainSceneCursor();
     }
 
     public static void showErrorAlert(String title, String message, Object controller) {
@@ -209,14 +210,14 @@ public class MapEditorUtils {
 
         dialog.getDialogPane().setContent(contentBox);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
-        StyleManager.setupButtonWithCustomCursor(okButton);
+        Button okButtonDialog = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        StyleManager.setupButtonWithCustomCursor(okButtonDialog);
 
         // Apply custom cursor to the dialog window when it appears
         dialog.setOnShowing(e -> StyleManager.applyCustomCursorToWindow(dialog.getDialogPane().getScene().getWindow()));
 
         dialog.showAndWait();
-        StyleManager.refreshMainSceneCursor();
+        ViewManager.refreshMainSceneCursor();
     }
 
     /**
@@ -256,33 +257,33 @@ public class MapEditorUtils {
         buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure consistent background
         
         // Create OK button (now green)
-        Button okButton = new Button("OK");
-        okButton.setPrefWidth(100);
-        okButton.setPrefHeight(30);
-        okButton.setStyle(OK_BUTTON_NORMAL_STYLE);
-        StyleManager.setupButtonWithCustomCursor(okButton);
+        Button okConfirmButton = new Button("OK");
+        okConfirmButton.setPrefWidth(100);
+        okConfirmButton.setPrefHeight(30);
+        okConfirmButton.setStyle(OK_BUTTON_NORMAL_STYLE);
+        StyleManager.setupButtonWithCustomCursor(okConfirmButton);
         
         // OK button click action
-        okButton.setOnAction(e -> {
+        okConfirmButton.setOnAction(e -> {
             dialogConfirmed = true;
             dialogStage.close();
         });
         
         // Create Cancel button (standard wood color)
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setPrefWidth(100);
-        cancelButton.setPrefHeight(30);
-        cancelButton.setStyle(BUTTON_NORMAL_STYLE);
-        StyleManager.setupButtonWithCustomCursor(cancelButton);
+        Button cancelConfirmButton = new Button("Cancel");
+        cancelConfirmButton.setPrefWidth(100);
+        cancelConfirmButton.setPrefHeight(30);
+        cancelConfirmButton.setStyle(BUTTON_NORMAL_STYLE);
+        StyleManager.setupButtonWithCustomCursor(cancelConfirmButton);
         
         // Cancel button click action
-        cancelButton.setOnAction(e -> {
+        cancelConfirmButton.setOnAction(e -> {
             dialogConfirmed = false;
             dialogStage.close();
         });
         
         // Add buttons to button area
-        buttonBox.getChildren().addAll(okButton, cancelButton);
+        buttonBox.getChildren().addAll(okConfirmButton, cancelConfirmButton);
         
         // Build the content area
         contentArea.getChildren().addAll(contentText, buttonBox);
@@ -312,7 +313,7 @@ public class MapEditorUtils {
         
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
-        StyleManager.refreshMainSceneCursor();
+        ViewManager.refreshMainSceneCursor();
         
         // Return result
         return dialogConfirmed;
