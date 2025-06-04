@@ -198,6 +198,11 @@ public class GameConfigController extends Controller implements Initializable {
 				return;
 			}
 
+			if (MapStorageManager.mapExists(selectedMapName)) {
+				MapEditorUtils.showErrorAlert("Name Exists", "A map with this name already exists.", this);
+				return;
+			}
+
 			Main.getViewManager().switchToGameScreen(selectedMapName, startingGold);
 		}
 	}
