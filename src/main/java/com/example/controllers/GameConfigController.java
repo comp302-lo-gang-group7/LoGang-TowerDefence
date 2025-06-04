@@ -203,7 +203,7 @@ public class GameConfigController extends Controller implements Initializable {
 	}
 
 	@FXML
-	private void goToHomePage() {
+	public void goToHomePage() {
 		Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
 	}
 }
