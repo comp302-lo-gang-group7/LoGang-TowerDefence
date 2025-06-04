@@ -117,10 +117,7 @@ public class MapEditorUtils {
         okButton.setPrefWidth(100);
         okButton.setPrefHeight(30);
         okButton.setStyle(OK_BUTTON_NORMAL_STYLE);
-        
-        // OK button hover effect
-        okButton.setOnMouseEntered(e -> okButton.setStyle(OK_BUTTON_HOVER_STYLE));
-        okButton.setOnMouseExited(e -> okButton.setStyle(OK_BUTTON_NORMAL_STYLE));
+        StyleManager.setupButtonWithCustomCursor(okButton);
         
         // OK button click action
         okButton.setOnAction(e -> dialogStage.close());
@@ -145,6 +142,9 @@ public class MapEditorUtils {
         dialogScene.setFill(Color.web("#5d4228"));
         dialogStage.setScene(dialogScene);
         
+        // Apply custom cursor to the entire dialog
+        StyleManager.applyCustomCursorToWindow(dialogStage);
+        
         // Center on parent
         dialogStage.centerOnScreen();
         
@@ -163,6 +163,7 @@ public class MapEditorUtils {
         dialog.setHeaderText(null);
 
         DialogPane dialogPane = dialog.getDialogPane();
+        StyleManager.applyCustomCursorRecursively(dialogPane);
 
         VBox contentBox = new VBox(15);
         contentBox.setAlignment(Pos.CENTER);
@@ -199,28 +200,19 @@ public class MapEditorUtils {
         }
 
         dialogPane.setStyle("-fx-background-color: #f4dede;");
-
         contentBox.setStyle("-fx-background-color: #fbeaea; -fx-background-radius: 5; " +
                 "-fx-border-color: #c62828; -fx-border-width: 3; -fx-border-radius: 5;");
 
         dialogPane.setContent(contentBox);
+        dialogPane.getButtonTypes().add(ButtonType.OK);
+        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        StyleManager.setupButtonWithCustomCursor(okButton);
 
-        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        dialogPane.getButtonTypes().add(okButtonType);
-
-        Button okButton = (Button) dialogPane.lookupButton(okButtonType);
-        okButton.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold;");
-
-        okButton.setOnMouseEntered(e ->
-                okButton.setStyle("-fx-background-color: #ef5350; -fx-text-fill: white; -fx-font-weight: bold;")
-        );
-        okButton.setOnMouseExited(e ->
-                okButton.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold;")
-        );
+        // Apply custom cursor to the dialog window when it appears
+        dialog.setOnShowing(e -> StyleManager.applyCustomCursorToWindow(dialog.getDialogPane().getScene().getWindow()));
 
         dialog.showAndWait();
     }
-
 
     /**
      * Shows a fully custom styled confirmation dialog with our custom title bar
@@ -263,14 +255,7 @@ public class MapEditorUtils {
         okButton.setPrefWidth(100);
         okButton.setPrefHeight(30);
         okButton.setStyle(OK_BUTTON_NORMAL_STYLE);
-        
-        // OK button hover effect
-        okButton.setOnMouseEntered(e -> okButton.setStyle(OK_BUTTON_HOVER_STYLE));
-        okButton.setOnMouseExited(e -> okButton.setStyle(OK_BUTTON_NORMAL_STYLE));
-        
-        // Add pressed style for feedback
-        okButton.setOnMousePressed(e -> okButton.setStyle(OK_BUTTON_PRESSED_STYLE));
-        okButton.setOnMouseReleased(e -> okButton.setStyle(OK_BUTTON_HOVER_STYLE));
+        StyleManager.setupButtonWithCustomCursor(okButton);
         
         // OK button click action
         okButton.setOnAction(e -> {
@@ -283,14 +268,7 @@ public class MapEditorUtils {
         cancelButton.setPrefWidth(100);
         cancelButton.setPrefHeight(30);
         cancelButton.setStyle(BUTTON_NORMAL_STYLE);
-        
-        // Cancel button hover effect
-        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
-        cancelButton.setOnMouseExited(e -> cancelButton.setStyle(BUTTON_NORMAL_STYLE));
-        
-        // Add pressed style for feedback
-        cancelButton.setOnMousePressed(e -> cancelButton.setStyle(BUTTON_PRESSED_STYLE));
-        cancelButton.setOnMouseReleased(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
+        StyleManager.setupButtonWithCustomCursor(cancelButton);
         
         // Cancel button click action
         cancelButton.setOnAction(e -> {
@@ -317,6 +295,9 @@ public class MapEditorUtils {
         // Ensure scene background is properly colored
         dialogScene.setFill(Color.web("#5d4228"));
         dialogStage.setScene(dialogScene);
+        
+        // Apply custom cursor to the entire dialog
+        StyleManager.applyCustomCursorToWindow(dialogStage);
         
         // Center on parent
         dialogStage.centerOnScreen();

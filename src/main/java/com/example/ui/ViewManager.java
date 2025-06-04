@@ -1,14 +1,12 @@
 package com.example.ui;
 
 import com.example.controllers.GameScreenController;
+import com.example.utils.StyleManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.ImageCursor;
-import javafx.scene.image.Image;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 
 import java.io.IOException;
@@ -19,21 +17,11 @@ import java.io.IOException;
 public class ViewManager {
     private final Stage stage;
     private static Scene scene;
-    private static ImageCursor customCursor;
 
     public ViewManager(Stage stage) {
         this.stage = stage;
 
         try {
-            // Load and create custom cursor
-            try {
-                Image cursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
-                customCursor = new ImageCursor(cursorImage);
-            } catch (Exception e) {
-                System.out.println("Failed to load cursor image: " + e.getMessage());
-                customCursor = null;
-            }
-
             // Load custom title bar
             FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
             Parent titleBar = titleBarLoader.load();
@@ -49,11 +37,9 @@ public class ViewManager {
             // Create scene
             this.scene = new Scene(root);
 
-            // Set cursor on both scene and root node
-            if (customCursor != null) {
-                scene.setCursor(customCursor);
-                applyCustomCursorToAll(root);
-            }
+            // Set cursor using StyleManager
+            scene.setCursor(StyleManager.getCustomCursor());
+            applyCustomCursorToAll(root);
             
             stage.setScene(scene);
             
@@ -67,15 +53,13 @@ public class ViewManager {
     }
 
     private void applyCustomCursorToAll(Node node) {
-        if (customCursor != null) {
-            // Set cursor on the node itself
-            node.setCursor(customCursor);
-            
-            // If the node has children (is a Parent), recursively apply to all children
-            if (node instanceof Parent) {
-                for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
-                    applyCustomCursorToAll(child);
-                }
+        // Set cursor on the node itself
+        node.setCursor(StyleManager.getCustomCursor());
+        
+        // If the node has children (is a Parent), recursively apply to all children
+        if (node instanceof Parent) {
+            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
+                applyCustomCursorToAll(child);
             }
         }
     }
@@ -93,9 +77,7 @@ public class ViewManager {
             root.getChildren().set(1, content);
             
             // Ensure cursor is set on new content
-            if (customCursor != null) {
-                applyCustomCursorToAll(content);
-            }
+            applyCustomCursorToAll(content);
             
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
@@ -118,9 +100,7 @@ public class ViewManager {
             root.getChildren().set(1, content);
 
             // Ensure cursor is set on new content
-            if (customCursor != null) {
-                applyCustomCursorToAll(content);
-            }
+            applyCustomCursorToAll(content);
 
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path com/example/fxml/game_screen_page.fxml, error: %s%n", e);
