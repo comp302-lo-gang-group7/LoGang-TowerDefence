@@ -10,78 +10,34 @@ import javafx.stage.Stage;
 import javafx.scene.Node;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * The view manager is used to request screen changes. Whenever a screen is to be loaded into the scene, the view manager handles that process.
  */
 public class ViewManager {
     private final Stage stage;
-    private static Scene scene;
+    private Scene scene;
 
     public ViewManager(Stage stage) {
         this.stage = stage;
-
-        try {
-            // Load custom title bar
-            FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
-            Parent titleBar = titleBarLoader.load();
-            
-            // Load initial content (home page)
-            FXMLLoader contentLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/home_page.fxml"));
-            Parent content = contentLoader.load();
-            
-            // Create root container with title bar at top and content area
-            VBox root = new VBox();
-            root.getChildren().addAll(titleBar, content);
-            
-            // Create scene
-            this.scene = new Scene(root);
-
-            // Load CSS
-            scene.getStylesheets().add(getClass().getResource("/com/example/css/styles.css").toExternalForm());
-
-            // Set cursor using StyleManager
-            scene.setCursor(StyleManager.getCustomCursor());
-            applyCustomCursorToAll(root);
-            
-            stage.setScene(scene);
-            
-        } catch (IOException e) {
-            System.out.printf("An IOException occurred during ViewManager initialization, error: %s%n", e);
-            e.printStackTrace();
-        } catch (Exception unexpectedError) {
-            System.out.printf("An unexpected error occurred in ViewManager constructor, error: %s%n", unexpectedError);
-            unexpectedError.printStackTrace();
-        }
-    }
-
-    private void applyCustomCursorToAll(Node node) {
-        // Set cursor on the node itself
-        node.setCursor(StyleManager.getCustomCursor());
-        
-        // If the node has children (is a Parent), recursively apply to all children
-        if (node instanceof Parent) {
-            for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
-                applyCustomCursorToAll(child);
-            }
-        }
     }
 
     public void switchTo(String fxmlPath) {
         try {
-            // Load new fxml page
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent content = fxmlLoader.load();
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxmlPath)));
+            if (scene == null) {
+                scene = new Scene(root);
+                stage.setScene(scene);
+            } else {
+                scene.setRoot(root);
+            }
             
-            // Get the current root layout which contains the title bar
-            VBox root = (VBox) scene.getRoot();
+            // Apply custom cursor to the entire scene and all its components
+            StyleManager.applyCustomCursorToScene(scene);
+            StyleManager.applyCustomCursorRecursively(root);
             
-            // Keep the title bar and replace the content
-            root.getChildren().set(1, content);
-            
-            // Ensure cursor is set on new content
-            applyCustomCursorToAll(content);
-            
+            stage.show();
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path %s, error: %s%n", fxmlPath, e);
             e.printStackTrace();
@@ -90,21 +46,21 @@ public class ViewManager {
 
     public void switchToGameScreen(String mapName, int startingGold) {
         try {
-            // Load new fxml page
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
-            Parent content = fxmlLoader.load();
-
-            ((GameScreenController)fxmlLoader.getController()).init(mapName, startingGold);
-
-            // Get the current root layout which contains the title bar
-            VBox root = (VBox) scene.getRoot();
-
-            // Keep the title bar and replace the content
-            root.getChildren().set(1, content);
-
-            // Ensure cursor is set on new content
-            applyCustomCursorToAll(content);
-
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
+            Parent root = loader.load();
+            
+            if (scene == null) {
+                scene = new Scene(root);
+                stage.setScene(scene);
+            } else {
+                scene.setRoot(root);
+            }
+            
+            // Apply custom cursor to the entire scene and all its components
+            StyleManager.applyCustomCursorToScene(scene);
+            StyleManager.applyCustomCursorRecursively(root);
+            
+            stage.show();
         } catch (IOException e) {
             System.out.printf("An IOException occurred during switch to FXML path com/example/fxml/game_screen_page.fxml, error: %s%n", e);
             e.printStackTrace();
@@ -118,7 +74,7 @@ public class ViewManager {
      */
     public void resizeWindow(int width, int height) {
         stage.setWidth(width);
-        stage.setHeight(height + 25); // Updated from 30 to 25 for smaller title bar
+        stage.setHeight(height);
     }
 
     public void terminateApplication() {

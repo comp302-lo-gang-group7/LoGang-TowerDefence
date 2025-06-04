@@ -155,15 +155,18 @@ public class MapEditorUtils {
         dialogStage.showAndWait();
     }
 
-    public static void showErrorAlert(String title, String header, String content, Object caller) {
+    public static void showErrorAlert(String title, String message, Object controller) {
+        showErrorAlert(title, message, null, controller);
+    }
+
+    public static void showErrorAlert(String title, String message, String details, Object controller) {
         if (suppressDialogs) return;
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(title);
         dialog.setHeaderText(null);
 
-        DialogPane dialogPane = dialog.getDialogPane();
-        StyleManager.applyCustomCursorRecursively(dialogPane);
+        StyleManager.applyCustomCursorRecursively(dialog.getDialogPane());
 
         VBox contentBox = new VBox(15);
         contentBox.setAlignment(Pos.CENTER);
@@ -174,7 +177,7 @@ public class MapEditorUtils {
         String ribbonPath = "/com/example/assets/ui/Ribbon_Red_3Slides.png";
 
         try {
-            Image iconImage = new Image(caller.getClass().getResourceAsStream(ribbonPath));
+            Image iconImage = new Image(controller.getClass().getResourceAsStream(ribbonPath));
             ribbonIcon = new ImageView(iconImage);
             ribbonIcon.setFitWidth(200);
             ribbonIcon.setFitHeight(40);
@@ -183,12 +186,12 @@ public class MapEditorUtils {
             System.err.println("Could not load ribbon image for error alert: " + e.getMessage());
         }
 
-        Label headerLabel = new Label(header);
+        Label headerLabel = new Label(message);
         headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #C62828;");
         headerLabel.setAlignment(Pos.CENTER);
         headerLabel.setWrapText(true);
 
-        Label contentLabel = new Label(content);
+        Label contentLabel = new Label(details);
         contentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
         contentLabel.setWrapText(true);
         contentLabel.setAlignment(Pos.CENTER);
@@ -199,13 +202,13 @@ public class MapEditorUtils {
             contentBox.getChildren().addAll(headerLabel, contentLabel);
         }
 
-        dialogPane.setStyle("-fx-background-color: #f4dede;");
+        dialog.getDialogPane().setStyle("-fx-background-color: #f4dede;");
         contentBox.setStyle("-fx-background-color: #fbeaea; -fx-background-radius: 5; " +
                 "-fx-border-color: #c62828; -fx-border-width: 3; -fx-border-radius: 5;");
 
-        dialogPane.setContent(contentBox);
-        dialogPane.getButtonTypes().add(ButtonType.OK);
-        Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+        dialog.getDialogPane().setContent(contentBox);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
         StyleManager.setupButtonWithCustomCursor(okButton);
 
         // Apply custom cursor to the dialog window when it appears
@@ -367,14 +370,25 @@ public class MapEditorUtils {
      * Animates a button click with a visual feedback
      */
     public static void animateButtonClick(Button button, ImageView imageView, String pressedImagePath, Object controller) {
-        // Animate button scale
+        // Store original image
+        Image originalImage = imageView.getImage();
+
+        // Load pressed state image
+        Image pressedImage = new Image(MapEditorUtils.class.getResourceAsStream(pressedImagePath));
+        imageView.setImage(pressedImage);
+
+        // Create scale animation
         ScaleTransition st = new ScaleTransition(Duration.millis(100), button);
         st.setFromX(1.0);
         st.setFromY(1.0);
-        st.setToX(0.95);
-        st.setToY(0.95);
+        st.setToX(0.9);
+        st.setToY(0.9);
         st.setCycleCount(2);
         st.setAutoReverse(true);
+
+        // Reset image after animation
+        st.setOnFinished(e -> imageView.setImage(originalImage));
+
         st.play();
     }
 

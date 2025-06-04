@@ -9,8 +9,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.control.Label?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             xmlns="http://javafx.com/javafx/23.0.1"
@@ -23,59 +21,44 @@
             <HBox spacing="15" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                 <!-- Map Selection Dropdown (removed label) -->
                 <ComboBox fx:id="mapSelectionCombo" prefWidth="240" promptText="Choose a map..." />
-                <Button fx:id="newMapBtn" text="New Map…" styleClass="menu-button" />
-                <Button fx:id="deleteMapBtn" text="Delete Map" styleClass="menu-button" />
+                <Button fx:id="newMapBtn" text="New Map…" />
+                <Button fx:id="deleteMapBtn" text="Delete Map" />
             </HBox>
             
             <HBox alignment="CENTER_RIGHT" spacing="10">
                 <!-- Home Button -->
-                <Button fx:id="homeBtn" onAction="#goToHome" text="HOME" styleClass="menu-button">
+                <Button fx:id="homeBtn" onAction="#goToHome" text="HOME">
                     <tooltip>
                         <Tooltip text="Return to home screen" />
                     </tooltip>
-                    <graphic>
-                        <ImageView fx:id="homeImage" fitHeight="24" fitWidth="24" />
-                    </graphic>
                 </Button>
                 
                 <!-- Edit Mode Button -->
-                <Button fx:id="editModeBtn" onAction="#toggleEditMode" text="EDIT MODE" styleClass="menu-button">
+                <Button fx:id="editModeBtn" onAction="#toggleEditMode" text="EDIT MODE">
                     <tooltip>
                         <Tooltip text="Switch to edit mode to place tiles" />
                     </tooltip>
-                    <graphic>
-                        <ImageView fx:id="editModeImage" fitHeight="24" fitWidth="24" />
-                    </graphic>
                 </Button>
                 
                 <!-- Delete Mode Button -->
-                <Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode" text="DELETE" styleClass="menu-button">
+                <Button fx:id="deleteModeBtn" onAction="#toggleDeleteMode" text="DELETE">
                     <tooltip>
                         <Tooltip text="Switch to delete mode to remove tiles" />
                     </tooltip>
-                    <graphic>
-                        <ImageView fx:id="deleteModeImage" fitHeight="24" fitWidth="24" />
-                    </graphic>
                 </Button>
 
                 <!-- Clear Map Button -->
-                <Button fx:id="clearMapBtn" onAction="#clearMap" text="CLEAR MAP" styleClass="menu-button">
+                <Button fx:id="clearMapBtn" onAction="#clearMap" text="CLEAR MAP">
                     <tooltip>
                         <Tooltip text="Clear the entire map" />
                     </tooltip>
-                    <graphic>
-                        <ImageView fx:id="clearMapImage" fitHeight="24" fitWidth="24" />
-                    </graphic>
                 </Button>
 
                 <!-- Save Map Button -->
-                <Button fx:id="saveMapBtn" onAction="#saveMap" text="SAVE" styleClass="menu-button">
+                <Button fx:id="saveMapBtn" onAction="#saveMap" text="SAVE">
                     <tooltip>
                         <Tooltip text="Save the current map" />
                     </tooltip>
-                    <graphic>
-                        <ImageView fx:id="saveMapImage" fitHeight="24" fitWidth="24" />
-                    </graphic>
                 </Button>
                 <padding>
                     <Insets right="10" />

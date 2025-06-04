@@ -2,7 +2,6 @@ package com.example.controllers;
 
 import com.example.main.Main;
 import com.example.utils.StyleManager;
-import com.example.utils.MapEditorUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -166,10 +165,5 @@ public class SettingsController extends Controller implements Initializable {
         showFpsCb.setSelected(false);
         
         MapEditorUtils.showInfoAlert("Settings Reset", "Settings reset to defaults.", this);
-    }
-
-    @FXML
-    public void goToHomePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
     }
 }

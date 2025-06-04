@@ -34,21 +34,15 @@
         <Button fx:id="speedUp" onAction="#speedUp"
                 style="-fx-background-color: transparent;
                    -fx-background-size: contain;
-                   -fx-border-color: transparent;
-                   -fx-background-image: url('path_to_menu_button_image.png');"
-                styleClass="menu-button" />
+                   -fx-border-color: transparent;" />
         <Button fx:id="pauseButton" onAction="#pauseGame"
                 style="-fx-background-color: transparent;
                    -fx-background-size: contain;
-                   -fx-border-color: transparent;
-                   -fx-background-image: url('path_to_menu_button_image.png');"
-                styleClass="menu-button" />
+                   -fx-border-color: transparent;" />
         <Button fx:id="exitButton" onAction="#goToHomePage"
                 style="-fx-background-color: transparent;
                    -fx-background-size: contain;
-                   -fx-border-color: transparent;
-                   -fx-background-image: url('path_to_menu_button_image.png');"
-                styleClass="menu-button" />
+                   -fx-border-color: transparent;" />
     </HBox>
 
 </StackPane>

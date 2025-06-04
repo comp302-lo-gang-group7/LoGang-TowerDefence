@@ -1,16 +1,21 @@
 package com.example.utils;
 
+import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import javafx.scene.layout.Region;
 import javafx.scene.control.Alert;
 import javafx.stage.Popup;
 import javafx.stage.Window;
 import javafx.stage.Stage;
 
+/**
+ * Utility class to manage styles and cursor behavior consistently across the application.
+ */
 public class StyleManager {
     private static ImageCursor customCursor;
     
@@ -19,8 +24,7 @@ public class StyleManager {
             Image cursorImage = new Image(StyleManager.class.getResourceAsStream("/com/example/assets/ui/01.png"));
             customCursor = new ImageCursor(cursorImage);
         } catch (Exception e) {
-            System.out.println("Failed to load cursor image: " + e.getMessage());
-            customCursor = null;
+            System.err.println("Failed to load custom cursor: " + e.getMessage());
         }
     }
 
@@ -60,60 +64,43 @@ public class StyleManager {
             "-fx-border-radius: 8; " +
             "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
 
-    public static void setupButtonWithCustomCursor(Button button) {
-        // Set initial style
-        button.setStyle(BUTTON_NORMAL_STYLE);
-        if (customCursor != null) {
-            button.setCursor(customCursor);
-        }
-
-        // Add hover/exit listeners
-        button.setOnMouseEntered(e -> {
-            button.setStyle(BUTTON_HOVER_STYLE);
-            if (customCursor != null) {
-                button.setCursor(customCursor);
-            }
-            button.setScaleX(1.05);
-            button.setScaleY(1.05);
-        });
-
-        button.setOnMouseExited(e -> {
-            button.setStyle(BUTTON_NORMAL_STYLE);
-            if (customCursor != null) {
-                button.setCursor(customCursor);
-            }
-            button.setScaleX(1.0);
-            button.setScaleY(1.0);
-        });
-
-        // Add pressed/released listeners
-        button.setOnMousePressed(e -> {
-            button.setStyle(BUTTON_PRESSED_STYLE);
-            if (customCursor != null) {
-                button.setCursor(customCursor);
-            }
-            button.setScaleX(1.02);
-            button.setScaleY(1.02);
-        });
-
-        button.setOnMouseReleased(e -> {
-            if (button.isHover()) {
-                button.setStyle(BUTTON_HOVER_STYLE);
-                button.setScaleX(1.05);
-                button.setScaleY(1.05);
-            } else {
-                button.setStyle(BUTTON_NORMAL_STYLE);
-                button.setScaleX(1.0);
-                button.setScaleY(1.0);
-            }
-            if (customCursor != null) {
-                button.setCursor(customCursor);
-            }
-        });
+    /**
+     * Get the custom cursor instance.
+     */
+    public static Cursor getCustomCursor() {
+        return customCursor;
     }
 
-    public static ImageCursor getCustomCursor() {
-        return customCursor;
+    /**
+     * Apply the custom cursor to a button and set up its hover behavior.
+     */
+    public static void setupButtonWithCustomCursor(Button button) {
+        if (button == null) return;
+        
+        button.setCursor(customCursor);
+        button.setOnMouseEntered(e -> button.setCursor(customCursor));
+        button.setOnMouseExited(e -> button.setCursor(customCursor));
+    }
+
+    /**
+     * Apply the custom cursor to a scene.
+     */
+    public static void applyCustomCursorToScene(Scene scene) {
+        if (scene == null) return;
+        scene.setCursor(customCursor);
+    }
+
+    /**
+     * Apply the custom cursor to a node and all its children recursively.
+     */
+    public static void applyCustomCursorRecursively(Node node) {
+        if (node == null) return;
+        
+        node.setCursor(customCursor);
+        
+        if (node instanceof Region) {
+            ((Region) node).getChildrenUnmodifiable().forEach(StyleManager::applyCustomCursorRecursively);
+        }
     }
 
     /**
@@ -170,20 +157,6 @@ public class StyleManager {
             Stage stage = (Stage) window;
             stage.getScene().setCursor(customCursor);
             applyCustomCursorRecursively(stage.getScene().getRoot());
-        }
-    }
-
-    /**
-     * Recursively apply custom cursor to a node and all its children
-     */
-    public static void applyCustomCursorRecursively(Node node) {
-        if (customCursor != null) {
-            node.setCursor(customCursor);
-            
-            if (node instanceof Parent) {
-                Parent parent = (Parent) node;
-                parent.getChildrenUnmodifiable().forEach(StyleManager::applyCustomCursorRecursively);
-            }
         }
     }
 } 
