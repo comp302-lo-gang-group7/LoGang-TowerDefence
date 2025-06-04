@@ -158,10 +158,10 @@ public class MapEditorUtils {
         // Make the dialog draggable by the title bar
         setupDraggableStage(titleBar, dialogStage);
         
-        // Show dialog and wait for it to close
-        ViewManager.refreshMainSceneCursor();
-        dialogStage.showAndWait();
-        ViewManager.refreshMainSceneCursor();
+        // Show dialog (non-modal for this test)
+        ViewManager.refreshMainSceneCursor(); // Refresh main scene cursor BEFORE showing dialog
+        dialogStage.show();
+        ViewManager.refreshMainSceneCursor(); // Refresh main scene cursor IMMEDIATELY AFTER showing dialog
     }
 
     public static void showErrorAlert(String title, String message, Object controller) {
