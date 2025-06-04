@@ -6,7 +6,6 @@ import com.example.map.*;
 import com.example.main.Main;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
-import com.example.utils.StyleManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -145,7 +144,6 @@ public class GameScreenController extends Controller {
 
 		Pane container = new Pane();
 		container.setPrefSize(containerSize, containerSize);
-		StyleManager.applyCustomCursorRecursively(container);
 
 		double cx0 = containerSize / 2;
 		double cy0 = containerSize / 2;
@@ -192,8 +190,6 @@ public class GameScreenController extends Controller {
 							"-fx-padding: 0;" +
 							"-fx-border-color: transparent;"
 			);
-			btn.getStyleClass().add("menu-button");
-			StyleManager.setupButtonWithCustomCursor(btn);
 
 			btn.setLayoutX(bx);
 			btn.setLayoutY(by);
@@ -206,13 +202,16 @@ public class GameScreenController extends Controller {
 		}
 
 		contextMenu.getContent().add(container);
-		StyleManager.setupPopupWithCustomCursor(contextMenu);
 
-		double screenX = tileX * TILE_SIZE + TILE_SIZE / 2;
-		double screenY = tileY * TILE_SIZE + TILE_SIZE / 2;
+		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
+		double localY = tileY * TILE_SIZE + TILE_SIZE / 2.0;
+		Point2D screenCenter = towerLayer.localToScreen(localX, localY);
 
-		Point2D point = gameArea.localToScreen(screenX - containerSize / 2, screenY - containerSize / 2);
-		contextMenu.show(gameArea, point.getX(), point.getY());
+		contextMenu.show(
+				towerLayer.getScene().getWindow(),
+				screenCenter.getX() - containerSize / 2,
+				screenCenter.getY() - containerSize / 2
+		);
 	}
 
 
@@ -284,7 +283,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button's icon or tooltip
+		// Optional: change the button’s icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}

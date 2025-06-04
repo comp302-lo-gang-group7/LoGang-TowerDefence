@@ -23,9 +23,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,7 +35,7 @@ import java.util.ResourceBundle;
  * Controller for the load game page. It displays saved games and provides functionality
  * to load or delete them, or return to the home page.
  */
-public class GameConfigController extends Controller implements Initializable {
+public class GameConfigController implements Initializable {
 
 	// Button styling constants
 	private static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
@@ -198,17 +195,12 @@ public class GameConfigController extends Controller implements Initializable {
 				return;
 			}
 
-			if (MapStorageManager.mapExists(selectedMapName)) {
-				MapEditorUtils.showErrorAlert("Name Exists", "A map with this name already exists.", this);
-				return;
-			}
-
 			Main.getViewManager().switchToGameScreen(selectedMapName, startingGold);
 		}
 	}
 
 	@FXML
-	public void goToHomePage() {
+	private void goToHomePage() {
 		Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
 	}
 }
