@@ -2,6 +2,7 @@ package com.example.ui;
 
 import javafx.scene.image.Image;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ImageLoader
 {
@@ -14,7 +15,8 @@ public class ImageLoader
 		return cache.computeIfAbsent(path, p -> {
 			try
 			{
-				return new Image(ImageLoader.class.getResourceAsStream(p));
+				return new Image(Objects.requireNonNull(ImageLoader.class.getResourceAsStream(p), 
+					"Could not find image resource: " + p));
 			}
 			catch ( Exception e )
 			{

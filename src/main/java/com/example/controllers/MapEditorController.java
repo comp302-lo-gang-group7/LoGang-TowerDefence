@@ -124,34 +124,41 @@ public class MapEditorController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-    // 1) Resize and renderer
-    Main.getViewManager().resizeWindow(windowWidth, windowHeight);
-    tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
+        try {
+            // 1) Create the renderer first
+            tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
-    // 2) Allocate the backing array
-    mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
+            // 2) Resize window
+            Main.getViewManager().resizeWindow(windowWidth, windowHeight);
 
-    // 3) Build the static UI
-    setupMapManagementButtons();  // Do this first
-    setupButtonImages();          // Apply button styling
-    createTilePalette();
-    createMapGrid();
+            // 3) Allocate the backing array
+            mapTileViews = new TileView[MAP_ROWS][MAP_COLS];
 
-    // 4) Wire up the combo exactly once
-    setupMapSelectionComboBox();
+            // 4) Build the static UI
+            setupMapManagementButtons();  // Do this first
+            setupButtonImages();          // Apply button styling
+            createTilePalette();
+            createMapGrid();
 
-    // 5) If there's at least one saved map, select & load it
-    List<String> maps = MapStorageManager.listAvailableMaps();
-    if (!maps.isEmpty()) {
-        String first = maps.get(0);
-        mapSelectionCombo.setValue(first);
-        loadMapIntoGrid(first);
+            // 5) Wire up the combo exactly once
+            setupMapSelectionComboBox();
+
+            // 6) If there's at least one saved map, select & load it
+            List<String> maps = MapStorageManager.listAvailableMaps();
+            if (!maps.isEmpty()) {
+                String first = maps.get(0);
+                mapSelectionCombo.setValue(first);
+                loadMapIntoGrid(first);
+            }
+
+            // 7) Set initial mode
+            currentMode = EditorMode.EDIT;
+            updateModeButtonStyles();
+        } catch (Exception e) {
+            System.err.println("Error initializing MapEditorController: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
-
-    // 6) Set initial mode
-    currentMode = EditorMode.EDIT;
-    updateModeButtonStyles();
-}
 
     /**
      * After loading tiles into mapTileViews, scan for any 2×2 blocks
@@ -335,40 +342,37 @@ public class MapEditorController implements Initializable {
     }
 
     @FXML
-    private void saveMap() {
-        String mapName = mapSelectionCombo.getEditor().getText().trim();
-        if (mapName.isEmpty()) {
-            MapEditorUtils.showErrorAlert(
-                    "Missing Map Name",
-                    "Please enter a map name before saving.",
-                    "You can type a new name or pick an existing one from the dropdown.",
-                    this
-            );
+    public void saveMap() {
+        String mapName = mapSelectionCombo.getValue();
+        if (mapName == null || mapName.trim().isEmpty()) {
+            MapEditorUtils.showErrorAlert("No Map Name", 
+                "Please enter a map name in the dropdown.", 
+                "Type a name and press Enter to create a new map.", 
+                this);
             return;
         }
 
         try {
             MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, mapName);
-            refreshMapList();
-            mapSelectionCombo.setValue(mapName);
-            MapEditorUtils.showInfoAlert("Map Saved", "Successfully saved \"" + mapName + "\".", this);
+            MapEditorUtils.showInfoAlert("Map Saved", 
+                "Map \"" + mapName + "\" has been saved successfully.", 
+                this);
         } catch (Exception e) {
-            MapEditorUtils.showErrorAlert(
-                    "Save Failed",
-                    "Could not save map \"" + mapName + "\".",
-                    e.getMessage(),
-                    this
-            );
+            MapEditorUtils.showErrorAlert("Save Failed", 
+                "Could not save map \"" + mapName + "\".", 
+                e.getMessage(), 
+                this);
         }
     }
 
     private void setupButtonImages() {
-        // Load button images
-        homeImage.setImage(new Image(getClass().getResourceAsStream("/com/example/assets/ui/home_icon.png")));
-        editModeImage.setImage(new Image(getClass().getResourceAsStream("/com/example/assets/ui/edit_icon.png")));
-        deleteModeImage.setImage(new Image(getClass().getResourceAsStream("/com/example/assets/ui/delete_icon.png")));
-        clearMapImage.setImage(new Image(getClass().getResourceAsStream("/com/example/assets/ui/clear_icon.png")));
-        saveMapImage.setImage(new Image(getClass().getResourceAsStream("/com/example/assets/ui/save_icon.png")));
+        // Load button images using existing assets
+        String buttonPath = "/com/example/assets/ui/Button_Blue.png";
+        homeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        editModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        deleteModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        clearMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
+        saveMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
 
         // Apply StyleManager to all buttons
         StyleManager.setupButtonWithCustomCursor(homeBtn);
