@@ -26,6 +26,16 @@ public class MapStorageManager {
             new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
     /**
+     * Checks if a map with the given name exists.
+     * @param mapName The name of the map to check (without .json extension)
+     * @return true if the map exists, false otherwise
+     */
+    public static boolean mapExists(String mapName) {
+        Path filePath = MAP_DIRECTORY.resolve(mapName + ".json");
+        return Files.exists(filePath);
+    }
+
+    /**
      * Saves the given map as a JSON file to cot/data/maps.
      */
     public static void saveMap(TileView[][] mapTiles, int rows, int cols, String mapName) {
