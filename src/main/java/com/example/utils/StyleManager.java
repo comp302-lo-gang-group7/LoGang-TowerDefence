@@ -177,8 +177,10 @@ public class StyleManager {
     public static void applyCustomCursorToWindow(Window window) {
         if (customCursor != null && window instanceof Stage) {
             Stage stage = (Stage) window;
-            stage.getScene().setCursor(customCursor);
-            applyCustomCursorRecursively(stage.getScene().getRoot());
+            if (stage.getScene() != null) {
+                stage.getScene().setCursor(customCursor);
+                applyCustomCursorRecursively(stage.getScene().getRoot());
+            }
         }
     }
 
@@ -188,10 +190,11 @@ public class StyleManager {
     public static void applyCustomCursorRecursively(Node node) {
         if (customCursor != null) {
             node.setCursor(customCursor);
-            
             if (node instanceof Parent) {
                 Parent parent = (Parent) node;
-                parent.getChildrenUnmodifiable().forEach(StyleManager::applyCustomCursorRecursively);
+                for (Node child : parent.getChildrenUnmodifiable()) {
+                    applyCustomCursorRecursively(child);
+                }
             }
         }
     }
