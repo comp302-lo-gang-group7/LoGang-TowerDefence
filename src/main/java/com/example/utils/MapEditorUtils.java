@@ -112,10 +112,14 @@ public class MapEditorUtils {
     }
 
     public static void showErrorAlert(String title, String content, Controller controller) {
+        showErrorAlert(title, content, null, controller);
+    }
+
+    public static void showErrorAlert(String title, String content, String details, Controller controller) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
-        alert.setContentText(content);
+        alert.setContentText(content + (details != null ? "\n\nDetails: " + details : ""));
         
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.initStyle(StageStyle.UNDECORATED);
