@@ -37,6 +37,9 @@ public class ViewManager {
             // Create scene
             this.scene = new Scene(root);
 
+            // Load CSS
+            scene.getStylesheets().add(getClass().getResource("/com/example/css/styles.css").toExternalForm());
+
             // Set cursor using StyleManager
             scene.setCursor(StyleManager.getCustomCursor());
             applyCustomCursorToAll(root);

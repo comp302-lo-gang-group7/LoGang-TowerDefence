@@ -20,10 +20,10 @@
     <!-- Minimize button - transparent with just text -->
     <Button fx:id="minimizeBtn" text="_" onAction="#minimizeWindow"
             style="-fx-background-color: transparent; -fx-text-fill: #e8d9b5; -fx-font-weight: bold; 
-                   -fx-padding: 0 8 5 8; -fx-background-radius: 0; -fx-cursor: hand;" />
+                   -fx-padding: 0 8 5 8; -fx-background-radius: 0; -fx-cursor: hand;" styleClass="menu-button" />
     
     <!-- Close button - transparent with just text -->
     <Button fx:id="closeBtn" text="×" onAction="#closeWindow"
             style="-fx-background-color: transparent; -fx-text-fill: #e8d9b5; -fx-font-weight: bold; 
-                   -fx-font-size: 16px; -fx-padding: 0 8 0 8; -fx-background-radius: 0; -fx-cursor: hand;" />
+                   -fx-font-size: 16px; -fx-padding: 0 8 0 8; -fx-background-radius: 0; -fx-cursor: hand;" styleClass="menu-button" />
 </HBox>
