@@ -644,13 +644,33 @@ public class MapEditorController implements Initializable {
                 setupDragAndDrop(cell, tileView, r, c);
 
                 cell.setOnMouseClicked(e -> {
-                    if (!e.isConsumed() && e.getButton() == MouseButton.PRIMARY) {
-                        placeTile(r, c);
+                    if (!e.isConsumed()) {
+                        if (e.getButton() == MouseButton.PRIMARY) {
+                            // Left click - normal behavior based on current mode
+                            placeTile(r, c);
+                        } else if (e.getButton() == MouseButton.SECONDARY) {
+                            // Right click - always delete the tile regardless of mode
+                            deleteTile(r, c);
+                        }
                     }
                 });
 
                 mapGrid.add(cell, col, row);
             }
+        }
+    }
+
+    /**
+     * Deletes a tile at the specified position (resets to grass)
+     * Used for right-click deletion feature
+     */
+    private void deleteTile(int row, int col) {
+        // Check if the tile is part of a group
+        String groupKey = getGroupKeyForTile(row, col);
+        if (groupKey != null) {
+            resetGroup(groupKey);
+        } else {
+            resetTileToGrass(row, col);
         }
     }
 
