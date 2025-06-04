@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.scene.ImageCursor;
 import javafx.scene.image.Image;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 
 import java.io.IOException;
 
@@ -51,7 +52,7 @@ public class ViewManager {
             // Set cursor on both scene and root node
             if (customCursor != null) {
                 scene.setCursor(customCursor);
-                root.setCursor(customCursor);
+                applyCustomCursorToAll(root);
             }
             
             stage.setScene(scene);
@@ -62,6 +63,20 @@ public class ViewManager {
         } catch (Exception unexpectedError) {
             System.out.printf("An unexpected error occurred in ViewManager constructor, error: %s%n", unexpectedError);
             unexpectedError.printStackTrace();
+        }
+    }
+
+    private void applyCustomCursorToAll(Node node) {
+        if (customCursor != null) {
+            // Set cursor on the node itself
+            node.setCursor(customCursor);
+            
+            // If the node has children (is a Parent), recursively apply to all children
+            if (node instanceof Parent) {
+                for (Node child : ((Parent) node).getChildrenUnmodifiable()) {
+                    applyCustomCursorToAll(child);
+                }
+            }
         }
     }
 
@@ -79,7 +94,7 @@ public class ViewManager {
             
             // Ensure cursor is set on new content
             if (customCursor != null) {
-                content.setCursor(customCursor);
+                applyCustomCursorToAll(content);
             }
             
         } catch (IOException e) {
@@ -104,7 +119,7 @@ public class ViewManager {
 
             // Ensure cursor is set on new content
             if (customCursor != null) {
-                content.setCursor(customCursor);
+                applyCustomCursorToAll(content);
             }
 
         } catch (IOException e) {
