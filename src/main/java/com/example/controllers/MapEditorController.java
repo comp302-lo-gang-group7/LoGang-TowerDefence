@@ -360,6 +360,7 @@ public class MapEditorController implements Initializable {
             
             // Highlight the disconnected roads
             highlightDisconnectedRoads(disconnectedRoads);
+            
             return false;
         }
         
@@ -413,18 +414,27 @@ public class MapEditorController implements Initializable {
     private void saveMap() {
         String mapName = mapSelectionCombo.getEditor().getText().trim();
         if (mapName.isEmpty()) {
-            MapEditorUtils.showErrorAlert(
+            MapEditorUtils.showInfoAlert(
                     "Missing Map Name",
-                    "Please Enter a Map Name",
-                    "You can type a new name or pick an existing one from the dropdown.",
+                    "Please enter a map name before saving.",
                     this
             );
             return;
         }
-        
-        // Validate road connections before saving
-        if (!validateRoadConnections()) {
-            return; // Stop save process if validation fails
+
+        // Check for disconnected roads
+        List<Point2D> disconnectedRoads = RoadValidator.findDisconnectedRoads(mapTileViews);
+        if (!disconnectedRoads.isEmpty()) {
+            // Use the wooden-styled info alert instead of the red error alert
+            MapEditorUtils.showInfoAlert(
+                    "Invalid Road Connections",
+                    "Some road tiles are not properly connected. Please fix the highlighted paths before saving.",
+                    this
+            );
+            
+            // Highlight the disconnected roads
+            highlightDisconnectedRoads(disconnectedRoads);
+            return;
         }
 
         try {
@@ -433,10 +443,9 @@ public class MapEditorController implements Initializable {
             mapSelectionCombo.setValue(mapName);
             MapEditorUtils.showInfoAlert("Map Saved", "Successfully saved \"" + mapName + "\".", this);
         } catch (Exception e) {
-            MapEditorUtils.showErrorAlert(
+            MapEditorUtils.showInfoAlert(
                     "Save Failed",
-                    "Could Not Save Map",
-                    e.getMessage(),
+                    "Could not save map \"" + mapName + "\": " + e.getMessage(),
                     this
             );
         }
