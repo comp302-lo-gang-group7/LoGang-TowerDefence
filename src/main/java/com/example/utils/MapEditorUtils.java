@@ -153,6 +153,7 @@ public class MapEditorUtils {
         setupDraggableStage(titleBar, dialogStage);
         
         // Show dialog and wait for it to close
+        ViewManager.refreshMainSceneCursor();
         dialogStage.showAndWait();
         ViewManager.refreshMainSceneCursor();
     }
@@ -216,6 +217,7 @@ public class MapEditorUtils {
         // Apply custom cursor to the dialog window when it appears
         dialog.setOnShowing(e -> StyleManager.applyCustomCursorToWindow(dialog.getDialogPane().getScene().getWindow()));
 
+        ViewManager.refreshMainSceneCursor();
         dialog.showAndWait();
         ViewManager.refreshMainSceneCursor();
     }
