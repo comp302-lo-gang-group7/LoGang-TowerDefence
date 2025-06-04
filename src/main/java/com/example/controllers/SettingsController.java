@@ -2,6 +2,7 @@ package com.example.controllers;
 
 import com.example.main.Main;
 import com.example.utils.StyleManager;
+import com.example.utils.MapEditorUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
