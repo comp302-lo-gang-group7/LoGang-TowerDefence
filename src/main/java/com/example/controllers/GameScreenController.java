@@ -201,6 +201,9 @@ public class GameScreenController extends Controller {
 			container.getChildren().add(btn);
 		}
 
+		// Apply the custom cursor to the container and all its children
+		com.example.utils.StyleManager.applyCustomCursorRecursively(container);
+
 		contextMenu.getContent().add(container);
 
 		double localX = tileX * TILE_SIZE + TILE_SIZE / 2.0;
@@ -283,7 +286,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button’s icon or tooltip
+		// Optional: change the button's icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}
