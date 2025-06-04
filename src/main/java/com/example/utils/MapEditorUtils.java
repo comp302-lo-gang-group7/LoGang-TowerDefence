@@ -83,7 +83,7 @@ public class MapEditorUtils {
     /**
      * Shows a wood-styled info alert with custom title bar
      */
-    public static void showInfoAlert(String title, String content, MapEditorController controller) {
+    public static void showInfoAlert(String title, String content, Object controller) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -101,7 +101,7 @@ public class MapEditorUtils {
         alert.showAndWait();
     }
 
-    public static void showErrorAlert(String title, String header, String content, MapEditorController controller) {
+    public static void showErrorAlert(String title, String header, String content, Object controller) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(header);
@@ -124,7 +124,7 @@ public class MapEditorUtils {
     /**
      * Shows a fully custom styled confirmation dialog with our custom title bar
      */
-    public static boolean showCustomConfirmDialog(String title, String message, MapEditorController controller) {
+    public static boolean showCustomConfirmDialog(String title, String message, Object controller) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
