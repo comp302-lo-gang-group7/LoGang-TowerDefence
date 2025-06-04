@@ -82,237 +82,69 @@ public class MapEditorUtils {
     /**
      * Shows a wood-styled info alert with custom title bar
      */
-    public static void showInfoAlert(String title, String content, Object controller) {
-        if (suppressDialogs) return;
-
-        // Create a new stage for our custom dialog
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.APPLICATION_MODAL);
-        dialogStage.initStyle(StageStyle.UNDECORATED);
-        dialogStage.setTitle(title);
+    public static void showInfoAlert(String title, String content, MapEditorController controller) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
         
-        // Create the custom title bar
-        HBox titleBar = createTitleBar(dialogStage, title);
-        
-        // Create content area
-        VBox contentArea = new VBox(10);
-        contentArea.setAlignment(Pos.CENTER);
-        contentArea.setPadding(new Insets(20, 20, 20, 20));
-        contentArea.setStyle("-fx-background-color: #5d4228;");
-        
-        // Create content text
-        Text contentText = new Text(content);
-        contentText.setFont(Font.font("Segoe UI", 14));
-        contentText.setFill(Color.web("#e8d9b5"));
-        contentText.setWrappingWidth(350);
-        
-        // Create button area
-        HBox buttonBox = new HBox();
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(20, 0, 10, 0));
-        buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure consistent background
-        
-        // Create OK button (now with green styling)
-        Button okButton = new Button("OK");
-        okButton.setPrefWidth(100);
-        okButton.setPrefHeight(30);
-        okButton.setStyle(OK_BUTTON_NORMAL_STYLE);
-        StyleManager.setupButtonWithCustomCursor(okButton);
-        
-        // OK button click action
-        okButton.setOnAction(e -> dialogStage.close());
-        
-        // Add button to button area
-        buttonBox.getChildren().add(okButton);
-        
-        // Build the content area
-        contentArea.getChildren().addAll(contentText, buttonBox);
-        
-        // Create main container with title bar and content
-        VBox root = new VBox();
-        root.getChildren().addAll(titleBar, contentArea);
-        root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
-        
-        // Apply drop shadow effect
-        root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
-        
-        // Set up the scene with proper size to prevent button from being cut off
-        Scene dialogScene = new Scene(root, 400, 200);
-        // Ensure scene background is properly colored
-        dialogScene.setFill(Color.web("#5d4228"));
-        dialogStage.setScene(dialogScene);
+        // Apply custom styling
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #5d4228;");
+        dialogPane.lookup(".content.label").setStyle("-fx-text-fill: #e8d9b5;");
         
         // Apply custom cursor to the entire dialog
-        StyleManager.applyCustomCursorToWindow(dialogStage);
+        StyleManager.applyCustomCursorToDialog(dialogPane);
         
-        // Center on parent
-        dialogStage.centerOnScreen();
-        
-        // Make the dialog draggable by the title bar
-        setupDraggableStage(titleBar, dialogStage);
-        
-        // Show dialog and wait for it to close
-        dialogStage.showAndWait();
+        // Show the dialog
+        alert.showAndWait();
     }
 
-    public static void showErrorAlert(String title, String message, Object controller) {
-        showErrorAlert(title, message, null, controller);
-    }
-
-    public static void showErrorAlert(String title, String message, String details, Object controller) {
-        if (suppressDialogs) return;
-
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle(title);
-        dialog.setHeaderText(null);
-
-        StyleManager.applyCustomCursorRecursively(dialog.getDialogPane());
-
-        VBox contentBox = new VBox(15);
-        contentBox.setAlignment(Pos.CENTER);
-        contentBox.setPadding(new Insets(20, 20, 10, 20));
-
-        // Use red ribbon for errors
-        ImageView ribbonIcon = null;
-        String ribbonPath = "/com/example/assets/ui/Ribbon_Red_3Slides.png";
-
-        try {
-            Image iconImage = new Image(controller.getClass().getResourceAsStream(ribbonPath));
-            ribbonIcon = new ImageView(iconImage);
-            ribbonIcon.setFitWidth(200);
-            ribbonIcon.setFitHeight(40);
-            ribbonIcon.setPreserveRatio(true);
-        } catch (Exception e) {
-            System.err.println("Could not load ribbon image for error alert: " + e.getMessage());
-        }
-
-        Label headerLabel = new Label(message);
-        headerLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #C62828;");
-        headerLabel.setAlignment(Pos.CENTER);
-        headerLabel.setWrapText(true);
-
-        Label contentLabel = new Label(details);
-        contentLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
-        contentLabel.setWrapText(true);
-        contentLabel.setAlignment(Pos.CENTER);
-
-        if (ribbonIcon != null) {
-            contentBox.getChildren().addAll(ribbonIcon, headerLabel, contentLabel);
-        } else {
-            contentBox.getChildren().addAll(headerLabel, contentLabel);
-        }
-
-        dialog.getDialogPane().setStyle("-fx-background-color: #f4dede;");
-        contentBox.setStyle("-fx-background-color: #fbeaea; -fx-background-radius: 5; " +
-                "-fx-border-color: #c62828; -fx-border-width: 3; -fx-border-radius: 5;");
-
-        dialog.getDialogPane().setContent(contentBox);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-        Button okButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
-        StyleManager.setupButtonWithCustomCursor(okButton);
-
-        // Apply custom cursor to the dialog window when it appears
-        dialog.setOnShowing(e -> StyleManager.applyCustomCursorToWindow(dialog.getDialogPane().getScene().getWindow()));
-
-        dialog.showAndWait();
+    public static void showErrorAlert(String title, String header, String content, MapEditorController controller) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        
+        // Apply custom styling
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #5d4228;");
+        dialogPane.lookup(".content.label").setStyle("-fx-text-fill: #e8d9b5;");
+        dialogPane.lookup(".header-panel").setStyle("-fx-background-color: #4e331f;");
+        dialogPane.lookup(".header-panel .label").setStyle("-fx-text-fill: #e8d9b5;");
+        
+        // Apply custom cursor to the entire dialog
+        StyleManager.applyCustomCursorToDialog(dialogPane);
+        
+        // Show the dialog
+        alert.showAndWait();
     }
 
     /**
      * Shows a fully custom styled confirmation dialog with our custom title bar
      */
-    public static boolean showCustomConfirmDialog(String title, String content, Object controller) {
-        if (suppressDialogs) return true;
-
-        // Create a new stage for our custom dialog
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.APPLICATION_MODAL);
-        dialogStage.initStyle(StageStyle.UNDECORATED);
-        dialogStage.setTitle(title);
+    public static boolean showCustomConfirmDialog(String title, String message, MapEditorController controller) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
         
-        // Reset dialog result
-        dialogConfirmed = false;
+        // Apply custom styling
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-background-color: #5d4228;");
+        dialogPane.lookup(".content.label").setStyle("-fx-text-fill: #e8d9b5;");
         
-        // Create the custom title bar
-        HBox titleBar = createTitleBar(dialogStage, title);
-        
-        // Create content area
-        VBox contentArea = new VBox(10);
-        contentArea.setAlignment(Pos.CENTER);
-        contentArea.setPadding(new Insets(20, 20, 20, 20));
-        contentArea.setStyle("-fx-background-color: #5d4228;");
-        
-        // Create content text
-        Text contentText = new Text(content);
-        contentText.setFont(Font.font("Segoe UI", 14));
-        contentText.setFill(Color.web("#e8d9b5"));
-        contentText.setWrappingWidth(350);
-        
-        // Create button area
-        HBox buttonBox = new HBox(20);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(20, 0, 10, 0));
-        buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure consistent background
-        
-        // Create OK button (now green)
-        Button okButton = new Button("OK");
-        okButton.setPrefWidth(100);
-        okButton.setPrefHeight(30);
-        okButton.setStyle(OK_BUTTON_NORMAL_STYLE);
-        StyleManager.setupButtonWithCustomCursor(okButton);
-        
-        // OK button click action
-        okButton.setOnAction(e -> {
-            dialogConfirmed = true;
-            dialogStage.close();
+        // Style the buttons
+        alert.getButtonTypes().forEach(buttonType -> {
+            Button button = (Button) dialogPane.lookupButton(buttonType);
+            StyleManager.setupButtonWithCustomCursor(button);
         });
-        
-        // Create Cancel button (standard wood color)
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setPrefWidth(100);
-        cancelButton.setPrefHeight(30);
-        cancelButton.setStyle(BUTTON_NORMAL_STYLE);
-        StyleManager.setupButtonWithCustomCursor(cancelButton);
-        
-        // Cancel button click action
-        cancelButton.setOnAction(e -> {
-            dialogConfirmed = false;
-            dialogStage.close();
-        });
-        
-        // Add buttons to button area
-        buttonBox.getChildren().addAll(okButton, cancelButton);
-        
-        // Build the content area
-        contentArea.getChildren().addAll(contentText, buttonBox);
-        
-        // Create main container with title bar and content
-        VBox root = new VBox();
-        root.getChildren().addAll(titleBar, contentArea);
-        root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
-        
-        // Apply drop shadow effect
-        root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
-        
-        // Set up the scene with proper size to prevent buttons from being cut off
-        Scene dialogScene = new Scene(root, 400, 220);
-        // Ensure scene background is properly colored
-        dialogScene.setFill(Color.web("#5d4228"));
-        dialogStage.setScene(dialogScene);
         
         // Apply custom cursor to the entire dialog
-        StyleManager.applyCustomCursorToWindow(dialogStage);
+        StyleManager.applyCustomCursorToDialog(dialogPane);
         
-        // Center on parent
-        dialogStage.centerOnScreen();
-        
-        // Make the dialog draggable by the title bar
-        setupDraggableStage(titleBar, dialogStage);
-        
-        // Show dialog and wait for it to close
-        dialogStage.showAndWait();
-        
-        // Return result
-        return dialogConfirmed;
+        // Show the dialog and return the result
+        return alert.showAndWait().filter(t -> t == ButtonType.OK).isPresent();
     }
 
     /**

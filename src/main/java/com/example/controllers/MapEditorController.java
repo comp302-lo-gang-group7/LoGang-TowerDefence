@@ -58,11 +58,6 @@ public class MapEditorController implements Initializable {
     @FXML private Button deleteModeBtn;
     @FXML private Button clearMapBtn;
     @FXML private Button saveMapBtn;
-    @FXML private ImageView homeImage;
-    @FXML private ImageView editModeImage;
-    @FXML private ImageView deleteModeImage;
-    @FXML private ImageView clearMapImage;
-    @FXML private ImageView saveMapImage;
     @FXML private Button newMapBtn, deleteMapBtn;
 
     @FXML private ComboBox<String> mapSelectionCombo;
@@ -136,7 +131,7 @@ public class MapEditorController implements Initializable {
 
             // 4) Build the static UI
             setupMapManagementButtons();  // Do this first
-            setupButtonImages();          // Apply button styling
+            setupButtons();              // Apply button styling
             createTilePalette();
             createMapGrid();
 
@@ -365,15 +360,7 @@ public class MapEditorController implements Initializable {
         }
     }
 
-    private void setupButtonImages() {
-        // Load button images using existing assets
-        String buttonPath = "/com/example/assets/ui/Button_Blue.png";
-        homeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
-        editModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
-        deleteModeImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
-        clearMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
-        saveMapImage.setImage(new Image(getClass().getResourceAsStream(buttonPath)));
-
+    private void setupButtons() {
         // Apply StyleManager to all buttons
         StyleManager.setupButtonWithCustomCursor(homeBtn);
         StyleManager.setupButtonWithCustomCursor(editModeBtn);
@@ -891,14 +878,6 @@ public class MapEditorController implements Initializable {
         );
 
         if (confirmed) {
-            // Visual feedback
-            MapEditorUtils.animateButtonClick(
-                clearMapBtn,
-                clearMapImage,
-                BUTTON_BLUE_PRESSED,
-                this
-            );
-
             // Clear all tiles
             for (int row = 0; row < MAP_ROWS; row++) {
                 for (int col = 0; col < MAP_COLS; col++) {
