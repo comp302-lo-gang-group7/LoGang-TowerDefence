@@ -17,6 +17,12 @@ public class AnimatedEntity extends Entity {
 
     // path + movement
     private final List<Point> path;
+    /**
+     * Movement speed in pixels per second. The value itself remains constant
+     * for an entity but the actual distance covered each frame is scaled by the
+     * {@code dt} provided from {@link com.example.game.GameManager} which
+     * already applies any global game speed multiplier.
+     */
     private final double speed;
     private int waypointIndex = 0;  // Start at first waypoint
 
@@ -58,19 +64,33 @@ public class AnimatedEntity extends Entity {
 
         // 2) movement
         if (waypointIndex < path.size()) {
-            Point target = path.get(waypointIndex);
-            double dx = target.x() - x, dy = target.y() - y;
-            double dist = Math.hypot(dx, dy);
-            if (dist < 1) {
-                x = target.x();
-                y = target.y();
-                waypointIndex++;
-            } else {
-                // speed is in px/sec, dt already incorporates game‐speed
-                double moveDistance = speed * dt;
-                if (moveDistance > dist) moveDistance = dist;
-                x += dx / dist * moveDistance;
-                y += dy / dist * moveDistance;
+            double remaining = speed * dt;
+
+            while (remaining > 0 && waypointIndex < path.size()) {
+                Point target = path.get(waypointIndex);
+                double dx = target.x() - x, dy = target.y() - y;
+                double dist = Math.hypot(dx, dy);
+
+                if (dist < 1e-3) {
+                    // Snap to the waypoint and advance to the next
+                    x = target.x();
+                    y = target.y();
+                    waypointIndex++;
+                    continue;
+                }
+
+                if (remaining >= dist) {
+                    // Consume the entire segment and keep going with leftover distance
+                    x = target.x();
+                    y = target.y();
+                    remaining -= dist;
+                    waypointIndex++;
+                } else {
+                    // Move partially along the segment and finish the update
+                    x += dx / dist * remaining;
+                    y += dy / dist * remaining;
+                    remaining = 0;
+                }
             }
         }
     }
