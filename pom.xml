@@ -12,19 +12,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.13.0</junit.version>
-        <javafx.version>21.0.2</javafx.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
+            <version>25-ea+18</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
+            <version>25-ea+18</version>
         </dependency>
 
         <dependency>
@@ -99,10 +98,9 @@
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>
                             <jvmArgs>
-                                <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
-                                <jvmArg>--add-opens=java.base/sun.misc=ALL-UNNAMED</jvmArg>
-                                <jvmArg>-Dsun.java2d.renderer.useThreadLocal=false</jvmArg>
-                                <jvmArg>-Dsun.java2d.renderer=sun.java2d.marlin.MarlinRenderingEngine</jvmArg>
+                                <jvmArg>--add-opens=java.base/sun.nio.ch=ALL-UNNAMED</jvmArg>
+                                <jvmArg>--add-opens=java.base/sun.util.math=ALL-UNNAMED</jvmArg>
+                                <jvmArg>-Dprism.order=sw</jvmArg>
                             </jvmArgs>
                         </configuration>
                     </execution>
