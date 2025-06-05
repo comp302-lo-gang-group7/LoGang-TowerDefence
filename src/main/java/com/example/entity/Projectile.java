@@ -59,10 +59,13 @@ public class Projectile extends Entity {
 	public void update(double dt) {
 		if ( active )
 		{
-			if ( Math.abs(x - x2) + Math.abs(y - y2) > 1 )
-			{
-				x += dirx * speed * dt;
-				y += diry * speed * dt;
+			if ( Math.abs(x - x2) + Math.abs(y - y2) > 0.1 ) {
+			double magnitude = Math.hypot(x - x2, y - y2);
+			dirx = (x2 - x) / magnitude;
+			diry = (y2 - y) / magnitude;
+
+			x += dirx * speed * dt;
+			y += diry * speed * dt;
 			} else
 			{
 				this.active = false;
