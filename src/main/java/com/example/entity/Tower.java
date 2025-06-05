@@ -1,20 +1,16 @@
 package com.example.entity;
 
 import com.example.game.GameManager;
-import com.example.utils.Damageable;
-import com.example.utils.HP;
-import com.example.map.TileModel;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 public abstract class Tower extends Entity
 {
-	private final int baseDamage;
-	private int goldCost;
-	private int upgradeLevel;
+	public final int baseDamage;
+	public int goldCost;
+	public int upgradeLevel;
 
 	private double timerTime = 0;
-	private double attackCooldown = 2.0;
+	private double attackCooldown = 0.5;
 
 	public Tower(int x, int y, int baseHp, int baseDamage, int goldCost, int upgradeLevel)
 	{
@@ -29,7 +25,7 @@ public abstract class Tower extends Entity
 		if ( timerTime >= attackCooldown )
 		{
 			timerTime = 0;
-			GameManager.getInstance().spawnProjectile(this);
+			GameManager.getInstance().attackEntity(this);
 		}
 	}
 

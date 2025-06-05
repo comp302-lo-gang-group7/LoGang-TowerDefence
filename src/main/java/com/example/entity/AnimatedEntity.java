@@ -1,13 +1,11 @@
 package com.example.entity;
 
-import com.example.game.GameManager;
 import com.example.utils.Point;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 import java.util.List;
-import java.util.Collections;
 
 public class AnimatedEntity extends Entity {
     private final Image[] frames;
@@ -30,7 +28,7 @@ public class AnimatedEntity extends Entity {
                           double scaleFactor)
     {
         // Start at the first path point
-        super(path.get(0).x(), path.get(0).y(), hp);
+        super(path.getFirst().x(), path.getFirst().y(), hp);
         this.path = path;
         this.speed = speed;
         this.frameDuration = frameDuration;
@@ -73,8 +71,17 @@ public class AnimatedEntity extends Entity {
                 y += dy / dist * moveDistance;
             }
         }
+    }
 
-        //System.out.printf("%.2f %.2f\n", x, y);
+    public Point getFuturePosition()
+    {
+        int futureSteps = ( int ) (1.5 * speed);
+        if ( waypointIndex + futureSteps < path.size() ) {
+            return path.get(waypointIndex + futureSteps);
+        }
+        else {
+            return path.getLast();
+        }
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.example.game;
 
 import com.example.controllers.GameScreenController;
 import com.example.entity.*;
-import com.example.ui.ImageLoader;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
 import javafx.animation.AnimationTimer;
@@ -16,7 +15,8 @@ import java.util.List;
 public class GameManager {
     private final Canvas canvas;
     private final GraphicsContext gc;
-    private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>(), enemies = new LinkedList<>();
+    private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
+    private final List<AnimatedEntity> enemies = new LinkedList<>();
     private long lastTime = 0;
     private GameModel gameModel;
     private boolean paused = false;
@@ -148,22 +148,23 @@ public class GameManager {
         enemies.add(warrior);
     }
 
-    public void spawnProjectile(Tower tower) {
-        Entity e = nearestEnemy(tower);
+    public void attackEntity( Tower tower) {
+        AnimatedEntity e = nearestEnemy(tower);
         if (e != null)
         {
             System.out.printf("%.2f %.2f\n", e.getX(), e.getY());
-            Projectile p = new Projectile(
-                    ImageLoader.getImage("/com/example/assets/ui/Button_Red.png"),
-                    tower.getX() * GameScreenController.TILE_SIZE,
-                    tower.getY() * GameScreenController.TILE_SIZE,
-                    e.getX(),
-                    e.getY());
+            Point pos = e.getFuturePosition();
+            Projectile p = new Projectile(tower);
+            p.initialize(
+                    tower.getX() * GameScreenController.TILE_SIZE + 32,
+                    tower.getY() * GameScreenController.TILE_SIZE + 32,
+                    pos.x(),
+                    pos.y());
             this.delayedAdd.add(p);
         }
     }
 
-    private Entity nearestEnemy( Tower tower)
+    private AnimatedEntity nearestEnemy( Tower tower)
     {
         return enemies.stream()
                 .min(Comparator.comparing(e ->
@@ -174,13 +175,6 @@ public class GameManager {
     public void removeProjectile( Projectile p )
     {
         this.delayedRemove.add(p);
-    }
-
-    public void testProjectile( double x1, double y1, double x2, double y2 )
-    {
-        Projectile p = new Projectile(ImageLoader.getImage("/com/example/assets/ui/Button_Red.png"),
-                x1, y1, x2, y2);
-        this.delayedAdd.add(p);
     }
 
     public void placeTower( Tower tower)
