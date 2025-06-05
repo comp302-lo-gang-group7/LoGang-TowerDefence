@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.controllers.GameScreenController;
 import com.example.game.GameManager;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -11,6 +12,7 @@ public abstract class Tower extends Entity
 
 	private double timerTime = 0;
 	private double attackCooldown = 0.5;
+	private double minRadius = 5;
 
 	public Tower(int x, int y, int baseHp, int baseDamage, int goldCost, int upgradeLevel)
 	{
@@ -21,11 +23,17 @@ public abstract class Tower extends Entity
 	@Override
 	public void update( double dt )
 	{
-		timerTime += dt;
-		if ( timerTime >= attackCooldown )
+		if ( timerTime < attackCooldown )
+			timerTime += dt;
+		else
 		{
-			timerTime = 0;
-			GameManager.getInstance().attackEntity(this);
+			AnimatedEntity nearestEnemy = GameManager.getInstance().nearestEnemy(this);
+			if ( Math.abs(getX() * 64 - nearestEnemy.getX()) + Math.abs(getY() * 64 - nearestEnemy.getY())
+					<= minRadius * GameScreenController.TILE_SIZE)
+			{
+				timerTime = 0;
+				GameManager.getInstance().attackEntity(this, nearestEnemy);
+			}
 		}
 	}
 

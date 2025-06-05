@@ -5,7 +5,8 @@ import com.example.ui.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class Projectile extends Entity {
+public class Projectile extends Entity
+{
 
 	private final Image image;
 	private double x1, y1, x2, y2;
@@ -15,11 +16,13 @@ public class Projectile extends Entity {
 	private double speed = 10;
 	private double angle;
 	private boolean active;
+	private AnimatedEntity target;
+	private Tower parent;
 
-	public Projectile( Tower tower )
+	public Projectile( Tower parent, double x1, double y1, AnimatedEntity target )
 	{
 		super(0, 0, 0);
-		switch ( tower )
+		switch ( parent )
 		{
 			case ArcherTower _:
 				image = ImageLoader.getImage("/arrow.png");
@@ -34,17 +37,16 @@ public class Projectile extends Entity {
 				image = null;
 				throw new IllegalArgumentException();
 		}
-	}
 
-	public void initialize(double x1, double y1, double x2, double y2)
-	{
 		this.active = true;
 		this.x1 = x1;
 		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
 		this.x = x1;
 		this.y = y1;
+		this.target = target;
+		this.parent = parent;
+		this.x2 = target.getFuturePosition().x();
+		this.y2 = target.getFuturePosition().y();
 
 		dx = x2 - x1;
 		dy = y2 - y1;
@@ -59,26 +61,26 @@ public class Projectile extends Entity {
 	public void update(double dt) {
 		if ( active )
 		{
-			if ( Math.abs(x - x2) + Math.abs(y - y2) > 0.1 ) {
-			double magnitude = Math.hypot(x - x2, y - y2);
-			dirx = (x2 - x) / magnitude;
-			diry = (y2 - y) / magnitude;
-
-			x += dirx * speed * dt;
-			y += diry * speed * dt;
+			if ( Math.abs(x - x2) + Math.abs(y - y2) > 1 )
+			{
+				x += dirx * speed * dt;
+				y += diry * speed * dt;
 			} else
 			{
 				this.active = false;
+				target.applyDamage(parent.baseDamage);
 				GameManager.getInstance().removeProjectile(this);
 			}
 		}
 	}
 
 	@Override
-	public void render(GraphicsContext gc) {
+	public void render( GraphicsContext gc )
+	{
 		gc.save();
 		gc.translate(x, y);
 		gc.rotate(angle);
+		gc.scale(0.5, 0.5);
 		gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
 		gc.restore();
 	}

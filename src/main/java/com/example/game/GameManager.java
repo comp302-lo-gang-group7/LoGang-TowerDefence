@@ -148,23 +148,20 @@ public class GameManager {
         enemies.add(warrior);
     }
 
-    public void attackEntity( Tower tower) {
-        AnimatedEntity e = nearestEnemy(tower);
+    public void attackEntity( Tower tower, AnimatedEntity e ) {
         if (e != null)
         {
-            System.out.printf("%.2f %.2f\n", e.getX(), e.getY());
             Point pos = e.getFuturePosition();
-            Projectile p = new Projectile(tower);
-            p.initialize(
+            Projectile p = new Projectile(
+                    tower,
                     tower.getX() * GameScreenController.TILE_SIZE + 32,
                     tower.getY() * GameScreenController.TILE_SIZE + 32,
-                    pos.x(),
-                    pos.y());
+                    e);
             this.delayedAdd.add(p);
         }
     }
 
-    private AnimatedEntity nearestEnemy( Tower tower)
+    public AnimatedEntity nearestEnemy( Tower tower )
     {
         return enemies.stream()
                 .min(Comparator.comparing(e ->
