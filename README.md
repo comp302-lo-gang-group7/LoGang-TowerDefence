@@ -19,7 +19,7 @@ We highly recommend using **IntelliJ IDEA** as your main development environment
 ## Tools and Technologies
 
 - **Java 23+**
-- **JavaFX 23+**
+- **JavaFX 25**
 - **Maven** (for build and dependency management)
 - **IntelliJ IDEA** (IDE recommendation)
 - **Gluon Scene Builder** (for JavaFX UI design)
@@ -40,7 +40,8 @@ We highly recommend using **IntelliJ IDEA** as your main development environment
 
 1. Open the project in **IntelliJ IDEA**.
 2. Make sure you have **Maven** installed or let IntelliJ handle it automatically.
-3. Run the `Application.java` file located in the `com.example.main` package.
+3. Execute `mvn clean javafx:run` from the project root. The Maven plugin launches the
+   `com.example.game` module with `com.example.main.Main` as the main class.
 4. The game window should appear. From there, you can:
    - Start a new game
    - Create and edit maps
