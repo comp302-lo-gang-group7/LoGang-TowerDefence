@@ -152,8 +152,4 @@ public class GameManager {
     public double getGameSpeedMultiplier() {
         return gameSpeedMultiplier;
     }
-
-    public GameModel getGameModel() {
-        return gameModel;
-    }
 }
