@@ -1,22 +1,21 @@
 package com.example.entity;
 
-import com.example.game.GameManager;
+import java.util.List;
+
 import com.example.utils.Point;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
-import java.util.List;
-import java.util.Collections;
-
 public class AnimatedEntity extends Entity {
     private final Image[] frames;
-    private final double frameDuration;
-    private double frameTimer = 0;
-    private int currentFrame = 0;
+    protected final double frameDuration;
+    protected double frameTimer = 0;
+    protected int currentFrame = 0;
 
     // path + movement
-    private final List<Point> path;
+    protected final List<Point> path;
     /**
      * Movement speed in pixels per second. The value itself remains constant
      * for an entity but the actual distance covered each frame is scaled by the
@@ -24,7 +23,7 @@ public class AnimatedEntity extends Entity {
      * already applies any global game speed multiplier.
      */
     private final double speed;
-    private int waypointIndex = 0;  // Start at first waypoint
+    protected int waypointIndex = 0;  // Start at first waypoint
 
     public AnimatedEntity(Image spriteSheet,
                           int frameCount,

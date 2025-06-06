@@ -1,11 +1,25 @@
 package com.example.controllers;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import com.example.entity.ArcherTower;
+import com.example.entity.ArtilleryTower;
 import com.example.entity.Entity;
-import com.example.game.*;
-import com.example.map.*;
+import com.example.entity.MageTower;
+import com.example.entity.Tower;
+import com.example.game.GameManager;
+import com.example.game.GameModel;
 import com.example.main.Main;
+import com.example.map.Tile;
+import com.example.map.TileEnum;
+import com.example.map.TileModel;
+import com.example.map.TileView;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,11 +37,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Popup;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class GameScreenController extends Controller {
 	@FXML private Pane gameArea;
@@ -226,6 +235,24 @@ public class GameScreenController extends Controller {
 
 		tile.view = newView;
 		tile.model.setTower(towerType, 10, 5, 100);
+		
+		// Create and track the tower
+		Tower tower;
+		switch (towerType) {
+			case ARCHERY_TOWER:
+				tower = new ArcherTower(x, y, 10, 5, newView.getImage());
+				break;
+			case MAGE_TOWER:
+				tower = new MageTower(x, y, 10, 5, newView.getImage());
+				break;
+			case ARTILLERY_TOWER:
+				tower = new ArtilleryTower(x, y, 10, 5, newView.getImage());
+				break;
+			default:
+				return;
+		}
+		GameManager.getInstance().getGameModel().addTower(tower);
+		
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
 	}
 
@@ -238,6 +265,11 @@ public class GameScreenController extends Controller {
 
 		towerLayer.getChildren().remove(tile.view);
 		towerLayer.getChildren().add(newView);
+
+		// Remove tower from tracking
+		GameManager.getInstance().getGameModel().getTowers().removeIf(tower -> 
+			tower.getTileX() == x && tower.getTileY() == y
+		);
 
 		tile.view = newView;
 		tile.model.removeTower();
@@ -283,7 +315,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button’s icon or tooltip
+		// Optional: change the button's icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}

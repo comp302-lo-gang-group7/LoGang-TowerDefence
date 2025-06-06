@@ -1,15 +1,16 @@
 package com.example.game;
 
+import java.util.List;
+
 import com.example.entity.Entity;
 import com.example.entity.Goblin;
 import com.example.entity.Warrior;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
+
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-
-import java.util.List;
 
 public class GameManager {
     private final Canvas canvas;
@@ -150,5 +151,9 @@ public class GameManager {
 
     public double getGameSpeedMultiplier() {
         return gameSpeedMultiplier;
+    }
+
+    public GameModel getGameModel() {
+        return gameModel;
     }
 }
