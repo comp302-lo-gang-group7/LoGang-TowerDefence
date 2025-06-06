@@ -26,6 +26,7 @@ public class Warrior extends AnimatedEntity {
     private static final double SCALE_FACTOR = 0.5;
     private static final double ATTACK_RANGE = 50.0; // Distance at which warrior starts attacking castle
     private static final int ATTACK_DAMAGE = 5;
+    private static final double VERTICAL_OFFSET = -32; // Offset to center the sprite vertically
 
     private boolean isAttacking = false;
     private double attackTimer = 0;
@@ -73,6 +74,9 @@ public class Warrior extends AnimatedEntity {
 
     @Override
     public void render(GraphicsContext gc) {
+        double drawX = x - (FRAME_SIZE * SCALE_FACTOR) / 2;
+        double drawY = y - (FRAME_SIZE * SCALE_FACTOR) / 2 + VERTICAL_OFFSET;
+
         if (isAttacking) {
             // Render attack animation
             int sx = attackFrame * FRAME_SIZE;
@@ -80,7 +84,7 @@ public class Warrior extends AnimatedEntity {
             gc.drawImage(
                 ATTACK_SPRITE_SHEET,
                 sx, sy, FRAME_SIZE, FRAME_SIZE,
-                x - FRAME_SIZE * SCALE_FACTOR / 2, y - FRAME_SIZE * SCALE_FACTOR / 2,
+                drawX, drawY,
                 FRAME_SIZE * SCALE_FACTOR, FRAME_SIZE * SCALE_FACTOR
             );
         } else {
@@ -90,16 +94,16 @@ public class Warrior extends AnimatedEntity {
             gc.drawImage(
                 WALK_SPRITE_SHEET,
                 sx, sy, FRAME_SIZE, FRAME_SIZE,
-                x - FRAME_SIZE * SCALE_FACTOR / 2, y - FRAME_SIZE * SCALE_FACTOR / 2,
+                drawX, drawY,
                 FRAME_SIZE * SCALE_FACTOR, FRAME_SIZE * SCALE_FACTOR
             );
         }
 
-        // Draw health bar
+        // Draw health bar above the sprite
         double barWidth = FRAME_SIZE * SCALE_FACTOR * 0.3;
         double barHeight = 3;
         double barX = x - barWidth / 2;
-        double barY = y + FRAME_SIZE * SCALE_FACTOR * 0.7;
+        double barY = y - (FRAME_SIZE * SCALE_FACTOR) / 2 + VERTICAL_OFFSET - 5; // Position above the sprite
 
         double healthRatio = Math.max(0, Math.min(1, hp / 100.0));
         gc.setFill(javafx.scene.paint.Color.RED);
