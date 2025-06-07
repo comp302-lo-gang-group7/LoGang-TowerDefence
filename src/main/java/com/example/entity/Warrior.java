@@ -8,18 +8,13 @@ import com.example.utils.Point;
 import javafx.scene.image.Image;
 
 public class Warrior extends AnimatedEntity {
-    private static final Image WALK_SPRITE_SHEET;
-    private static final Image ATTACK_SPRITE_SHEET;
-    
-    static {
-        // Load images with transparency enabled
-        WALK_SPRITE_SHEET = new Image(
+    private static final Image WALK_SPRITE_SHEET = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/enemies/Warrior_Blue.png"))
-        );
-        ATTACK_SPRITE_SHEET = new Image(
+    );
+    
+    private static final Image ATTACK_SPRITE_SHEET = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/enemies/Hit_Animation.png"))
-        );
-    }
+    );
 
     private static final int WALK_FRAMES = 6;
     private static final int ATTACK_FRAMES = 6;  // 6 frames: standing + 4 attack + back to standing
