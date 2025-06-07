@@ -75,9 +75,14 @@ public class AnimatedEntity extends Entity {
 
     @Override
     public void update(double dt) {
-        // Check if we've reached the castle (last waypoint)
-        if (waypointIndex >= path.size() - 1) {
-            // We're at the castle, handle attack animation
+        // First check distance to castle
+        Point castle = path.get(path.size() - 1); // Castle position
+        double dx = castle.x() - x;
+        double dy = castle.y() - y;
+        double distToCastle = Math.hypot(dx, dy);
+
+        // If we're in attack range of the castle, stop and attack
+        if (distToCastle <= ATTACK_RANGE) {
             if (!isAttacking) {
                 isAttacking = true;
                 currentFrame = 0;  // Start with standing frame
@@ -106,48 +111,38 @@ public class AnimatedEntity extends Entity {
             return;
         }
 
-        // Normal movement animation
-        if (!isAttacking) {
-            frameTimer += dt;
-            if (frameTimer >= frameDuration) {
-                frameTimer -= frameDuration;
-                currentFrame = (currentFrame + 1) % walkFrames.length;
+        // If we're not attacking, handle movement
+        isAttacking = false;
+        frameTimer += dt;
+        if (frameTimer >= frameDuration) {
+            frameTimer -= frameDuration;
+            currentFrame = (currentFrame + 1) % walkFrames.length;
+        }
+
+        // Continue normal movement
+        double remaining = speed * dt;
+        while (remaining > 0 && waypointIndex < path.size()) {
+            Point target = path.get(waypointIndex);
+            dx = target.x() - x;
+            dy = target.y() - y;
+            double dist = Math.hypot(dx, dy);
+
+            if (dist < 1e-3) {
+                x = target.x();
+                y = target.y();
+                waypointIndex++;
+                continue;
             }
 
-            // Check if we're close to the castle
-            Point target = path.get(path.size() - 1); // Castle position
-            double dx = target.x() - x;
-            double dy = target.y() - y;
-            double distToCastle = Math.hypot(dx, dy);
-
-            if (distToCastle > ATTACK_RANGE) {
-                // Continue normal movement
-                double remaining = speed * dt;
-
-                while (remaining > 0 && waypointIndex < path.size()) {
-                    target = path.get(waypointIndex);
-                    dx = target.x() - x;
-                    dy = target.y() - y;
-                    double dist = Math.hypot(dx, dy);
-
-                    if (dist < 1e-3) {
-                        x = target.x();
-                        y = target.y();
-                        waypointIndex++;
-                        continue;
-                    }
-
-                    if (remaining >= dist) {
-                        x = target.x();
-                        y = target.y();
-                        remaining -= dist;
-                        waypointIndex++;
-                    } else {
-                        x += dx / dist * remaining;
-                        y += dy / dist * remaining;
-                        remaining = 0;
-                    }
-                }
+            if (remaining >= dist) {
+                x = target.x();
+                y = target.y();
+                remaining -= dist;
+                waypointIndex++;
+            } else {
+                x += dx / dist * remaining;
+                y += dy / dist * remaining;
+                remaining = 0;
             }
         }
     }
