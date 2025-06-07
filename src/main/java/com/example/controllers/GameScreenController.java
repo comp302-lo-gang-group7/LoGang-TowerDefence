@@ -41,7 +41,7 @@ public class GameScreenController extends Controller {
 	private boolean isPaused = false;
 
 
-	private static final int TILE_SIZE = 64;
+	public static final int TILE_SIZE = 64;
 
     private Tile[][] tiles;
     private TileRenderer renderer;
@@ -107,6 +107,7 @@ public class GameScreenController extends Controller {
 		this.gameManager = GameManager.getInstance();
 		gameManager.spawnGoblin();
 		gameManager.spawnWarrior();
+
 		gameManager.start();
 	}
 

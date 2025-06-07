@@ -1,20 +1,22 @@
 package com.example.game;
 
-import com.example.entity.Entity;
-import com.example.entity.Goblin;
-import com.example.entity.Warrior;
+import com.example.controllers.GameScreenController;
+import com.example.entity.*;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class GameManager {
     private final Canvas canvas;
     private final GraphicsContext gc;
-    private final List<Entity> entities;
+    private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
+    private final List<AnimatedEntity> enemies = new LinkedList<>();
     private long lastTime = 0;
     private GameModel gameModel;
     private boolean paused = false;
@@ -69,6 +71,8 @@ public class GameManager {
                 for (Entity e : entities) {
                     e.update(dt);
                 }
+                entities.addAll(delayedAdd);
+                entities.removeAll(delayedRemove);
 
                 // render as before…
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -128,6 +132,7 @@ public class GameManager {
         Goblin goblin = new Goblin(path, 50, 100);
 
         this.entities.add(goblin);
+        enemies.add(goblin);
     }
 
     public void spawnWarrior() {
@@ -140,6 +145,43 @@ public class GameManager {
         Warrior warrior = new Warrior(path, 40, 100);
 
         this.entities.add(warrior);
+        enemies.add(warrior);
+    }
+
+    public void attackEntity( Tower tower, AnimatedEntity e ) {
+        if (e != null)
+        {
+            Point pos = e.getFuturePosition();
+            Projectile p = new Projectile(
+                    tower,
+                    tower.getX() * GameScreenController.TILE_SIZE + 32,
+                    tower.getY() * GameScreenController.TILE_SIZE + 32,
+                    e);
+            this.delayedAdd.add(p);
+        }
+    }
+
+    public AnimatedEntity nearestEnemy( Tower tower )
+    {
+        return enemies.stream()
+                .min(Comparator.comparing(e ->
+                        Math.pow(e.getX() - tower.getX(), 2) + Math.pow(e.getY() - tower.getY(), 2)))
+                .orElse(null);
+    }
+
+    public void removeProjectile( Projectile p )
+    {
+        this.delayedRemove.add(p);
+    }
+
+    public void placeTower( Tower tower)
+    {
+        this.entities.add(tower);
+    }
+
+    public void removeTower( Tower tower )
+    {
+        this.entities.remove(tower);
     }
 
     public void stop() {
