@@ -150,6 +150,12 @@ public class AnimatedEntity extends Entity {
 
     @Override
     public void render(GraphicsContext gc) {
+        // Save the current state
+        javafx.scene.effect.BlendMode oldBlendMode = gc.getGlobalBlendMode();
+        
+        // Set blend mode for proper transparency
+        gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.SRC_OVER);
+
         // Get the current frame based on state
         Image currentSprite;
         if (isAttacking) {
@@ -182,17 +188,37 @@ public class AnimatedEntity extends Entity {
         // Foreground (green)
         gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
+
+        // Restore the original blend mode
+        gc.setGlobalBlendMode(oldBlendMode);
     }
 
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
+        // Create a canvas with transparent background
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
         GraphicsContext gc = tempCanvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, targetWidth, targetHeight);
-        gc.drawImage(src, 0, 0, targetWidth, targetHeight);
+        
+        // Save the current state
+        javafx.scene.effect.BlendMode oldBlendMode = gc.getGlobalBlendMode();
+        
+        try {
+            // Clear with transparent background
+            gc.clearRect(0, 0, targetWidth, targetHeight);
+            
+            // Set global blend mode to handle transparency correctly
+            gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.SRC_OVER);
+            
+            // Draw the image with preserved transparency
+            gc.drawImage(src, 0, 0, targetWidth, targetHeight);
 
-        javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
-        params.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            // Create snapshot parameters with transparent background
+            javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
+            params.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
-        return tempCanvas.snapshot(params, null);
+            return tempCanvas.snapshot(params, null);
+        } finally {
+            // Restore the original blend mode
+            gc.setGlobalBlendMode(oldBlendMode);
+        }
     }
 }
