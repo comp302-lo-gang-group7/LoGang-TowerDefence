@@ -1,10 +1,11 @@
 package com.example.entity;
 
-import com.example.utils.Point;
-import javafx.scene.image.Image;
-
 import java.util.List;
 import java.util.Objects;
+
+import com.example.utils.Point;
+
+import javafx.scene.image.Image;
 
 /**
  * A goblin enemy that animates from a horizontal sprite sheet.
@@ -23,6 +24,7 @@ public class Goblin extends AnimatedEntity {
                   double speed,
                   int hp)
     {
-        super(SPRITE_SHEET, FRAMES, FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
+        super(SPRITE_SHEET, SPRITE_SHEET, FRAMES, FRAMES, 
+              FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
     }
 }
