@@ -8,19 +8,26 @@ import com.example.utils.Point;
 import javafx.scene.image.Image;
 
 public class Warrior extends AnimatedEntity {
-    private static final Image SPRITE_SHEET = new Image(
+    private static final Image WALK_SPRITE_SHEET = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/enemies/Warrior_Blue.png"))
     );
+    
+    private static final Image ATTACK_SPRITE_SHEET = new Image(
+            Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/enemies/Hit_Animation.png"))
+    );
 
-    private static final int FRAMES = 6;
+    private static final int WALK_FRAMES = 6;
+    private static final int ATTACK_FRAMES = 6;  // 6 frames: standing + 4 attack + back to standing
     private static final int FRAME_SIZE = 192;
-    private static final double FRAME_SECONDS = 0.1;
+    private static final double FRAME_SECONDS = 0.1;  // Normal walking speed
+    private static final double ATTACK_FRAME_SECONDS = 0.15;  // Slightly slower for attack animation
     private static final double SCALE_FACTOR = 0.5;
 
     public Warrior(List<Point> path,
                   double speed,
                   int hp)
     {
-        super(SPRITE_SHEET, FRAMES, FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
+        super(WALK_SPRITE_SHEET, ATTACK_SPRITE_SHEET, WALK_FRAMES, ATTACK_FRAMES, 
+              FRAME_SIZE, ATTACK_FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
     }
 }

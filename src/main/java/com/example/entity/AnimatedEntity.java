@@ -9,10 +9,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 public class AnimatedEntity extends Entity {
-    private final Image[] frames;
+    private final Image[] walkFrames;
+    private final Image[] attackFrames;
     private final double frameDuration;
     private double frameTimer = 0;
     private int currentFrame = 0;
+    private boolean isFirstAttackFrame = true;
 
     // path + movement
     private final List<Point> path;
@@ -24,71 +26,127 @@ public class AnimatedEntity extends Entity {
      */
     private final double speed;
     private int waypointIndex = 0;  // Start at first waypoint
+    
+    // Attack animation state
+    private boolean isAttacking = false;
+    private static final double ATTACK_RANGE = 50.0; // Distance to start attacking
+    private static final double ATTACK_DURATION = 0.8; // Time for one attack sequence
+    private double attackTimer = 0;
 
-    public AnimatedEntity(Image spriteSheet,
-                          int frameCount,
-                          int frameSize,
-                          double frameDuration,
-                          List<Point> path,
-                          double speed,
-                          int hp,
-                          double scaleFactor)
+    public AnimatedEntity(Image walkSpriteSheet,
+                         Image attackSpriteSheet,
+                         int walkFrameCount,
+                         int attackFrameCount,
+                         int frameSize,
+                         double frameDuration,
+                         List<Point> path,
+                         double speed,
+                         int hp,
+                         double scaleFactor)
     {
         // Start at the first path point
         super(path.get(0).x(), path.get(0).y(), hp);
         this.path = path;
         this.speed = speed;
         this.frameDuration = frameDuration;
-        this.frames = new Image[frameCount];
-
-        // slice sprite‐sheet + scaling
-        for (int i = 0; i < frameCount; i++) {
+        
+        // Initialize walking frames
+        this.walkFrames = new Image[walkFrameCount];
+        for (int i = 0; i < walkFrameCount; i++) {
             Image raw = new WritableImage(
-                    spriteSheet.getPixelReader(),
+                    walkSpriteSheet.getPixelReader(),
                     i * frameSize, 0,
                     frameSize, frameSize
             );
-            frames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
+            walkFrames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
+        }
+
+        // Initialize attack frames
+        this.attackFrames = new Image[attackFrameCount];
+        for (int i = 0; i < attackFrameCount; i++) {
+            Image raw = new WritableImage(
+                    attackSpriteSheet.getPixelReader(),
+                    i * frameSize, 0,
+                    frameSize, frameSize
+            );
+            attackFrames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
         }
     }
 
     @Override
     public void update(double dt) {
-        // 1) animation
-        frameTimer += dt;
-        if (frameTimer >= frameDuration) {
-            frameTimer -= frameDuration;
-            currentFrame = (currentFrame + 1) % frames.length;
+        // Check if we've reached the castle (last waypoint)
+        if (waypointIndex >= path.size() - 1) {
+            // We're at the castle, handle attack animation
+            if (!isAttacking) {
+                isAttacking = true;
+                currentFrame = 0;  // Start with standing frame
+                isFirstAttackFrame = true;
+                attackTimer = 0;
+            }
+
+            attackTimer += dt;
+            if (attackTimer >= frameDuration) {
+                attackTimer = 0;
+                
+                if (isFirstAttackFrame) {
+                    // After showing the first frame (standing) for one duration,
+                    // move to the attack sequence
+                    currentFrame = 1;
+                    isFirstAttackFrame = false;
+                } else {
+                    // Cycle through attack frames (1-4), then back to standing (0)
+                    currentFrame++;
+                    if (currentFrame >= attackFrames.length) {
+                        currentFrame = 0;  // Back to standing frame
+                        isFirstAttackFrame = true;  // Reset the sequence
+                    }
+                }
+            }
+            return;
         }
 
-        // 2) movement
-        if (waypointIndex < path.size()) {
-            double remaining = speed * dt;
+        // Normal movement animation
+        if (!isAttacking) {
+            frameTimer += dt;
+            if (frameTimer >= frameDuration) {
+                frameTimer -= frameDuration;
+                currentFrame = (currentFrame + 1) % walkFrames.length;
+            }
 
-            while (remaining > 0 && waypointIndex < path.size()) {
-                Point target = path.get(waypointIndex);
-                double dx = target.x() - x, dy = target.y() - y;
-                double dist = Math.hypot(dx, dy);
+            // Check if we're close to the castle
+            Point target = path.get(path.size() - 1); // Castle position
+            double dx = target.x() - x;
+            double dy = target.y() - y;
+            double distToCastle = Math.hypot(dx, dy);
 
-                if (dist < 1e-3) {
-                    // Snap to the waypoint and advance to the next
-                    x = target.x();
-                    y = target.y();
-                    waypointIndex++;
-                    continue;
-                }
+            if (distToCastle > ATTACK_RANGE) {
+                // Continue normal movement
+                double remaining = speed * dt;
 
-                if (remaining >= dist) {
-                    // Consume the entire segment and keep going with leftover distance
-                    x = target.x();
-                    y = target.y();
-                    remaining -= dist;
-                    waypointIndex++;
-                } else {
-                    // Move partially along the segment and finish the update
-                    x += dx / dist * remaining;
-                    y += dy / dist * remaining;
-                    remaining = 0;
+                while (remaining > 0 && waypointIndex < path.size()) {
+                    target = path.get(waypointIndex);
+                    dx = target.x() - x;
+                    dy = target.y() - y;
+                    double dist = Math.hypot(dx, dy);
+
+                    if (dist < 1e-3) {
+                        x = target.x();
+                        y = target.y();
+                        waypointIndex++;
+                        continue;
+                    }
+
+                    if (remaining >= dist) {
+                        x = target.x();
+                        y = target.y();
+                        remaining -= dist;
+                        waypointIndex++;
+                    } else {
+                        x += dx / dist * remaining;
+                        y += dy / dist * remaining;
+                        remaining = 0;
+                    }
                 }
             }
         }
@@ -96,19 +154,27 @@ public class AnimatedEntity extends Entity {
 
     @Override
     public void render(GraphicsContext gc) {
-        // 1. Draw the sprite centered on entity position
-        double spriteWidth = frames[currentFrame].getWidth();
-        double spriteHeight = frames[currentFrame].getHeight();
+        // Get the current frame based on state
+        Image currentSprite;
+        if (isAttacking) {
+            currentSprite = attackFrames[currentFrame];
+        } else {
+            currentSprite = walkFrames[currentFrame];
+        }
+
+        // Draw the sprite centered on entity position
+        double spriteWidth = currentSprite.getWidth();
+        double spriteHeight = currentSprite.getHeight();
         double drawX = x - spriteWidth / 2;
         double drawY = y - spriteHeight / 2;
 
-        gc.drawImage(frames[currentFrame], drawX, drawY);
+        gc.drawImage(currentSprite, drawX, drawY);
 
-        // 2. Draw smaller health bar just above the bottom of the sprite
-        double barWidth = spriteWidth * 0.3;     // narrower
-        double barHeight = 3;                    // thinner
+        // Draw health bar
+        double barWidth = spriteWidth * 0.3;
+        double barHeight = 3;
         double barX = drawX + (spriteWidth - barWidth) / 2;
-        double barY = drawY + (spriteHeight * 0.7);  // closer to sprite bottom
+        double barY = drawY + (spriteHeight * 0.7);
 
         double healthRatio = Math.max(0, Math.min(1, hp / 100.0));
         double filledWidth = barWidth * healthRatio;
@@ -122,12 +188,10 @@ public class AnimatedEntity extends Entity {
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
     }
 
-
-
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
         GraphicsContext gc = tempCanvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, targetWidth, targetHeight); // ensure it's transparent
+        gc.clearRect(0, 0, targetWidth, targetHeight);
         gc.drawImage(src, 0, 0, targetWidth, targetHeight);
 
         javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
