@@ -21,13 +21,14 @@ public class Warrior extends AnimatedEntity {
     private static final int FRAME_SIZE = 192;
     private static final double FRAME_SECONDS = 0.1;  // Normal walking speed
     private static final double ATTACK_FRAME_SECONDS = 0.15;  // Slightly slower for attack animation
-    private static final double SCALE_FACTOR = 0.5;
+    private static final double WALK_SCALE_FACTOR = 0.5;
+    private static final double ATTACK_SCALE_FACTOR = 0.5;  // Match the walk animation size
 
     public Warrior(List<Point> path,
                   double speed,
                   int hp)
     {
         super(WALK_SPRITE_SHEET, ATTACK_SPRITE_SHEET, WALK_FRAMES, ATTACK_FRAMES, 
-              FRAME_SIZE, ATTACK_FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
+              FRAME_SIZE, ATTACK_FRAME_SECONDS, path, speed, hp, WALK_SCALE_FACTOR, ATTACK_SCALE_FACTOR);
     }
 }

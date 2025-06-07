@@ -25,6 +25,6 @@ public class Goblin extends AnimatedEntity {
                   int hp)
     {
         super(SPRITE_SHEET, SPRITE_SHEET, FRAMES, FRAMES, 
-              FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
+              FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR, SCALE_FACTOR);
     }
 }

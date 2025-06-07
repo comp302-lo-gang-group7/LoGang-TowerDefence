@@ -42,7 +42,8 @@ public class AnimatedEntity extends Entity {
                          List<Point> path,
                          double speed,
                          int hp,
-                         double scaleFactor)
+                         double walkScaleFactor,
+                         double attackScaleFactor)
     {
         // Start at the first path point
         super(path.get(0).x(), path.get(0).y(), hp);
@@ -58,7 +59,7 @@ public class AnimatedEntity extends Entity {
                     i * frameSize, 0,
                     frameSize, frameSize
             );
-            walkFrames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
+            walkFrames[i] = scaleImage(raw, frameSize * walkScaleFactor, frameSize * walkScaleFactor);
         }
 
         // Initialize attack frames
@@ -69,7 +70,7 @@ public class AnimatedEntity extends Entity {
                     i * frameSize, 0,
                     frameSize, frameSize
             );
-            attackFrames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
+            attackFrames[i] = scaleImage(raw, frameSize * attackScaleFactor, frameSize * attackScaleFactor);
         }
     }
 
