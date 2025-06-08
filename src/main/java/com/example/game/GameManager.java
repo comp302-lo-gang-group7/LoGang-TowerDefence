@@ -17,6 +17,8 @@ public class GameManager {
     private final GraphicsContext gc;
     private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
     private final List<AnimatedEntity> enemies = new LinkedList<>();
+    private List<int[]> waves = new LinkedList<>();
+    private int currentWave = 0;
     private long lastTime = 0;
     private GameModel gameModel;
     private boolean paused = false;
@@ -32,6 +34,11 @@ public class GameManager {
             instance.stop();
         }
         instance = new GameManager(canvas, entities, model);
+    }
+
+    public void setWaves(List<int[]> waves) {
+        this.waves = waves != null ? waves : new LinkedList<>();
+        this.currentWave = 0;
     }
 
     public static GameManager getInstance() {
@@ -71,8 +78,23 @@ public class GameManager {
                 for (Entity e : entities) {
                     e.update(dt);
                 }
+
+                // remove dead enemies
+                for (AnimatedEntity enemy : new LinkedList<>(enemies)) {
+                    if (enemy.getHP() <= 0) {
+                        delayedRemove.add(enemy);
+                        enemies.remove(enemy);
+                    }
+                }
+
                 entities.addAll(delayedAdd);
                 entities.removeAll(delayedRemove);
+
+                // if wave cleared, spawn next
+                if (enemies.isEmpty() && currentWave < waves.size()) {
+                    spawnWave(waves.get(currentWave));
+                    currentWave++;
+                }
 
                 // render as before…
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -123,29 +145,42 @@ public class GameManager {
     }
 
     public void spawnGoblin() {
+        spawnGoblin(50, 100);
+    }
+
+    public void spawnGoblin(double speed, int hp) {
         int[][] grid = gameModel.getMap().getExpandedGrid();
         Point start = PathFinder.findRandomSpawnPoint(grid);
         Point goal = PathFinder.findCastlePoint(grid);
         List<Point> path = PathFinder.findPath(grid, start, goal);
 
-        // Higher speed value for better visibility of movement
-        Goblin goblin = new Goblin(path, 50, 100);
+        Goblin goblin = new Goblin(path, speed, hp);
 
         this.entities.add(goblin);
         enemies.add(goblin);
     }
 
     public void spawnWarrior() {
+        spawnWarrior(40, 100);
+    }
+
+    public void spawnWarrior(double speed, int hp) {
         int[][] grid = gameModel.getMap().getExpandedGrid();
         Point start = PathFinder.findRandomSpawnPoint(grid);
         Point goal = PathFinder.findCastlePoint(grid);
         List<Point> path = PathFinder.findPath(grid, start, goal);
 
-        // Higher speed value for better visibility of movement
-        Warrior warrior = new Warrior(path, 40, 100);
+        Warrior warrior = new Warrior(path, speed, hp);
 
         this.entities.add(warrior);
         enemies.add(warrior);
+    }
+
+    private void spawnWave(int[] cfg) {
+        int goblins = cfg.length > 0 ? cfg[0] : 0;
+        int warriors = cfg.length > 1 ? cfg[1] : 0;
+        for(int i=0;i<goblins;i++) spawnGoblin();
+        for(int i=0;i<warriors;i++) spawnWarrior();
     }
 
     public void attackEntity( Tower tower, AnimatedEntity e ) {

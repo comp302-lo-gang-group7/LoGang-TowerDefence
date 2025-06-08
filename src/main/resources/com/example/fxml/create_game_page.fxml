@@ -92,7 +92,7 @@
             <!-- Game mode buttons -->
             <Button fx:id="defaultGameBtn" text="Create Default Game" onAction="#goToDefaultGamePage" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="customGameBtn" text="Create Custom Game" 
+            <Button fx:id="customGameBtn" text="Create Custom Game" onAction="#goToCustomGamePage"
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <Button fx:id="backBtn" text="Back to Main Menu" onAction="#goToHomePage" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
