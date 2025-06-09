@@ -26,7 +26,7 @@ public class AnimatedEntity extends Entity {
      */
     private final double speed;
     private int waypointIndex = 0;  // Start at first waypoint
-    
+
     // Attack animation state
     private boolean isAttacking = false;
     private static final double ATTACK_RANGE = 50.0; // Distance to start attacking
@@ -37,15 +37,13 @@ public class AnimatedEntity extends Entity {
                          Image attackSpriteSheet,
                          int walkFrameCount,
                          int attackFrameCount,
-                         int frameSize,
+                         int commonFrameSize,   // Unified frame size
                          double frameDuration,
                          List<Point> path,
                          double speed,
                          int hp,
-                         double walkScaleFactor,
-                         double attackScaleFactor)
+                         double commonScaleFactor) // Unified scale factor
     {
-        // Start at the first path point
         super(path.get(0).x(), path.get(0).y(), hp);
         this.path = path;
         this.speed = speed;
@@ -56,10 +54,10 @@ public class AnimatedEntity extends Entity {
         for (int i = 0; i < walkFrameCount; i++) {
             Image raw = new WritableImage(
                     walkSpriteSheet.getPixelReader(),
-                    i * frameSize, 0,
-                    frameSize, frameSize
+                    i * commonFrameSize, 0,
+                    commonFrameSize, commonFrameSize
             );
-            walkFrames[i] = scaleImage(raw, frameSize * walkScaleFactor, frameSize * walkScaleFactor);
+            walkFrames[i] = scaleImage(raw, commonFrameSize * commonScaleFactor, commonFrameSize * commonScaleFactor);
         }
 
         // Initialize attack frames
@@ -67,10 +65,10 @@ public class AnimatedEntity extends Entity {
         for (int i = 0; i < attackFrameCount; i++) {
             Image raw = new WritableImage(
                     attackSpriteSheet.getPixelReader(),
-                    i * frameSize, 0,
-                    frameSize, frameSize
+                    i * commonFrameSize, 0,
+                    commonFrameSize, commonFrameSize
             );
-            attackFrames[i] = scaleImage(raw, frameSize * attackScaleFactor, frameSize * attackScaleFactor);
+            attackFrames[i] = scaleImage(raw, commonFrameSize * commonScaleFactor, commonFrameSize * commonScaleFactor);
         }
     }
 
@@ -121,29 +119,29 @@ public class AnimatedEntity extends Entity {
         }
 
         // Continue normal movement
-        double remaining = speed * dt;
-        while (remaining > 0 && waypointIndex < path.size()) {
-            Point target = path.get(waypointIndex);
+            double remaining = speed * dt;
+            while (remaining > 0 && waypointIndex < path.size()) {
+                Point target = path.get(waypointIndex);
             dx = target.x() - x;
             dy = target.y() - y;
-            double dist = Math.hypot(dx, dy);
+                double dist = Math.hypot(dx, dy);
 
-            if (dist < 1e-3) {
-                x = target.x();
-                y = target.y();
-                waypointIndex++;
-                continue;
-            }
+                if (dist < 1e-3) {
+                    x = target.x();
+                    y = target.y();
+                    waypointIndex++;
+                    continue;
+                }
 
-            if (remaining >= dist) {
-                x = target.x();
-                y = target.y();
-                remaining -= dist;
-                waypointIndex++;
-            } else {
-                x += dx / dist * remaining;
-                y += dy / dist * remaining;
-                remaining = 0;
+                if (remaining >= dist) {
+                    x = target.x();
+                    y = target.y();
+                    remaining -= dist;
+                    waypointIndex++;
+                } else {
+                    x += dx / dist * remaining;
+                    y += dy / dist * remaining;
+                    remaining = 0;
             }
         }
     }
@@ -209,13 +207,13 @@ public class AnimatedEntity extends Entity {
             gc.setGlobalBlendMode(javafx.scene.effect.BlendMode.SRC_OVER);
             
             // Draw the image with preserved transparency
-            gc.drawImage(src, 0, 0, targetWidth, targetHeight);
+        gc.drawImage(src, 0, 0, targetWidth, targetHeight);
 
             // Create snapshot parameters with transparent background
-            javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
-            params.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
+        params.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
-            return tempCanvas.snapshot(params, null);
+        return tempCanvas.snapshot(params, null);
         } finally {
             // Restore the original blend mode
             gc.setGlobalBlendMode(oldBlendMode);

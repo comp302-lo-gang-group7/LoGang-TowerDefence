@@ -16,15 +16,15 @@ public class Goblin extends AnimatedEntity {
     );
 
     private static final int FRAMES = 6;
-    private static final int FRAME_SIZE = 192;
+    private static final int COMMON_FRAME_SIZE = 192; // Assuming Goblin frames are also 192x192
     private static final double FRAME_SECONDS = 0.1;
-    private static final double SCALE_FACTOR = 0.5;
+    private static final double COMMON_SCALE_FACTOR = 0.5;
 
     public Goblin(List<Point> path,
                   double speed,
                   int hp)
     {
         super(SPRITE_SHEET, SPRITE_SHEET, FRAMES, FRAMES, 
-              FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR, SCALE_FACTOR);
+              COMMON_FRAME_SIZE, FRAME_SECONDS, path, speed, hp, COMMON_SCALE_FACTOR);
     }
 }
