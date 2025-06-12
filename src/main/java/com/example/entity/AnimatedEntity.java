@@ -93,6 +93,15 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+    /**
+     * Returns true if this entity has traversed its entire path and reached the final
+     * goal tile.
+     */
+    public boolean hasReachedGoal() {
+        return waypointIndex >= path.size();
+    }
+
+
     public Point getFuturePosition()
     {
         int futureSteps = ( int ) (1.5 * speed);

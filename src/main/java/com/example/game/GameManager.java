@@ -5,6 +5,8 @@ import com.example.entity.*;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -18,9 +20,10 @@ public class GameManager {
     private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
     private final List<AnimatedEntity> enemies = new LinkedList<>();
     private List<int[]> waves = new LinkedList<>();
-    private int currentWave = 0;
+    private final IntegerProperty currentWaveProperty = new SimpleIntegerProperty(0);
     private long lastTime = 0;
     private GameModel gameModel;
+    private PlayerState playerState;
     private boolean paused = false;
     private double gameSpeedMultiplier = 1.0; // default speed
     private AnimationTimer gameLoop;
@@ -29,16 +32,16 @@ public class GameManager {
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
 
-    public static void initialize(Canvas canvas, List<Entity> entities, GameModel model) {
+    public static void initialize(Canvas canvas, List<Entity> entities, GameModel model, PlayerState state) {
         if (instance != null) {
             instance.stop();
         }
-        instance = new GameManager(canvas, entities, model);
+        instance = new GameManager(canvas, entities, model, state);
     }
 
     public void setWaves(List<int[]> waves) {
         this.waves = waves != null ? waves : new LinkedList<>();
-        this.currentWave = 0;
+        this.currentWaveProperty.set(0);
     }
 
     public static GameManager getInstance() {
@@ -48,11 +51,12 @@ public class GameManager {
         return instance;
     }
 
-    private GameManager(Canvas canvas, List<Entity> entities, GameModel model) {
+    private GameManager(Canvas canvas, List<Entity> entities, GameModel model, PlayerState state) {
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
         this.entities = entities;
         this.gameModel = model;
+        this.playerState = state;
     }
 
     public void start() {
@@ -79,11 +83,16 @@ public class GameManager {
                     e.update(dt);
                 }
 
-                // remove dead enemies
+                // handle enemy deaths or reaching the goal
                 for (AnimatedEntity enemy : new LinkedList<>(enemies)) {
                     if (enemy.getHP() <= 0) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
+                        playerState.addGold(10);
+                    } else if (enemy.hasReachedGoal()) {
+                        delayedRemove.add(enemy);
+                        enemies.remove(enemy);
+                        playerState.loseLife();
                     }
                 }
 
@@ -91,9 +100,9 @@ public class GameManager {
                 entities.removeAll(delayedRemove);
 
                 // if wave cleared, spawn next
-                if (enemies.isEmpty() && currentWave < waves.size()) {
-                    spawnWave(waves.get(currentWave));
-                    currentWave++;
+                if (enemies.isEmpty() && currentWaveProperty.get() < waves.size()) {
+                    spawnWave(waves.get(currentWaveProperty.get()));
+                    currentWaveProperty.set(currentWaveProperty.get() + 1);
                 }
 
                 // render as before…
@@ -227,5 +236,25 @@ public class GameManager {
 
     public double getGameSpeedMultiplier() {
         return gameSpeedMultiplier;
+    }
+
+    public int getGold() {
+        return playerState.getGold();
+    }
+
+    public int getLives() {
+        return playerState.getLives();
+    }
+
+    public int getMaxLives() {
+        return playerState.getMaxLives();
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
+    }
+
+    public IntegerProperty getCurrentWaveProperty() {
+        return currentWaveProperty;
     }
 }
