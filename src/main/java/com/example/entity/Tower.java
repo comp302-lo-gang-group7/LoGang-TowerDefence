@@ -25,16 +25,17 @@ public abstract class Tower extends Entity
 	{
 		if ( timerTime < attackCooldown )
 			timerTime += dt;
-		else
-		{
-			AnimatedEntity nearestEnemy = GameManager.getInstance().nearestEnemy(this);
-			if ( Math.abs(getX() * 64 - nearestEnemy.getX()) + Math.abs(getY() * 64 - nearestEnemy.getY())
-					<= minRadius * GameScreenController.TILE_SIZE)
-			{
-				timerTime = 0;
-				GameManager.getInstance().attackEntity(this, nearestEnemy);
-			}
-		}
+                else
+                {
+                        AnimatedEntity nearestEnemy = GameManager.getInstance().nearestEnemy(this);
+                        if (nearestEnemy != null &&
+                                Math.abs(getX() * 64 - nearestEnemy.getX()) + Math.abs(getY() * 64 - nearestEnemy.getY())
+                                        <= minRadius * GameScreenController.TILE_SIZE)
+                        {
+                                timerTime = 0;
+                                GameManager.getInstance().attackEntity(this, nearestEnemy);
+                        }
+                }
 	}
 
 	@Override

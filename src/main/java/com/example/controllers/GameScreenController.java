@@ -49,7 +49,7 @@ public class GameScreenController extends Controller {
 	private boolean isFast;
 	private Parent pauseOverlay;
 
-	public void init( String mapName, int startingGold) {
+        public void init( String mapName, int startingGold, List<int[]> waves) {
 		contextMenu.setAutoHide(true);
 		goldLabel.setText(String.format("%d", startingGold));
 		setupButtonIcons();
@@ -104,12 +104,10 @@ public class GameScreenController extends Controller {
 		// 3) Hook up & start the GameManager loop
 		GameManager.initialize(gameCanvas, allEntities, gameModel);
 
-		this.gameManager = GameManager.getInstance();
-		gameManager.spawnGoblin();
-		gameManager.spawnWarrior();
-
-		gameManager.start();
-	}
+                this.gameManager = GameManager.getInstance();
+                gameManager.setWaves(waves);
+                gameManager.start();
+        }
 
 
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {

@@ -109,6 +109,11 @@ public class CreateGameController extends Controller implements Initializable {
     }
 
     @FXML
+    public void goToCustomGamePage() {
+        Main.getViewManager().switchTo("/com/example/fxml/custom_game_page.fxml");
+    }
+
+    @FXML
     public void goToHomePage() {
         Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
     }
