@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
@@ -30,59 +31,63 @@
         <Button fx:id="pauseButton" onAction="#pauseGame" style="-fx-background-color: transparent;                    -fx-background-size: contain;                    -fx-border-color: transparent;" />
         <Button fx:id="exitButton" onAction="#goToHomePage" style="-fx-background-color: transparent;                    -fx-background-size: contain;                    -fx-border-color: transparent;" />
     </HBox>
-   <HBox prefHeight="100.0" prefWidth="200.0">
+   <AnchorPane StackPane.alignment="TOP_LEFT" mouseTransparent="true">
       <children>
-         <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-               <Image url="@../assets/ui/Coin_Health_Wave.png" />
-            </image>
-         </ImageView>
-          <!-- 2) HUD Overlay (anchored top-left) -->
-          <VBox fx:id="hudOverlay" alignment="TOP_LEFT" fillWidth="false" pickOnBounds="false">
-            <StackPane prefHeight="150.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../assets/ui/Button_Blue_3Slides.png" />
-                     </image>
-                  </ImageView>
-                    <Label fx:id="goldLabel" style="-fx-padding: 5 10;" text="1000" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold Italic" size="17.0" />
-                     </font>
-                  </Label>
-               </children>
-            </StackPane>
-            <StackPane prefHeight="150.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../assets/ui/Button_Blue_3Slides.png" />
-                     </image>
-                  </ImageView>
-                    <Label fx:id="healthLabel" style="-fx-padding: 5 10;" text="10/10" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold Italic" size="17.0" />
-                     </font>
-                  </Label>
-               </children>
-            </StackPane>
-            <StackPane prefHeight="150.0" prefWidth="200.0">
-               <children>
-                  <ImageView fitHeight="40.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../assets/ui/Button_Blue_3Slides.png" />
-                     </image>
-                  </ImageView>
-                    <Label fx:id="waveLabel" style="-fx-padding: 5 10;" text="1/10" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold Italic" size="17.0" />
-                     </font>
-                  </Label>
-               </children>
-            </StackPane>
-          </VBox>
+         <HBox prefHeight="100.0" prefWidth="200.0">
+            <children>
+               <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@../assets/ui/Coin_Health_Wave.png" />
+                  </image>
+               </ImageView>
+                <!-- 2) HUD Overlay (anchored top-left) -->
+                <VBox fx:id="hudOverlay" alignment="TOP_LEFT" fillWidth="false" pickOnBounds="false">
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="40.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/ui/Button_Blue_3Slides.png" />
+                           </image>
+                        </ImageView>
+                          <Label fx:id="goldLabel" style="-fx-padding: 5 10;" text="1000" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold Italic" size="17.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="40.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/ui/Button_Blue_3Slides.png" />
+                           </image>
+                        </ImageView>
+                          <Label fx:id="healthLabel" style="-fx-padding: 5 10;" text="10/10" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold Italic" size="17.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="40.0" fitWidth="160.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../assets/ui/Button_Blue_3Slides.png" />
+                           </image>
+                        </ImageView>
+                          <Label fx:id="waveLabel" style="-fx-padding: 5 10;" text="1/10" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold Italic" size="17.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </StackPane>
+                </VBox>
+            </children>
+         </HBox>
       </children>
-   </HBox>
+   </AnchorPane>
 
 </StackPane>
