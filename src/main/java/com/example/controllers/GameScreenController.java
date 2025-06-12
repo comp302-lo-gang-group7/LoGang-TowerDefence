@@ -56,8 +56,12 @@ public class GameScreenController extends Controller {
 		setupButtonIcons();
 
 		playerState = new PlayerState(startingGold, 10);
-		goldLabel.setText(String.format("%d", playerState.getGold()));
-		healthLabel.setText(String.format("%d/%d", playerState.getLives(), playerState.getMaxLives()));
+		goldLabel.textProperty().bind(playerState.getGoldProperty().asString());
+		healthLabel.textProperty().bind(
+				playerState.getLivesProperty()
+						.asString()
+						.concat(String.format("/%d", playerState.getMaxLives()))
+		);
 
 		// load map data
         TileView[][] mapTiles;
@@ -110,17 +114,15 @@ public class GameScreenController extends Controller {
 		GameManager.initialize(gameCanvas, allEntities, gameModel, playerState);
 
 		this.gameManager = GameManager.getInstance();
+
+		waveLabel.textProperty().bind(
+				gameManager.getCurrentWaveProperty()
+						.asString()
+						.concat(String.format("/%d", waves.size()))
+		);
+
 		gameManager.setWaves(waves);
 		gameManager.start();
-
-		hudTimer = new javafx.animation.AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				goldLabel.setText(String.format("%d", gameManager.getGold()));
-				healthLabel.setText(String.format("%d/%d", gameManager.getLives(), gameManager.getMaxLives()));
-			}
-		};
-		hudTimer.start();
         }
 
 

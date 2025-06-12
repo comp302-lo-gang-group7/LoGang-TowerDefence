@@ -5,6 +5,8 @@ import com.example.entity.*;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -18,7 +20,7 @@ public class GameManager {
     private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
     private final List<AnimatedEntity> enemies = new LinkedList<>();
     private List<int[]> waves = new LinkedList<>();
-    private int currentWave = 0;
+    private final IntegerProperty currentWaveProperty = new SimpleIntegerProperty(0);
     private long lastTime = 0;
     private GameModel gameModel;
     private PlayerState playerState;
@@ -39,7 +41,7 @@ public class GameManager {
 
     public void setWaves(List<int[]> waves) {
         this.waves = waves != null ? waves : new LinkedList<>();
-        this.currentWave = 0;
+        this.currentWaveProperty.set(0);
     }
 
     public static GameManager getInstance() {
@@ -98,9 +100,9 @@ public class GameManager {
                 entities.removeAll(delayedRemove);
 
                 // if wave cleared, spawn next
-                if (enemies.isEmpty() && currentWave < waves.size()) {
-                    spawnWave(waves.get(currentWave));
-                    currentWave++;
+                if (enemies.isEmpty() && currentWaveProperty.get() < waves.size()) {
+                    spawnWave(waves.get(currentWaveProperty.get()));
+                    currentWaveProperty.set(currentWaveProperty.get() + 1);
                 }
 
                 // render as before…
@@ -250,5 +252,9 @@ public class GameManager {
 
     public PlayerState getPlayerState() {
         return playerState;
+    }
+
+    public IntegerProperty getCurrentWaveProperty() {
+        return currentWaveProperty;
     }
 }
