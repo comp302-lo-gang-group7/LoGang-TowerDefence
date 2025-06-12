@@ -38,6 +38,8 @@ public class GameScreenController extends Controller {
 	@FXML private Label waveLabel;
 	@FXML private Button speedUp, pauseButton, exitButton;
 	private GameManager gameManager;
+	private PlayerState playerState;
+	private javafx.animation.AnimationTimer hudTimer;
 	private boolean isPaused = false;
 
 
@@ -49,10 +51,13 @@ public class GameScreenController extends Controller {
 	private boolean isFast;
 	private Parent pauseOverlay;
 
-        public void init( String mapName, int startingGold, List<int[]> waves) {
+	public void init( String mapName, int startingGold, List<int[]> waves) {
 		contextMenu.setAutoHide(true);
-		goldLabel.setText(String.format("%d", startingGold));
 		setupButtonIcons();
+
+		playerState = new PlayerState(startingGold, 10);
+		goldLabel.setText(String.format("%d", playerState.getGold()));
+		healthLabel.setText(String.format("%d/%d", playerState.getLives(), playerState.getMaxLives()));
 
 		// load map data
         TileView[][] mapTiles;
@@ -102,11 +107,20 @@ public class GameScreenController extends Controller {
 		List<Entity> allEntities = gameModel.getEntities();
 
 		// 3) Hook up & start the GameManager loop
-		GameManager.initialize(gameCanvas, allEntities, gameModel);
+		GameManager.initialize(gameCanvas, allEntities, gameModel, playerState);
 
-                this.gameManager = GameManager.getInstance();
-                gameManager.setWaves(waves);
-                gameManager.start();
+		this.gameManager = GameManager.getInstance();
+		gameManager.setWaves(waves);
+		gameManager.start();
+
+		hudTimer = new javafx.animation.AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				goldLabel.setText(String.format("%d", gameManager.getGold()));
+				healthLabel.setText(String.format("%d/%d", gameManager.getLives(), gameManager.getMaxLives()));
+			}
+		};
+		hudTimer.start();
         }
 
 

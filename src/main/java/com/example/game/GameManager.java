@@ -21,6 +21,7 @@ public class GameManager {
     private int currentWave = 0;
     private long lastTime = 0;
     private GameModel gameModel;
+    private PlayerState playerState;
     private boolean paused = false;
     private double gameSpeedMultiplier = 1.0; // default speed
     private AnimationTimer gameLoop;
@@ -29,11 +30,11 @@ public class GameManager {
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
 
-    public static void initialize(Canvas canvas, List<Entity> entities, GameModel model) {
+    public static void initialize(Canvas canvas, List<Entity> entities, GameModel model, PlayerState state) {
         if (instance != null) {
             instance.stop();
         }
-        instance = new GameManager(canvas, entities, model);
+        instance = new GameManager(canvas, entities, model, state);
     }
 
     public void setWaves(List<int[]> waves) {
@@ -48,11 +49,12 @@ public class GameManager {
         return instance;
     }
 
-    private GameManager(Canvas canvas, List<Entity> entities, GameModel model) {
+    private GameManager(Canvas canvas, List<Entity> entities, GameModel model, PlayerState state) {
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
         this.entities = entities;
         this.gameModel = model;
+        this.playerState = state;
     }
 
     public void start() {
@@ -79,11 +81,16 @@ public class GameManager {
                     e.update(dt);
                 }
 
-                // remove dead enemies
+                // handle enemy deaths or reaching the goal
                 for (AnimatedEntity enemy : new LinkedList<>(enemies)) {
                     if (enemy.getHP() <= 0) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
+                        playerState.addGold(10);
+                    } else if (enemy.hasReachedGoal()) {
+                        delayedRemove.add(enemy);
+                        enemies.remove(enemy);
+                        playerState.loseLife();
                     }
                 }
 
@@ -227,5 +234,21 @@ public class GameManager {
 
     public double getGameSpeedMultiplier() {
         return gameSpeedMultiplier;
+    }
+
+    public int getGold() {
+        return playerState.getGold();
+    }
+
+    public int getLives() {
+        return playerState.getLives();
+    }
+
+    public int getMaxLives() {
+        return playerState.getMaxLives();
+    }
+
+    public PlayerState getPlayerState() {
+        return playerState;
     }
 }
