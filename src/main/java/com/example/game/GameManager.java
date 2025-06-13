@@ -112,10 +112,6 @@ public class GameManager {
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
                                 ((Warrior) enemy).setMoving(false);
 
-                                // Make warrior face the castle
-                                double angle = Math.toDegrees(Math.atan2(castlePoint.y() - enemy.getY(), castlePoint.x() - enemy.getX()));
-                                ((Warrior) enemy).setRotation(angle);
-
                                 warriorAttackTimer += dt;
                                 if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
                                     castleHP -= 10; // Example damage
