@@ -67,6 +67,7 @@ public class GameManager {
         this.playerState = state;
         // Find castle point once at initialization
         this.castlePoint = PathFinder.findCastlePoint(gameModel.getMap().getExpandedGrid());
+        System.out.println("DEBUG: GameManager initialized. Castle point: " + castlePoint); // DEBUG
     }
 
     public void start() {
@@ -104,13 +105,19 @@ public class GameManager {
                         enemies.remove(enemy);
                         playerState.addGold(10);
                     } else if (enemy.hasReachedGoal()) {
+                        System.out.println("DEBUG: Enemy reached goal: " + enemy.getClass().getSimpleName() + " at (" + enemy.getX() + ", " + enemy.getY() + ")"); // DEBUG
                         // Check if the entity is a Warrior and if it's close to the castle
                         if (enemy instanceof Warrior) {
                             double distanceToCastle = enemy.distanceTo(castlePoint);
+                            System.out.println("DEBUG: Warrior distance to castle: " + distanceToCastle + ", Attack range: " + WARRIOR_ATTACK_RANGE); // DEBUG
                             if (distanceToCastle <= WARRIOR_ATTACK_RANGE) {
+                                System.out.println("DEBUG: Warrior entering ATTACKING state."); // DEBUG
                                 // Warrior is in attack range
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
                                 ((Warrior) enemy).setMoving(false);
+
+                                // double angle = Math.toDegrees(Math.atan2(castlePoint.y() - enemy.getY(), castlePoint.x() - enemy.getX()));
+                                // ((Warrior) enemy).setRotation(angle);
 
                                 warriorAttackTimer += dt;
                                 if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
@@ -124,12 +131,14 @@ public class GameManager {
                                     }
                                 }
                             } else {
+                                System.out.println("DEBUG: Warrior out of attack range, continuing WALKING."); // DEBUG
                                 // Warrior is not in attack range, continue walking
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.WALKING);
                                 ((Warrior) enemy).setMoving(true);
                                 // Reset rotation to default for walking if needed, or handle based on pathfinding direction
                             }
                         } else {
+                            System.out.println("DEBUG: Non-Warrior enemy reached goal, losing life."); // DEBUG
                             // Non-warrior enemies still cause life loss when reaching goal
                             delayedRemove.add(enemy);
                             enemies.remove(enemy);
