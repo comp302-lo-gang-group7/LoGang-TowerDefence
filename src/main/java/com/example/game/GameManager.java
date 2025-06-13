@@ -106,12 +106,10 @@ public class GameManager {
                         playerState.addGold(10);
                     } else { // Enemy is alive
                         if (enemy instanceof Warrior) {
-                            double distanceToCastle = enemy.distanceTo(castlePoint);
-                            System.out.println("DEBUG: Warrior at (" + enemy.getX() + ", " + enemy.getY() + "). Distance to castle: " + distanceToCastle + ", Attack range: " + WARRIOR_ATTACK_RANGE); // DEBUG
-
-                            if (distanceToCastle <= WARRIOR_ATTACK_RANGE) {
-                                System.out.println("DEBUG: Warrior entering ATTACKING state."); // DEBUG
-                                // Warrior is in attack range
+                            // Instead of distance, check if warrior has reached the end of its path
+                            if (enemy.hasReachedGoal()) {
+                                System.out.println("DEBUG: Warrior reached goal. Entering ATTACKING state."); // DEBUG
+                                // Warrior is in attack range (because it reached its goal)
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
                                 ((Warrior) enemy).setMoving(false);
 
@@ -127,7 +125,8 @@ public class GameManager {
                                     }
                                 }
                             } else {
-                                // Warrior is not in attack range, continue walking towards goal
+                                System.out.println("DEBUG: Warrior has not reached goal, continuing WALKING."); // DEBUG
+                                // Warrior has not reached goal, continue walking
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.WALKING);
                                 ((Warrior) enemy).setMoving(true);
                             }
