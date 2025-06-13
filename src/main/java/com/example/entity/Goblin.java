@@ -1,10 +1,11 @@
 package com.example.entity;
 
-import com.example.utils.Point;
-import javafx.scene.image.Image;
-
 import java.util.List;
 import java.util.Objects;
+
+import com.example.utils.Point;
+
+import javafx.scene.image.Image;
 
 /**
  * A goblin enemy that animates from a horizontal sprite sheet.

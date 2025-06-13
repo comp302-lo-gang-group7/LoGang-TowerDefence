@@ -238,7 +238,8 @@ public class GameManager {
         for(int i=0;i<warriors;i++) spawnWarrior();
     }
 
-    public void attackEntity( Tower tower, AnimatedEntity e ) {
+    public void attackEntity( Tower tower, AnimatedEntity e )
+    {
         if (e != null)
         {
             Point pos = e.getFuturePosition();
