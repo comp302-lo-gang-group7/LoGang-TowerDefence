@@ -67,7 +67,6 @@ public class GameManager {
         this.playerState = state;
         // Find castle point once at initialization
         this.castlePoint = PathFinder.findCastlePoint(gameModel.getMap().getExpandedGrid());
-        System.out.println("DEBUG: GameManager initialized. Castle point: " + castlePoint); // DEBUG
     }
 
     public void start() {
@@ -108,7 +107,6 @@ public class GameManager {
                         if (enemy instanceof Warrior) {
                             // Instead of distance, check if warrior has reached the end of its path
                             if (enemy.hasReachedGoal()) {
-                                System.out.println("DEBUG: Warrior reached goal. Entering ATTACKING state."); // DEBUG
                                 // Warrior is in attack range (because it reached its goal)
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
                                 ((Warrior) enemy).setMoving(false);
@@ -116,23 +114,19 @@ public class GameManager {
                                 warriorAttackTimer += dt;
                                 if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
                                     castleHP -= 10; // Example damage
-                                    System.out.println("Castle HP: " + castleHP);
                                     warriorAttackTimer = 0;
                                     if (castleHP <= 0) {
-                                        System.out.println("Game Over! Castle destroyed.");
                                         gameLoop.stop(); // Stop the game
                                         // TODO: Implement game over screen or logic
                                     }
                                 }
                             } else {
-                                System.out.println("DEBUG: Warrior has not reached goal, continuing WALKING."); // DEBUG
                                 // Warrior has not reached goal, continue walking
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.WALKING);
                                 ((Warrior) enemy).setMoving(true);
                             }
                         } else { // Non-warrior enemies (like Goblins)
                             if (enemy.hasReachedGoal()) {
-                                System.out.println("DEBUG: Non-Warrior enemy reached goal, losing life."); // DEBUG
                                 delayedRemove.add(enemy);
                                 enemies.remove(enemy);
                                 playerState.loseLife();
