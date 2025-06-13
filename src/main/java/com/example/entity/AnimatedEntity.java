@@ -1,17 +1,26 @@
 package com.example.entity;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.example.utils.Point;
+
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
-import java.util.List;
-
 public class AnimatedEntity extends Entity {
-    private final Image[] frames;
-    private final double frameDuration;
+    public enum AnimationState {
+        WALKING,
+        ATTACKING // New state for hitting animation
+    }
+
+    private Map<AnimationState, Image[]> animationFrames;
+    private AnimationState currentAnimationState;
     private double frameTimer = 0;
     private int currentFrame = 0;
+    private double rotation = 0; // New field for rotation
 
     // path + movement
     private final List<Point> path;
@@ -23,11 +32,12 @@ public class AnimatedEntity extends Entity {
      */
     private final double speed;
     private int waypointIndex = 0;  // Start at first waypoint
+    private boolean moving = true; // New field to control movement
 
-    public AnimatedEntity(Image spriteSheet,
-                          int frameCount,
+    public AnimatedEntity(Map<AnimationState, Image> spriteSheets,
+                          Map<AnimationState, Integer> frameCounts,
                           int frameSize,
-                          double frameDuration,
+                          Map<AnimationState, Double> frameDurations,
                           List<Point> path,
                           double speed,
                           int hp,
@@ -37,31 +47,75 @@ public class AnimatedEntity extends Entity {
         super(path.getFirst().x(), path.getFirst().y(), hp);
         this.path = path;
         this.speed = speed;
-        this.frameDuration = frameDuration;
-        this.frames = new Image[frameCount];
+        this.animationFrames = new HashMap<>();
 
-        // slice sprite‐sheet + scaling
-        for (int i = 0; i < frameCount; i++) {
-            Image raw = new WritableImage(
-                    spriteSheet.getPixelReader(),
-                    i * frameSize, 0,
-                    frameSize, frameSize
-            );
-            frames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
+        // Initialize animation frames for each state
+        spriteSheets.forEach((state, spriteSheet) -> {
+            int frameCount = frameCounts.get(state);
+            Image[] frames = new Image[frameCount];
+            for (int i = 0; i < frameCount; i++) {
+                Image raw = new WritableImage(
+                        spriteSheet.getPixelReader(),
+                        i * frameSize, 0,
+                        frameSize, frameSize
+                );
+                frames[i] = scaleImage(raw, frameSize * scaleFactor, frameSize * scaleFactor);
+            }
+            this.animationFrames.put(state, frames);
+        });
+
+        // Set initial animation state
+        setAnimationState(AnimationState.WALKING);
+    }
+
+    // Existing constructor for single animation, for backward compatibility
+    public AnimatedEntity(Image spriteSheet,
+                          int frameCount,
+                          int frameSize,
+                          double frameDuration,
+                          List<Point> path,
+                          double speed,
+                          int hp,
+                          double scaleFactor)
+    {
+        this(
+            Map.of(AnimationState.WALKING, spriteSheet),
+            Map.of(AnimationState.WALKING, frameCount),
+            frameSize,
+            Map.of(AnimationState.WALKING, frameDuration),
+            path, speed, hp, scaleFactor
+        );
+    }
+
+    public void setAnimationState(AnimationState state) {
+        if (this.currentAnimationState != state) {
+            this.currentAnimationState = state;
+            this.currentFrame = 0;
+            this.frameTimer = 0;
         }
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
+
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
     }
 
     @Override
     public void update(double dt) {
         // 1) animation
         frameTimer += dt;
+        Image[] frames = animationFrames.get(currentAnimationState);
+        double frameDuration = (currentAnimationState == AnimationState.ATTACKING) ? 0.2 : 0.1; // Example: faster attack animation
         if (frameTimer >= frameDuration) {
             frameTimer -= frameDuration;
             currentFrame = (currentFrame + 1) % frames.length;
         }
 
         // 2) movement
-        if (waypointIndex < path.size()) {
+        if (moving && waypointIndex < path.size()) { // Only move if 'moving' is true
             double remaining = speed * dt;
 
             while (remaining > 0 && waypointIndex < path.size()) {
@@ -115,19 +169,24 @@ public class AnimatedEntity extends Entity {
 
     @Override
     public void render(GraphicsContext gc) {
-        // 1. Draw the sprite centered on entity position
-        double spriteWidth = frames[currentFrame].getWidth();
-        double spriteHeight = frames[currentFrame].getHeight();
-        double drawX = x - spriteWidth / 2;
-        double drawY = y - spriteHeight / 2;
+        // 1. Draw the sprite centered on entity position, with rotation
+        Image currentSprite = animationFrames.get(currentAnimationState)[currentFrame];
+        double spriteWidth = currentSprite.getWidth();
+        double spriteHeight = currentSprite.getHeight();
+        double drawX = x;
+        double drawY = y;
 
-        gc.drawImage(frames[currentFrame], drawX, drawY);
+        gc.save();
+        gc.translate(drawX, drawY);
+        gc.rotate(rotation);
+        gc.drawImage(currentSprite, -spriteWidth / 2, -spriteHeight / 2);
+        gc.restore();
 
         // 2. Draw smaller health bar just above the bottom of the sprite
         double barWidth = spriteWidth * 0.3;     // narrower
         double barHeight = 3;                    // thinner
-        double barX = drawX + (spriteWidth - barWidth) / 2;
-        double barY = drawY + (spriteHeight * 0.7);  // closer to sprite bottom
+        double barX = x - barWidth / 2;
+        double barY = y + (spriteHeight * 0.7) / 2;  // closer to sprite bottom
 
         double healthRatio = Math.max(0, Math.min(1, hp / 100.0));
         double filledWidth = barWidth * healthRatio;

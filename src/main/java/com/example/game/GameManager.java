@@ -1,18 +1,24 @@
 package com.example.game;
 
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.example.controllers.GameScreenController;
-import com.example.entity.*;
+import com.example.entity.AnimatedEntity;
+import com.example.entity.Entity;
+import com.example.entity.Goblin;
+import com.example.entity.Projectile;
+import com.example.entity.Tower;
+import com.example.entity.Warrior;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
+
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
 
 public class GameManager {
     private final Canvas canvas;
@@ -28,6 +34,8 @@ public class GameManager {
     private double gameSpeedMultiplier = 1.0; // default speed
     private AnimationTimer gameLoop;
     private static GameManager instance;
+    private int castleHP = 1000; // Initial castle HP
+    private Point castlePoint; // Store castle central point
 
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
@@ -57,10 +65,16 @@ public class GameManager {
         this.entities = entities;
         this.gameModel = model;
         this.playerState = state;
+        // Find castle point once at initialization
+        this.castlePoint = PathFinder.findCastlePoint(gameModel.getMap().getExpandedGrid());
     }
 
     public void start() {
         gameLoop = new AnimationTimer() {
+            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 0.75; // Example range
+            private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
+            private double warriorAttackTimer = 0;
+
             @Override
             public void handle(long now) {
                 if (lastTime == 0) {
@@ -83,16 +97,48 @@ public class GameManager {
                     e.update(dt);
                 }
 
-                // handle enemy deaths or reaching the goal
+                // handle enemy deaths or reaching the goal, and warrior attacking castle
                 for (AnimatedEntity enemy : new LinkedList<>(enemies)) {
                     if (enemy.getHP() <= 0) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
                         playerState.addGold(10);
                     } else if (enemy.hasReachedGoal()) {
-                        delayedRemove.add(enemy);
-                        enemies.remove(enemy);
-                        playerState.loseLife();
+                        // Check if the entity is a Warrior and if it's close to the castle
+                        if (enemy instanceof Warrior) {
+                            double distanceToCastle = enemy.distanceTo(castlePoint);
+                            if (distanceToCastle <= WARRIOR_ATTACK_RANGE) {
+                                // Warrior is in attack range
+                                ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
+                                ((Warrior) enemy).setMoving(false);
+
+                                // Make warrior face the castle
+                                double angle = Math.toDegrees(Math.atan2(castlePoint.y() - enemy.getY(), castlePoint.x() - enemy.getX()));
+                                ((Warrior) enemy).setRotation(angle);
+
+                                warriorAttackTimer += dt;
+                                if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
+                                    castleHP -= 10; // Example damage
+                                    System.out.println("Castle HP: " + castleHP);
+                                    warriorAttackTimer = 0;
+                                    if (castleHP <= 0) {
+                                        System.out.println("Game Over! Castle destroyed.");
+                                        gameLoop.stop(); // Stop the game
+                                        // TODO: Implement game over screen or logic
+                                    }
+                                }
+                            } else {
+                                // Warrior is not in attack range, continue walking
+                                ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.WALKING);
+                                ((Warrior) enemy).setMoving(true);
+                                // Reset rotation to default for walking if needed, or handle based on pathfinding direction
+                            }
+                        } else {
+                            // Non-warrior enemies still cause life loss when reaching goal
+                            delayedRemove.add(enemy);
+                            enemies.remove(enemy);
+                            playerState.loseLife();
+                        }
                     }
                 }
 

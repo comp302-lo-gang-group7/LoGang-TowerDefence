@@ -1,6 +1,7 @@
 package com.example.entity;
 
-import com.example.utils.HP;
+import com.example.utils.Point;
+
 import javafx.scene.canvas.GraphicsContext;
 
 
@@ -41,5 +42,10 @@ public abstract class Entity {
 
     public void applyDamage(int amount) {
         hp -= amount;
+    }
+
+    // New method to calculate distance to a point
+    public double distanceTo(Point other) {
+        return Math.hypot(this.x - other.x(), this.y - other.y());
     }
 }
