@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.controllers.GameScreenController;
 import com.example.utils.Point;
 
 import javafx.scene.canvas.GraphicsContext;
@@ -43,8 +44,8 @@ public class AnimatedEntity extends Entity {
                           int hp,
                           double scaleFactor)
     {
-        // Start at the first path point
-        super(path.getFirst().x(), path.getFirst().y(), hp);
+        // Start at the first path point in pixel coordinates
+        super(path.getFirst().x() * GameScreenController.TILE_SIZE, path.getFirst().y() * GameScreenController.TILE_SIZE, hp);
         this.path = path;
         this.speed = speed;
         this.animationFrames = new HashMap<>();
@@ -120,21 +121,25 @@ public class AnimatedEntity extends Entity {
 
             while (remaining > 0 && waypointIndex < path.size()) {
                 Point target = path.get(waypointIndex);
-                double dx = target.x() - x, dy = target.y() - y;
+                // Convert target grid coordinates to pixel coordinates for movement calculation
+                double targetX = target.x() * GameScreenController.TILE_SIZE;
+                double targetY = target.y() * GameScreenController.TILE_SIZE;
+
+                double dx = targetX - x, dy = targetY - y;
                 double dist = Math.hypot(dx, dy);
 
                 if (dist < 1e-3) {
                     // Snap to the waypoint and advance to the next
-                    x = target.x();
-                    y = target.y();
+                    x = targetX;
+                    y = targetY;
                     waypointIndex++;
                     continue;
                 }
 
                 if (remaining >= dist) {
                     // Consume the entire segment and keep going with leftover distance
-                    x = target.x();
-                    y = target.y();
+                    x = targetX;
+                    y = targetY;
                     remaining -= dist;
                     waypointIndex++;
                 } else {
@@ -160,10 +165,12 @@ public class AnimatedEntity extends Entity {
     {
         int futureSteps = ( int ) (1.5 * speed);
         if ( waypointIndex + futureSteps < path.size() ) {
-            return path.get(waypointIndex + futureSteps);
+            Point futureGridPoint = path.get(waypointIndex + futureSteps);
+            return new Point(futureGridPoint.x() * GameScreenController.TILE_SIZE, futureGridPoint.y() * GameScreenController.TILE_SIZE);
         }
         else {
-            return path.getLast();
+            Point lastGridPoint = path.getLast();
+            return new Point(lastGridPoint.x() * GameScreenController.TILE_SIZE, lastGridPoint.y() * GameScreenController.TILE_SIZE);
         }
     }
 
