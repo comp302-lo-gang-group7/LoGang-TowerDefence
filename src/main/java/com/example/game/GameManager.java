@@ -71,9 +71,9 @@ public class GameManager {
 
     public void start() {
         gameLoop = new AnimationTimer() {
-            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 2.5; // Increased range for consistent attack trigger
-            private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
-            private double warriorAttackTimer = 0;
+            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 0.75; // Example range
+            // private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
+            // private double warriorAttackTimer = 0;
 
             @Override
             public void handle(long now) {
@@ -103,24 +103,20 @@ public class GameManager {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
                         playerState.addGold(10);
-                    } else { // Enemy is alive
+                    } else if (enemy.hasReachedGoal()) {
+                        // Check if the entity is a Warrior and if it's close to the castle
                         if (enemy instanceof Warrior) {
-                            Warrior warrior = (Warrior) enemy;
-                            double distanceToCastle = warrior.distanceTo(castlePoint);
-
+                            double distanceToCastle = enemy.distanceTo(castlePoint);
                             if (distanceToCastle <= WARRIOR_ATTACK_RANGE) {
-                                // Warrior is in attack range, set to attacking, stop movement
-                                warrior.setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
-                                warrior.setMoving(false);
+                                // Warrior is in attack range
+                                ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
+                                ((Warrior) enemy).setMoving(false);
 
-                                // double angle = Math.toDegrees(Math.atan2(castlePoint.y() - warrior.getY(), castlePoint.x() - warrior.getX()));
-                                // warrior.setRotation(angle);
-
-                                warriorAttackTimer += dt;
-                                if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
+                                // warriorAttackTimer += dt;
+                                if (((Warrior) enemy).canAttack()) {
                                     castleHP -= 10; // Example damage
                                     System.out.println("Castle HP: " + castleHP);
-                                    warriorAttackTimer = 0;
+                                    ((Warrior) enemy).resetAttackTimer();
                                     if (castleHP <= 0) {
                                         System.out.println("Game Over! Castle destroyed.");
                                         gameLoop.stop(); // Stop the game
@@ -129,10 +125,12 @@ public class GameManager {
                                 }
                             } else {
                                 // Warrior is not in attack range, continue walking
-                                warrior.setAnimationState(AnimatedEntity.AnimationState.WALKING);
-                                warrior.setMoving(true);
+                                ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.WALKING);
+                                ((Warrior) enemy).setMoving(true);
+                                // Reset rotation to default for walking if needed, or handle based on pathfinding direction
                             }
-                        } else if (enemy.hasReachedGoal()) { // For non-warrior enemies that reach the goal
+                        } else {
+                            // Non-warrior enemies still cause life loss when reaching goal
                             delayedRemove.add(enemy);
                             enemies.remove(enemy);
                             playerState.loseLife();

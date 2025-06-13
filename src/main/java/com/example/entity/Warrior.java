@@ -23,6 +23,10 @@ public class Warrior extends AnimatedEntity {
     private static final double FRAME_SECONDS_ATTACK = 0.1; // Adjust as needed for attack animation speed
     private static final double SCALE_FACTOR = 0.5;
 
+    // New fields for attack timing
+    private double attackTimer = 0;
+    private static final double ATTACK_COOLDOWN = 1.0; // Seconds
+
     public Warrior(List<Point> path,
                   double speed,
                   int hp)
@@ -43,5 +47,22 @@ public class Warrior extends AnimatedEntity {
                 ),
                 path, speed, hp, SCALE_FACTOR
         );
+    }
+
+    @Override
+    public void update(double dt) {
+        super.update(dt);
+        // Update attack timer only if not moving (i.e., attacking)
+        if (!isMoving()) {
+            attackTimer += dt;
+        }
+    }
+
+    public boolean canAttack() {
+        return attackTimer >= ATTACK_COOLDOWN;
+    }
+
+    public void resetAttackTimer() {
+        attackTimer = 0;
     }
 }
