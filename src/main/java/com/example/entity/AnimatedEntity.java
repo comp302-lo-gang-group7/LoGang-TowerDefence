@@ -103,11 +103,6 @@ public class AnimatedEntity extends Entity {
         this.rotation = rotation;
     }
 
-    // New getter for the 'moving' field
-    public boolean isMoving() {
-        return moving;
-    }
-
     @Override
     public void update(double dt) {
         // 1) animation

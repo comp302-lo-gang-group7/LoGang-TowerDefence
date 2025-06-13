@@ -72,8 +72,8 @@ public class GameManager {
     public void start() {
         gameLoop = new AnimationTimer() {
             private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 0.75; // Example range
-            // private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
-            // private double warriorAttackTimer = 0;
+            private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
+            private double warriorAttackTimer = 0;
 
             @Override
             public void handle(long now) {
@@ -112,11 +112,11 @@ public class GameManager {
                                 ((Warrior) enemy).setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
                                 ((Warrior) enemy).setMoving(false);
 
-                                // warriorAttackTimer += dt;
-                                if (((Warrior) enemy).canAttack()) {
+                                warriorAttackTimer += dt;
+                                if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
                                     castleHP -= 10; // Example damage
                                     System.out.println("Castle HP: " + castleHP);
-                                    ((Warrior) enemy).resetAttackTimer();
+                                    warriorAttackTimer = 0;
                                     if (castleHP <= 0) {
                                         System.out.println("Game Over! Castle destroyed.");
                                         gameLoop.stop(); // Stop the game
