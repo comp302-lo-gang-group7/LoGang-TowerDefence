@@ -71,7 +71,7 @@ public class GameManager {
 
     public void start() {
         gameLoop = new AnimationTimer() {
-            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 0.75; // Example range
+            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 1.5; // Increased range for consistent attack trigger
             private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
             private double warriorAttackTimer = 0;
 
@@ -109,9 +109,12 @@ public class GameManager {
                             double distanceToCastle = warrior.distanceTo(castlePoint);
 
                             if (distanceToCastle <= WARRIOR_ATTACK_RANGE) {
-                                // Warrior is in attack range
+                                // Warrior is in attack range, set to attacking, stop movement
                                 warrior.setAnimationState(AnimatedEntity.AnimationState.ATTACKING);
                                 warrior.setMoving(false);
+
+                                // double angle = Math.toDegrees(Math.atan2(castlePoint.y() - warrior.getY(), castlePoint.x() - warrior.getX()));
+                                // warrior.setRotation(angle);
 
                                 warriorAttackTimer += dt;
                                 if (warriorAttackTimer >= WARRIOR_ATTACK_COOLDOWN) {
@@ -129,13 +132,10 @@ public class GameManager {
                                 warrior.setAnimationState(AnimatedEntity.AnimationState.WALKING);
                                 warrior.setMoving(true);
                             }
-                        } else { // Not a Warrior
-                            // For non-warrior enemies, they are removed if they reach the goal
-                            if (enemy.hasReachedGoal()) {
-                                delayedRemove.add(enemy);
-                                enemies.remove(enemy);
-                                playerState.loseLife();
-                            }
+                        } else if (enemy.hasReachedGoal()) { // For non-warrior enemies that reach the goal
+                            delayedRemove.add(enemy);
+                            enemies.remove(enemy);
+                            playerState.loseLife();
                         }
                     }
                 }
