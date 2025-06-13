@@ -72,7 +72,7 @@ public class GameManager {
 
     public void start() {
         gameLoop = new AnimationTimer() {
-            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 2.0; // Increased range to 128.0
+            private final double WARRIOR_ATTACK_RANGE = GameScreenController.TILE_SIZE * 0.75; // Example range
             private final double WARRIOR_ATTACK_COOLDOWN = 1.0; // Seconds
             private double warriorAttackTimer = 0;
 
