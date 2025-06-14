@@ -162,6 +162,11 @@ public class MapEditorUtils {
         // Set custom cursor for the OK button
         okButton.setCursor(customCursor);
         
+        // Set main scene cursor to custom cursor before showing dialog
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
+
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
 
@@ -242,6 +247,11 @@ public class MapEditorUtils {
         // Set custom cursor for the dialog pane and its scene
         dialog.getDialogPane().setCursor(customCursor);
         dialog.getDialogPane().getScene().setCursor(customCursor);
+
+        // Set main scene cursor to custom cursor before showing dialog
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
 
         dialog.showAndWait();
 
@@ -357,6 +367,11 @@ public class MapEditorUtils {
         // Make the dialog draggable by the title bar
         setupDraggableStage(titleBar, dialogStage);
         
+        // Set main scene cursor to custom cursor before showing dialog
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
+
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
         
