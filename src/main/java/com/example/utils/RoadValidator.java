@@ -123,7 +123,25 @@ public class RoadValidator {
      * Checks if a connection between two tiles is valid in the specified direction
      */
     private static boolean isValidConnection(TileEnum sourceTile, int direction, TileEnum targetTile) {
-        // Check specific valid connections based on direction
+        // Check if target is a castle tile
+        if (TileEnum.CASTLE_TILES.contains(targetTile)) {
+            // Castle pieces typically connect on their bottom or left sides
+            // You might need to adjust this based on your specific castle layout
+            if (targetTile.name().contains("TOP_LEFT") && (direction == RIGHT || direction == DOWN)) {
+                return true;
+            }
+            else if (targetTile.name().contains("TOP_RIGHT") && (direction == LEFT || direction == DOWN)) {
+                return true;
+            }
+            else if (targetTile.name().contains("BOTTOM_LEFT") && (direction == RIGHT || direction == UP)) {
+                return true;
+            }
+            else if (targetTile.name().contains("BOTTOM_RIGHT") && (direction == LEFT || direction == UP)) {
+                return true;
+            }
+        }
+        
+        // Regular road connections
         switch (direction) {
             case UP:
                 return hasConnectionIn(targetTile, DOWN);
