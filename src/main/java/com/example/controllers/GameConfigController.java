@@ -298,16 +298,20 @@ public class GameConfigController implements Initializable {
 		dialogScene.setCursor(customCursor);
 		root.setCursor(customCursor);
 
-		// Set owner of the dialog to the main application window
-		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
-			dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
-		}
+		// Center on parent
+		dialogStage.centerOnScreen();
+
+		// Make the dialog draggable by the title bar
+		setupDraggableStage(titleBar, dialogStage);
 
 		// Show dialog and wait for it to close
 		dialogStage.showAndWait();
 
 		// Restore custom cursor to main scene
-		// No explicit setCursor here, relies on ViewManager's EventFilter
+		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+		}
+
 		return dialogConfirmed;
 	}
 
@@ -381,11 +385,6 @@ public class GameConfigController implements Initializable {
 		dialogScene.setCursor(customCursor);
 		root.setCursor(customCursor);
 
-		// Set owner of the dialog to the main application window
-		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
-			dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
-		}
-
 		// Center on parent
 		dialogStage.centerOnScreen();
 
@@ -396,7 +395,9 @@ public class GameConfigController implements Initializable {
 		dialogStage.showAndWait();
 
 		// Restore custom cursor to main scene
-		// No explicit setCursor here, relies on ViewManager's EventFilter
+		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+		}
 	}
 
 	/**

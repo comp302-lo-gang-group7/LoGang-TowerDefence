@@ -240,218 +240,199 @@ public class LoadGameController implements Initializable {
     }
     
     /**
-     * Shows a fully custom styled confirmation dialog with our custom title bar
-     */
-    private boolean showCustomConfirmDialog(String title, String content) {
-        // Create a new stage for our custom dialog
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.APPLICATION_MODAL);
-        dialogStage.initStyle(StageStyle.UNDECORATED);
-        dialogStage.setTitle(title);
-        
-        // Reset dialog result
-        dialogConfirmed = false;
-        
-        // Create the custom title bar
-        HBox titleBar = createTitleBar(dialogStage, title);
-        
-        // Create content area
-        VBox contentArea = new VBox(10);
-        contentArea.setAlignment(Pos.CENTER);
-        contentArea.setPadding(new Insets(20, 20, 20, 20));
-        contentArea.setStyle("-fx-background-color: #5d4228;");
-        
-        // Create content text
-        Text contentText = new Text(content);
-        contentText.setFont(Font.font("Segoe UI", 14));
-        contentText.setFill(Color.web("#e8d9b5"));
-        contentText.setWrappingWidth(350);
-        
-        // Create button area
-        HBox buttonBox = new HBox(20);
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(20, 0, 10, 0));
-        buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure the button area has the same background
-        
-        // Create OK button
-        Button okButton = new Button("OK");
-        okButton.setPrefWidth(100);
-        okButton.setPrefHeight(30);
-        okButton.setStyle(BUTTON_NORMAL_STYLE);
-        
-        // Set custom cursor for the OK button
-        Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
-        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
-        okButton.setCursor(customCursor);
-        
-        // OK button hover effect
-        okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
-        okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
-        
-        // OK button click action
-        okButton.setOnAction(e -> {
-            dialogConfirmed = true;
-            dialogStage.close();
-        });
-        
-        // Create Cancel button
-        Button cancelButton = new Button("Cancel");
-        cancelButton.setPrefWidth(100);
-        cancelButton.setPrefHeight(30);
-        cancelButton.setStyle(BUTTON_NORMAL_STYLE);
-        
-        // Set custom cursor for the Cancel button
-        cancelButton.setCursor(customCursor);
-        
-        // Cancel button hover effect
-        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
-        cancelButton.setOnMouseExited(e -> cancelButton.setStyle(BUTTON_NORMAL_STYLE));
-        
-        // Cancel button click action
-        cancelButton.setOnAction(e -> {
-            dialogConfirmed = false;
-            dialogStage.close();
-        });
-        
-        // Add buttons to button area
-        buttonBox.getChildren().addAll(okButton, cancelButton);
-        
-        // Build the content area
-        contentArea.getChildren().addAll(contentText, buttonBox);
-        
-        // Create main container with title bar and content
-        VBox root = new VBox();
-        root.getChildren().addAll(titleBar, contentArea);
-        root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
-        
-        // Apply drop shadow effect
-        root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
-        
-        // Set up the scene with more height to prevent buttons from being cut off
-        Scene dialogScene = new Scene(root, 400, 220);
-        // Add a style to ensure the scene background is also properly colored
-        dialogScene.setFill(Color.web("#5d4228"));
-        dialogStage.setScene(dialogScene);
-        
-        // Set custom cursor for the dialog scene and its root
-        dialogScene.setCursor(customCursor);
-        root.setCursor(customCursor);
-        
-        // Set owner of the dialog to the main application window
-        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
-            dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
-        }
-        
-        // Set main scene cursor to custom cursor before showing dialog
-        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-        }
-        
-        // Center on parent
-        dialogStage.centerOnScreen();
-        
-        // Make the dialog draggable by the title bar
-        setupDraggableStage(titleBar, dialogStage);
-        
-        // Show dialog and wait for it to close
-        dialogStage.showAndWait();
-        
-        // Restore custom cursor to main scene
-        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-        }
-        
-        // Return result
-        return dialogConfirmed;
-    }
+ * Shows a fully custom styled confirmation dialog with our custom title bar
+ */
+private boolean showCustomConfirmDialog(String title, String content) {
+    // Create a new stage for our custom dialog
+    Stage dialogStage = new Stage();
+    dialogStage.initModality(Modality.APPLICATION_MODAL);
+    dialogStage.initStyle(StageStyle.UNDECORATED);
+    dialogStage.setTitle(title);
     
-    /**
-     * Shows a wood-styled info alert with custom title bar
-     */
-    private void showWoodenAlert(String title, String content) {
-        // Create a new stage for our custom dialog
-        Stage dialogStage = new Stage();
-        dialogStage.initModality(Modality.APPLICATION_MODAL);
-        dialogStage.initStyle(StageStyle.UNDECORATED);
-        dialogStage.setTitle(title);
-        
-        // Create the custom title bar
-        HBox titleBar = createTitleBar(dialogStage, title);
-        
-        // Create content area
-        VBox contentArea = new VBox(10);
-        contentArea.setAlignment(Pos.CENTER);
-        contentArea.setPadding(new Insets(20, 20, 20, 20));
-        contentArea.setStyle("-fx-background-color: #5d4228;");
-        
-        // Create content text
-        Text contentText = new Text(content);
-        contentText.setFont(Font.font("Segoe UI", 14));
-        contentText.setFill(Color.web("#e8d9b5"));
-        contentText.setWrappingWidth(350);
-        
-        // Create OK button
-        Button okButton = new Button("OK");
-        okButton.setPrefWidth(100);
-        okButton.setPrefHeight(30);
-        okButton.setStyle(BUTTON_NORMAL_STYLE);
-        
-        // Set custom cursor for the OK button
-        Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
-        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
-        okButton.setCursor(customCursor);
-        
-        // OK button hover effect
-        okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
-        okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
-        
-        // OK button click action
-        okButton.setOnAction(e -> dialogStage.close());
-        
-        // Add button to button area
-        HBox buttonBox = new HBox();
-        buttonBox.setAlignment(Pos.CENTER);
-        buttonBox.setPadding(new Insets(20, 0, 10, 0));
-        buttonBox.getChildren().add(okButton);
-        buttonBox.setStyle("-fx-background-color: #5d4228;");
-        
-        // Build the content area
-        contentArea.getChildren().addAll(contentText, buttonBox);
-        
-        // Create main container with title bar and content
-        VBox root = new VBox();
-        root.getChildren().addAll(titleBar, contentArea);
-        root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
-        
-        // Apply drop shadow effect
-        root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
-        
-        // Set up the scene
-        Scene dialogScene = new Scene(root, 400, 200);
-        dialogScene.setFill(Color.web("#5d4228"));
-        dialogStage.setScene(dialogScene);
-        
-        // Set custom cursor for the dialog scene and its root
-        dialogScene.setCursor(customCursor);
-        root.setCursor(customCursor);
-
-        // Set owner of the dialog to the main application window
-        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
-            dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
-        }
-
-        // Center on parent
-        dialogStage.centerOnScreen();
-        
-        // Make the dialog draggable by the title bar
-        setupDraggableStage(titleBar, dialogStage);
-        
-        // Show dialog and wait for it to close
-        dialogStage.showAndWait();
-        
-        // Restore custom cursor to main scene
-        // Removed problematic line: if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) { Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor()); }
-    }
+    // Reset dialog result
+    dialogConfirmed = false;
+    
+    // Create the custom title bar
+    HBox titleBar = createTitleBar(dialogStage, title);
+    
+    // Create content area
+    VBox contentArea = new VBox(10);
+    contentArea.setAlignment(Pos.CENTER);
+    contentArea.setPadding(new Insets(20, 20, 20, 20));
+    contentArea.setStyle("-fx-background-color: #5d4228;");
+    
+    // Create content text
+    Text contentText = new Text(content);
+    contentText.setFont(Font.font("Segoe UI", 14));
+    contentText.setFill(Color.web("#e8d9b5"));
+    contentText.setWrappingWidth(350);
+    
+    // Create button area
+    HBox buttonBox = new HBox(20);
+    buttonBox.setAlignment(Pos.CENTER);
+    buttonBox.setPadding(new Insets(20, 0, 10, 0));
+    buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure the button area has the same background
+    
+    // Create OK button
+    Button okButton = new Button("OK");
+    okButton.setPrefWidth(100);
+    okButton.setPrefHeight(30);
+    okButton.setStyle(BUTTON_NORMAL_STYLE);
+    
+    // Set custom cursor for the OK button
+    Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+    ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+    okButton.setCursor(customCursor);
+    
+    // OK button hover effect
+    okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
+    okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
+    
+    // OK button click action
+    okButton.setOnAction(e -> {
+        dialogConfirmed = true;
+        dialogStage.close();
+    });
+    
+    // Create Cancel button
+    Button cancelButton = new Button("Cancel");
+    cancelButton.setPrefWidth(100);
+    cancelButton.setPrefHeight(30);
+    cancelButton.setStyle(BUTTON_NORMAL_STYLE);
+    
+    // Set custom cursor for the Cancel button
+    cancelButton.setCursor(customCursor);
+    
+    // Cancel button hover effect
+    cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
+    cancelButton.setOnMouseExited(e -> cancelButton.setStyle(BUTTON_NORMAL_STYLE));
+    
+    // Cancel button click action
+    cancelButton.setOnAction(e -> {
+        dialogConfirmed = false;
+        dialogStage.close();
+    });
+    
+    // Add buttons to button area
+    buttonBox.getChildren().addAll(okButton, cancelButton);
+    
+    // Build the content area
+    contentArea.getChildren().addAll(contentText, buttonBox);
+    
+    // Create main container with title bar and content
+    VBox root = new VBox();
+    root.getChildren().addAll(titleBar, contentArea);
+    root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
+    
+    // Apply drop shadow effect
+    root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
+    
+    // Set up the scene with more height to prevent buttons from being cut off
+    Scene dialogScene = new Scene(root, 400, 220);
+    // Add a style to ensure the scene background is also properly colored
+    dialogScene.setFill(Color.web("#5d4228"));
+    dialogStage.setScene(dialogScene);
+    
+    // Set custom cursor for the dialog scene and its root
+    dialogScene.setCursor(customCursor);
+    root.setCursor(customCursor);
+    
+    // Center on parent
+    dialogStage.centerOnScreen();
+    
+    // Make the dialog draggable by the title bar
+    setupDraggableStage(titleBar, dialogStage);
+    
+    // Show dialog and wait for it to close
+    dialogStage.showAndWait();
+    
+    // Return result
+    return dialogConfirmed;
+}
+    
+    
+/**
+ * Shows a wood-styled info alert with custom title bar
+ */
+private void showWoodenAlert(String title, String content) {
+    // Create a new stage for our custom dialog
+    Stage dialogStage = new Stage();
+    dialogStage.initModality(Modality.APPLICATION_MODAL);
+    dialogStage.initStyle(StageStyle.UNDECORATED);
+    dialogStage.setTitle(title);
+    
+    // Create the custom title bar
+    HBox titleBar = createTitleBar(dialogStage, title);
+    
+    // Create content area
+    VBox contentArea = new VBox(10);
+    contentArea.setAlignment(Pos.CENTER);
+    contentArea.setPadding(new Insets(20, 20, 20, 20));
+    contentArea.setStyle("-fx-background-color: #5d4228;");
+    
+    // Create content text
+    Text contentText = new Text(content);
+    contentText.setFont(Font.font("Segoe UI", 14));
+    contentText.setFill(Color.web("#e8d9b5"));
+    contentText.setWrappingWidth(350);
+    
+    // Create button area
+    HBox buttonBox = new HBox();
+    buttonBox.setAlignment(Pos.CENTER);
+    buttonBox.setPadding(new Insets(20, 0, 10, 0));
+    buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure the button area has the same background
+    
+    // Create OK button
+    Button okButton = new Button("OK");
+    okButton.setPrefWidth(100);
+    okButton.setPrefHeight(30);
+    okButton.setStyle(BUTTON_NORMAL_STYLE);
+    
+    // Set custom cursor for the OK button
+    Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+    ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+    okButton.setCursor(customCursor);
+    
+    // OK button hover effect
+    okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
+    okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
+    
+    // OK button click action
+    okButton.setOnAction(e -> dialogStage.close());
+    
+    // Add button to button area
+    buttonBox.getChildren().add(okButton);
+    
+    // Build the content area
+    contentArea.getChildren().addAll(contentText, buttonBox);
+    
+    // Create main container with title bar and content
+    VBox root = new VBox();
+    root.getChildren().addAll(titleBar, contentArea);
+    root.setStyle("-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 2;");
+    
+    // Apply drop shadow effect
+    root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
+    
+    // Set up the scene with more height to prevent button from being cut off
+    Scene dialogScene = new Scene(root, 400, 200);
+    // Ensure scene background is properly colored
+    dialogScene.setFill(Color.web("#5d4228"));
+    dialogStage.setScene(dialogScene);
+    
+    // Set custom cursor for the dialog scene and its root
+    dialogScene.setCursor(customCursor);
+    root.setCursor(customCursor);
+    
+    // Center on parent
+    dialogStage.centerOnScreen();
+    
+    // Make the dialog draggable by the title bar
+    setupDraggableStage(titleBar, dialogStage);
+    
+    // Show dialog and wait for it to close
+    dialogStage.showAndWait();
+}
     
     /**
      * Creates a custom title bar for dialogs
@@ -497,12 +478,12 @@ public class LoadGameController implements Initializable {
     private void setupDraggableStage(HBox titleBar, Stage stage) {
         final double[] xOffset = {0};
         final double[] yOffset = {0};
-
+        
         titleBar.setOnMousePressed(event -> {
             xOffset[0] = event.getSceneX();
             yOffset[0] = event.getSceneY();
         });
-
+        
         titleBar.setOnMouseDragged(event -> {
             stage.setX(event.getScreenX() - xOffset[0]);
             stage.setY(event.getScreenY() - yOffset[0]);
