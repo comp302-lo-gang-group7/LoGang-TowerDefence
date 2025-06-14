@@ -2,6 +2,7 @@ package com.example.game;
 
 import com.example.controllers.GameScreenController;
 import com.example.entity.*;
+import com.example.ui.ImageLoader;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
 import javafx.animation.AnimationTimer;
@@ -9,6 +10,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -195,7 +197,6 @@ public class GameManager {
     public void attackEntity( Tower tower, AnimatedEntity e ) {
         if (e != null)
         {
-            Point pos = e.getFuturePosition();
             Projectile p = new Projectile(
                     tower,
                     tower.getX() * GameScreenController.TILE_SIZE + 32,
@@ -205,6 +206,43 @@ public class GameManager {
         }
     }
 
+	public void spawnEffect( Tower parent, double x, double y )
+	{
+		if ( parent != null )
+		{
+			Image spriteSheet;
+            double scaleFactor = 0.75, frameDuration;
+            int frameSize, frameCount;
+			switch ( parent )
+			{
+				case ArcherTower _:
+					spriteSheet = ImageLoader.getImage("/com/example/assets/effects/Explosions2.png");
+                    scaleFactor = 0.25;
+                    frameDuration = 0.05;
+                    frameSize = 192;
+                    frameCount = 6;
+					break;
+				case MageTower _:
+					spriteSheet = ImageLoader.getImage("/com/example/assets/effects/Fire.png");
+                    frameSize = 128;
+                    scaleFactor = 0.5;
+                    frameDuration = 0.2;
+                    frameCount = 7;
+					break;
+				case ArtilleryTower _:
+					spriteSheet = ImageLoader.getImage("/com/example/assets/effects/Explosions2.png");
+                    frameSize = 192;
+                    frameCount = 6;
+                    frameDuration = 0.4;
+					break;
+				default:
+					throw new IllegalArgumentException();
+			}
+			Effect e = new Effect(spriteSheet, frameCount, frameSize, frameDuration, scaleFactor, x, y);
+			this.delayedAdd.add(e);
+		}
+	}
+
     public AnimatedEntity nearestEnemy( Tower tower )
     {
         return enemies.stream()
@@ -213,7 +251,7 @@ public class GameManager {
                 .orElse(null);
     }
 
-    public void removeProjectile( Projectile p )
+    public void removeEntity( Entity p )
     {
         this.delayedRemove.add(p);
     }

@@ -104,7 +104,7 @@ public class AnimatedEntity extends Entity {
 
     public Point getFuturePosition()
     {
-        int futureSteps = ( int ) (1.5 * speed);
+        int futureSteps = ( int ) (0.75 * speed);
         if ( waypointIndex + futureSteps < path.size() ) {
             return path.get(waypointIndex + futureSteps);
         }
