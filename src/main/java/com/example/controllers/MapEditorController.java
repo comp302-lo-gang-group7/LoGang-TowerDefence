@@ -22,6 +22,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -151,6 +152,12 @@ public class MapEditorController implements Initializable {
     // 6) Set initial mode
     currentMode = EditorMode.EDIT;
     updateModeButtonStyles();
+
+    // 7) Set custom cursor for the entire scene
+    if (Main.getViewManager().getScene() != null) {
+        Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+        Main.getViewManager().setCustomCursor(customCursorImage);
+    }
 }
 
     /**
@@ -375,6 +382,11 @@ public class MapEditorController implements Initializable {
             // Apply normal style
             button.setStyle(buttonStyle);
             
+            // Set custom cursor for the button
+            Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+            ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+            button.setCursor(customCursor);
+
             // Add hover effects
             button.setOnMouseEntered(e -> button.setStyle(buttonHoverStyle));
             button.setOnMouseExited(e -> button.setStyle(buttonStyle));

@@ -1,17 +1,18 @@
 package com.example.utils;
 
 import javafx.animation.ScaleTransition;
-import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -40,8 +41,7 @@ public class MapEditorUtils {
                                                     "-fx-text-fill: #f5ead9; -fx-font-family: 'Segoe UI'; " +
                                                     "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                     "-fx-border-color: #a07748; -fx-border-width: 2; " +
-                                                    "-fx-border-radius: 5; -fx-background-radius: 5; " +
-                                                    "-fx-cursor: hand;";
+                                                    "-fx-border-radius: 5; -fx-background-radius: 5;";
     
     public static final String BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
                                                       "-fx-text-fill: #d9c9a0; -fx-font-family: 'Segoe UI'; " +
@@ -59,8 +59,7 @@ public class MapEditorUtils {
                                                        "-fx-text-fill: #f5ffe9; -fx-font-family: 'Segoe UI'; " +
                                                        "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                        "-fx-border-color: #6a894d; -fx-border-width: 2; " +
-                                                       "-fx-border-radius: 5; -fx-background-radius: 5; " +
-                                                       "-fx-cursor: hand;";
+                                                       "-fx-border-radius: 5; -fx-background-radius: 5; ";
     
     public static final String OK_BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#2e5a23, #447240); " +
                                                          "-fx-text-fill: #d9f0c0; -fx-font-family: 'Segoe UI'; " +
