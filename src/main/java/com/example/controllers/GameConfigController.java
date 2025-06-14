@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,6 +21,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -239,6 +241,11 @@ public class GameConfigController implements Initializable {
 		okButton.setPrefHeight(30);
 		okButton.setStyle(BUTTON_NORMAL_STYLE);
 
+		// Set custom cursor for the OK button
+		Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+		ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+		okButton.setCursor(customCursor);
+
 		// OK button hover effect
 		okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
 		okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
@@ -254,6 +261,9 @@ public class GameConfigController implements Initializable {
 		cancelButton.setPrefWidth(100);
 		cancelButton.setPrefHeight(30);
 		cancelButton.setStyle(BUTTON_NORMAL_STYLE);
+
+		// Set custom cursor for the Cancel button
+		cancelButton.setCursor(customCursor);
 
 		// Cancel button hover effect
 		cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
@@ -279,11 +289,14 @@ public class GameConfigController implements Initializable {
 		// Apply drop shadow effect
 		root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
 
-		// Set up the scene with more height to prevent buttons from being cut off
-		Scene dialogScene = new Scene(root, 400, 220);
-		// Add a style to ensure the scene background is also properly colored
+		// Set up the scene
+		Scene dialogScene = new Scene(root, 400, 200);
 		dialogScene.setFill(Color.web("#5d4228"));
 		dialogStage.setScene(dialogScene);
+
+		// Set custom cursor for the dialog scene and its root
+		dialogScene.setCursor(customCursor);
+		root.setCursor(customCursor);
 
 		// Center on parent
 		dialogStage.centerOnScreen();
@@ -294,7 +307,6 @@ public class GameConfigController implements Initializable {
 		// Show dialog and wait for it to close
 		dialogStage.showAndWait();
 
-		// Return result
 		return dialogConfirmed;
 	}
 
@@ -303,13 +315,12 @@ public class GameConfigController implements Initializable {
 	 * Shows a wood-styled info alert with custom title bar
 	 */
 	private void showWoodenAlert(String title, String content) {
-		// Create a new stage for our custom dialog
 		Stage dialogStage = new Stage();
 		dialogStage.initModality(Modality.APPLICATION_MODAL);
 		dialogStage.initStyle(StageStyle.UNDECORATED);
 		dialogStage.setTitle(title);
 
-		// Create the custom title bar
+		// Create custom title bar
 		HBox titleBar = createTitleBar(dialogStage, title);
 
 		// Create content area
@@ -324,17 +335,16 @@ public class GameConfigController implements Initializable {
 		contentText.setFill(Color.web("#e8d9b5"));
 		contentText.setWrappingWidth(350);
 
-		// Create button area
-		HBox buttonBox = new HBox();
-		buttonBox.setAlignment(Pos.CENTER);
-		buttonBox.setPadding(new Insets(20, 0, 10, 0));
-		buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure the button area has the same background
-
 		// Create OK button
 		Button okButton = new Button("OK");
 		okButton.setPrefWidth(100);
 		okButton.setPrefHeight(30);
 		okButton.setStyle(BUTTON_NORMAL_STYLE);
+
+		// Set custom cursor for the OK button
+		Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+		ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+		okButton.setCursor(customCursor);
 
 		// OK button hover effect
 		okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
@@ -344,7 +354,11 @@ public class GameConfigController implements Initializable {
 		okButton.setOnAction(e -> dialogStage.close());
 
 		// Add button to button area
+		HBox buttonBox = new HBox();
+		buttonBox.setAlignment(Pos.CENTER);
+		buttonBox.setPadding(new Insets(20, 0, 10, 0));
 		buttonBox.getChildren().add(okButton);
+		buttonBox.setStyle("-fx-background-color: #5d4228;");
 
 		// Build the content area
 		contentArea.getChildren().addAll(contentText, buttonBox);
@@ -357,11 +371,14 @@ public class GameConfigController implements Initializable {
 		// Apply drop shadow effect
 		root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
 
-		// Set up the scene with more height to prevent button from being cut off
+		// Set up the scene
 		Scene dialogScene = new Scene(root, 400, 200);
-		// Ensure scene background is properly colored
 		dialogScene.setFill(Color.web("#5d4228"));
 		dialogStage.setScene(dialogScene);
+
+		// Set custom cursor for the dialog scene and its root
+		dialogScene.setCursor(customCursor);
+		root.setCursor(customCursor);
 
 		// Center on parent
 		dialogStage.centerOnScreen();
@@ -399,6 +416,11 @@ public class GameConfigController implements Initializable {
 		// Hover effect for close button
 		closeButton.setOnMouseEntered(e -> closeButton.setStyle(CLOSE_BUTTON_HOVER + "-fx-font-size: 16px;"));
 		closeButton.setOnMouseExited(e -> closeButton.setStyle(BUTTON_TRANSPARENT_STYLE + "-fx-font-size: 16px;"));
+
+		// Set custom cursor for the close button
+		Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+		ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+		closeButton.setCursor(customCursor);
 
 		// Add components to title bar
 		titleBar.getChildren().addAll(titleLabel, closeButton);

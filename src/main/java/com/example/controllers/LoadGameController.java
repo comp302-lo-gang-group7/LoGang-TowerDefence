@@ -14,12 +14,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -277,6 +279,11 @@ private boolean showCustomConfirmDialog(String title, String content) {
     okButton.setPrefHeight(30);
     okButton.setStyle(BUTTON_NORMAL_STYLE);
     
+    // Set custom cursor for the OK button
+    Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+    ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+    okButton.setCursor(customCursor);
+    
     // OK button hover effect
     okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
     okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
@@ -292,6 +299,9 @@ private boolean showCustomConfirmDialog(String title, String content) {
     cancelButton.setPrefWidth(100);
     cancelButton.setPrefHeight(30);
     cancelButton.setStyle(BUTTON_NORMAL_STYLE);
+    
+    // Set custom cursor for the Cancel button
+    cancelButton.setCursor(customCursor);
     
     // Cancel button hover effect
     cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
@@ -322,6 +332,10 @@ private boolean showCustomConfirmDialog(String title, String content) {
     // Add a style to ensure the scene background is also properly colored
     dialogScene.setFill(Color.web("#5d4228"));
     dialogStage.setScene(dialogScene);
+    
+    // Set custom cursor for the dialog scene and its root
+    dialogScene.setCursor(customCursor);
+    root.setCursor(customCursor);
     
     // Center on parent
     dialogStage.centerOnScreen();
@@ -374,6 +388,11 @@ private void showWoodenAlert(String title, String content) {
     okButton.setPrefHeight(30);
     okButton.setStyle(BUTTON_NORMAL_STYLE);
     
+    // Set custom cursor for the OK button
+    Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+    ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+    okButton.setCursor(customCursor);
+    
     // OK button hover effect
     okButton.setOnMouseEntered(e -> okButton.setStyle(BUTTON_HOVER_STYLE));
     okButton.setOnMouseExited(e -> okButton.setStyle(BUTTON_NORMAL_STYLE));
@@ -400,6 +419,10 @@ private void showWoodenAlert(String title, String content) {
     // Ensure scene background is properly colored
     dialogScene.setFill(Color.web("#5d4228"));
     dialogStage.setScene(dialogScene);
+    
+    // Set custom cursor for the dialog scene and its root
+    dialogScene.setCursor(customCursor);
+    root.setCursor(customCursor);
     
     // Center on parent
     dialogStage.centerOnScreen();
@@ -437,6 +460,11 @@ private void showWoodenAlert(String title, String content) {
         // Hover effect for close button
         closeButton.setOnMouseEntered(e -> closeButton.setStyle(CLOSE_BUTTON_HOVER + "-fx-font-size: 16px;"));
         closeButton.setOnMouseExited(e -> closeButton.setStyle(BUTTON_TRANSPARENT_STYLE + "-fx-font-size: 16px;"));
+        
+        // Set custom cursor for the close button
+        Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+        closeButton.setCursor(customCursor);
         
         // Add components to title bar
         titleBar.getChildren().addAll(titleLabel, closeButton);
