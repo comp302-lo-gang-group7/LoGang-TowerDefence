@@ -1,6 +1,13 @@
 package com.example.controllers;
 
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.ResourceBundle;
+
 import com.example.main.Main;
+
+import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,24 +15,22 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.animation.ScaleTransition;
 import javafx.util.Duration;
-
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ResourceBundle;
 
 /**
  * Controller for the load game page. It displays saved games and provides functionality 
@@ -44,8 +49,7 @@ public class LoadGameController implements Initializable {
                                                     "-fx-text-fill: #f5ead9; -fx-font-family: 'Segoe UI'; " +
                                                     "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                     "-fx-border-color: #a07748; -fx-border-width: 2; " +
-                                                    "-fx-border-radius: 5; -fx-background-radius: 5; " +
-                                                    "-fx-cursor: hand;";
+                                                    "-fx-border-radius: 5; -fx-background-radius: 5; ";
     
     private static final String BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
                                                       "-fx-text-fill: #d9c9a0; -fx-font-family: 'Segoe UI'; " +
