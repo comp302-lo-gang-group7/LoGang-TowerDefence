@@ -337,6 +337,11 @@ public class LoadGameController implements Initializable {
         dialogScene.setCursor(customCursor);
         root.setCursor(customCursor);
         
+        // Set owner of the dialog to the main application window
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
+            dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
+        }
+        
         // Set main scene cursor to custom cursor before showing dialog
         if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
             Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
@@ -429,25 +434,23 @@ public class LoadGameController implements Initializable {
         // Set custom cursor for the dialog scene and its root
         dialogScene.setCursor(customCursor);
         root.setCursor(customCursor);
-        
+
+        // Set owner of the dialog to the main application window
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
+            dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
+        }
+
         // Center on parent
         dialogStage.centerOnScreen();
         
         // Make the dialog draggable by the title bar
         setupDraggableStage(titleBar, dialogStage);
         
-        // Set main scene cursor to custom cursor before showing dialog
-        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-        }
-        
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
         
         // Restore custom cursor to main scene
-        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-        }
+        // Removed problematic line: if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) { Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor()); }
     }
     
     /**
@@ -494,12 +497,12 @@ public class LoadGameController implements Initializable {
     private void setupDraggableStage(HBox titleBar, Stage stage) {
         final double[] xOffset = {0};
         final double[] yOffset = {0};
-        
+
         titleBar.setOnMousePressed(event -> {
             xOffset[0] = event.getSceneX();
             yOffset[0] = event.getSceneY();
         });
-        
+
         titleBar.setOnMouseDragged(event -> {
             stage.setX(event.getScreenX() - xOffset[0]);
             stage.setY(event.getScreenY() - yOffset[0]);

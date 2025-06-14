@@ -298,19 +298,16 @@ public class GameConfigController implements Initializable {
 		dialogScene.setCursor(customCursor);
 		root.setCursor(customCursor);
 
-		// Set main scene cursor to custom cursor before showing dialog
-		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+		// Set owner of the dialog to the main application window
+		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
+			dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
 		}
 
 		// Show dialog and wait for it to close
 		dialogStage.showAndWait();
 
 		// Restore custom cursor to main scene
-		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-		}
-
+		// No explicit setCursor here, relies on ViewManager's EventFilter
 		return dialogConfirmed;
 	}
 
@@ -384,24 +381,22 @@ public class GameConfigController implements Initializable {
 		dialogScene.setCursor(customCursor);
 		root.setCursor(customCursor);
 
+		// Set owner of the dialog to the main application window
+		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
+			dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
+		}
+
 		// Center on parent
 		dialogStage.centerOnScreen();
 
 		// Make the dialog draggable by the title bar
 		setupDraggableStage(titleBar, dialogStage);
 
-		// Set main scene cursor to custom cursor before showing dialog
-		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-		}
-
 		// Show dialog and wait for it to close
 		dialogStage.showAndWait();
 
 		// Restore custom cursor to main scene
-		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
-			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
-		}
+		// No explicit setCursor here, relies on ViewManager's EventFilter
 	}
 
 	/**

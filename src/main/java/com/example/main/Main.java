@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.example.ui.ViewManager;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageCursor;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -26,7 +27,8 @@ public class Main extends javafx.application.Application {
 
         // Set custom cursor
         Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
-        viewManager.setCustomCursor(customCursorImage);
+        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+        viewManager.setCustomCursor(customCursor);
         
         stage.show();
     }

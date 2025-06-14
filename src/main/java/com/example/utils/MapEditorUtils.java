@@ -274,6 +274,11 @@ public class MapEditorUtils {
         dialogStage.initStyle(StageStyle.UNDECORATED);
         dialogStage.setTitle(title);
         
+        // Set owner of the dialog to the main application window
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null) {
+            dialogStage.initOwner(Main.getViewManager().getScene().getWindow());
+        }
+
         // Reset dialog result
         dialogConfirmed = false;
         

@@ -9,7 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.ImageCursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -17,43 +17,77 @@ import javafx.stage.Stage;
  * The view manager is used to request screen changes. Whenever a screen is to be loaded into the scene, the view manager handles that process.
  */
 public class ViewManager {
-    private final Stage stage;
+    private final Stage primaryStage;
     private static Scene scene;
+    private ImageCursor customCursor;
+    private javafx.event.EventHandler<MouseEvent> mouseMovedEventHandler;
 
-    public ViewManager(Stage stage) {
-        this.stage = stage;
+    public ViewManager(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
 
+    public void showScene(String fxmlPath, int width, int height) {
         try {
-            // Load custom title bar
-            FXMLLoader titleBarLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/CustomTitleBar.fxml"));
-            Parent titleBar = titleBarLoader.load();
-            
-            // Load initial content (home page)
-            FXMLLoader contentLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/home_page.fxml"));
-            Parent content = contentLoader.load();
-            
-            // Create root container with title bar at top and content area
-            VBox root = new VBox();
-            root.getChildren().addAll(titleBar, content);
-            
-            // Create scene
-            this.scene = new Scene(root);
-            stage.setScene(scene);
-            
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
+            scene = new Scene(fxmlLoader.load(), width, height);
+            primaryStage.setScene(scene);
+            applyCustomCursorToCurrentScene();
         } catch (IOException e) {
             System.out.printf("An IOException occurred during ViewManager initialization, error: %s%n", e);
-            e.printStackTrace();
-        } catch (Exception unexpectedError) {
-            System.out.printf("An unexpected error occurred in ViewManager constructor, error: %s%n", unexpectedError);
-            unexpectedError.printStackTrace();
         }
     }
 
-    public void setCustomCursor(Image cursorImage) {
-        if (scene != null && cursorImage != null) {
-            ImageCursor customCursor = new ImageCursor(cursorImage, cursorImage.getWidth() / 2, cursorImage.getHeight() / 2);
-            scene.setCursor(customCursor);
+    public void setScene(String fxmlPath) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
+            scene.setRoot(fxmlLoader.load());
+            resizeWindow(scene.getWidth(), scene.getHeight());
+            applyCustomCursorToCurrentScene();
+        } catch (IOException e) {
+            System.err.println("Failed to load FXML: " + fxmlPath + " error: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    public void setCustomCursor(ImageCursor cursor) {
+        this.customCursor = cursor;
+        applyCustomCursorToCurrentScene();
+    }
+
+    private void applyCustomCursorToCurrentScene() {
+        if (customCursor != null && primaryStage.getScene() != null) {
+            Scene currentScene = primaryStage.getScene();
+            currentScene.setCursor(customCursor);
+
+            if (currentScene.getRoot() != null) {
+                // Remove existing event filter if present to prevent multiple attachments
+                if (mouseMovedEventHandler != null) {
+                    currentScene.getRoot().removeEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedEventHandler);
+                }
+
+                // Create and add new event filter
+                mouseMovedEventHandler = event -> {
+                    if (!currentScene.getCursor().equals(customCursor)) {
+                        currentScene.setCursor(customCursor);
+                    }
+                };
+                currentScene.getRoot().addEventFilter(MouseEvent.MOUSE_MOVED, mouseMovedEventHandler);
+            }
+        }
+    }
+
+    public ImageCursor getCustomCursor() {
+        return customCursor;
+    }
+
+    public Scene getScene() {
+        return primaryStage.getScene();
+    }
+
+    public void resizeWindow(double width, double height) {
+        primaryStage.setWidth(width);
+        primaryStage.setHeight(height);
+        primaryStage.centerOnScreen();
     }
 
     public void switchTo(String fxmlPath) {
@@ -115,28 +149,12 @@ public class ViewManager {
      * @param width
      * @param height
      */
-    public void resizeWindow(int width, int height) {
-        stage.setWidth(width);
-        stage.setHeight(height + 25); // Updated from 30 to 25 for smaller title bar
-    }
-
-    public void terminateApplication() {
-        stage.close();
-    }
-
-    public static Scene getScene() {
-        return scene;
-    }
-
-    public javafx.scene.Cursor getCustomCursor() {
-        return scene.getCursor();
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
     public void resizeWindowDefault() {
         this.resizeWindow(640, 450);
     }
+
+    public void terminateApplication() {
+        primaryStage.close();
+    }
 }
+
