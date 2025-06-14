@@ -307,6 +307,11 @@ public class GameConfigController implements Initializable {
 		// Show dialog and wait for it to close
 		dialogStage.showAndWait();
 
+		// Restore custom cursor to main scene
+		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+		}
+
 		return dialogConfirmed;
 	}
 
@@ -388,6 +393,11 @@ public class GameConfigController implements Initializable {
 
 		// Show dialog and wait for it to close
 		dialogStage.showAndWait();
+
+		// Restore custom cursor to main scene
+		if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+			Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+		}
 	}
 
 	/**

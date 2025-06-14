@@ -1,5 +1,7 @@
 package com.example.utils;
 
+import com.example.main.Main;
+
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -162,6 +164,11 @@ public class MapEditorUtils {
         
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
+
+        // Restore custom cursor to main scene
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
     }
 
     public static void showErrorAlert(String title, String header, String content, Object caller) {
@@ -237,6 +244,11 @@ public class MapEditorUtils {
         dialog.getDialogPane().getScene().setCursor(customCursor);
 
         dialog.showAndWait();
+
+        // Restore custom cursor to main scene
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
     }
 
 
@@ -348,6 +360,11 @@ public class MapEditorUtils {
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
         
+        // Restore custom cursor to main scene
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
+
         return dialogConfirmed;
     }
 

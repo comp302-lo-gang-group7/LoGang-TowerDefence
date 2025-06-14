@@ -128,6 +128,10 @@ public class ViewManager {
         return scene;
     }
 
+    public javafx.scene.Cursor getCustomCursor() {
+        return scene.getCursor();
+    }
+
     public Stage getStage() {
         return stage;
     }
