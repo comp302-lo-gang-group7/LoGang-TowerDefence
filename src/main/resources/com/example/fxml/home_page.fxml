@@ -49,7 +49,7 @@
 
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="25.0" translateY="-50.0">
-
+         
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Button container -->

@@ -42,13 +42,9 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="30.0" translateY="-120.0">
-      <!-- Removed Title with stylized rectangle backdrop (Available Maps) -->
-
+   <VBox alignment="CENTER" spacing="30.0">
       <!-- Game list panel -->
       <StackPane>
-         <!-- Removed Panel backdrop Rectangle -->
-
          <!-- Save game list -->
          <VBox alignment="CENTER" maxWidth="480" spacing="15">
             <padding>
@@ -57,8 +53,8 @@
 
             <!-- ListView for saved games -->
             <ListView fx:id="savedMapsListView" prefHeight="180" prefWidth="480"
-                      style="-fx-background-color: transparent; -fx-border-color: #a07748;
-                     -fx-border-width: 2; -fx-control-inner-background: transparent;" />
+                      style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748;
+                     -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
 
             <!-- Starting Gold Input -->
             <HBox alignment="CENTER_LEFT" spacing="10">
