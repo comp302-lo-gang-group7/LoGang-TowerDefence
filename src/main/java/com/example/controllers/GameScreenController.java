@@ -52,6 +52,7 @@ public class GameScreenController extends Controller {
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
 	private boolean isFast;
+	private Parent gameOverOverlay;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
 		contextMenu.setAutoHide(true);
@@ -64,6 +65,13 @@ public class GameScreenController extends Controller {
 						.asString()
 						.concat(String.format("/%d", playerState.getMaxLives()))
 		);
+
+		// show game over overlay when lives reach zero
+		playerState.getLivesProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal.intValue() <= 0) {
+				showGameOverOverlay();
+			}
+		});
 
 		// load map data
         TileView[][] mapTiles;
@@ -387,6 +395,21 @@ public class GameScreenController extends Controller {
 		speedUp.setGraphic(speedView);
 		pauseButton.setGraphic(optionsView);
 		exitButton.setGraphic(exitView);
+	}
+
+	private void showGameOverOverlay() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (gameOverOverlay != null) {
+			return;
+		}
+		try {
+			gameOverOverlay = FXMLLoader.load(getClass().getResource("/com/example/fxml/game_over.fxml"));
+			gameArea.getChildren().add(gameOverOverlay);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
