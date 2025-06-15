@@ -18,6 +18,7 @@ public class Projectile extends Entity
 	private boolean active;
 	private AnimatedEntity target;
 	private Tower parent;
+	private double scaleFactor;
 
 	public Projectile( Tower parent, double x1, double y1, AnimatedEntity target )
 	{
@@ -25,13 +26,16 @@ public class Projectile extends Entity
 		switch ( parent )
 		{
 			case ArcherTower _:
-				image = ImageLoader.getImage("/arrow.png");
+				image = ImageLoader.getImage("/com/example/assets/effects/arrow.png");
+				scaleFactor = 0.2;
 				break;
 			case MageTower _:
-				image = ImageLoader.getImage("/spell.png");
+				image = ImageLoader.getImage("/com/example/assets/effects/spell.png");
+				scaleFactor = 0.3;
 				break;
 			case ArtilleryTower _:
-				image = ImageLoader.getImage("/bomb.png");
+				image = ImageLoader.getImage("/com/example/assets/effects/bomb.png");
+				scaleFactor = 0.2;
 				break;
 			default:
 				image = null;
@@ -69,7 +73,8 @@ public class Projectile extends Entity
 			{
 				this.active = false;
 				target.applyDamage(parent.baseDamage);
-				GameManager.getInstance().removeProjectile(this);
+				GameManager.getInstance().removeEntity(this);
+				GameManager.getInstance().spawnEffect(parent, x, y);
 			}
 		}
 	}
@@ -80,7 +85,7 @@ public class Projectile extends Entity
 		gc.save();
 		gc.translate(x, y);
 		gc.rotate(angle);
-		gc.scale(0.5, 0.5);
+		gc.scale(scaleFactor, scaleFactor);
 		gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
 		gc.restore();
 	}
