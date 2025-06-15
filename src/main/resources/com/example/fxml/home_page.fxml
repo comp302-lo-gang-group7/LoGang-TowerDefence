@@ -76,14 +76,6 @@
          
       <!-- Menu panel with wooden styling -->
       <StackPane>
-         <!-- Menu panel backdrop -->
-         <Rectangle width="320" height="260" arcWidth="15" arcHeight="15" 
-                    style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
-            </effect>
-         </Rectangle>
-            
          <!-- Button container -->
          <VBox alignment="CENTER" spacing="12.0" maxWidth="280.0">
             <padding>
@@ -96,8 +88,6 @@
             <Button fx:id="loadGameBtn" text="Load Game" onAction="#goToLoadGamePage" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
-                    prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="settingsBtn" text="Settings" onAction="#goToSettings" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
@@ -148,11 +138,20 @@
          <StackPane alignment="BOTTOM_LEFT">
             <Rectangle width="40" height="40" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Button onAction="#goToSettings" style="-fx-background-color: transparent;">
+               <graphic>
+                  <ImageView fitHeight="30" fitWidth="30" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assets/buttons/Settings_Button.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </StackPane>
       </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
-            <Rectangle width="40" height="40" 
+            <Rectangle width="40" height="40"
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
          </StackPane>
       </bottom>
