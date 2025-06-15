@@ -32,7 +32,7 @@
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;" text="DEFAULT GAME CONFIG">
+            <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;" text="DEFAULT GAME SETUP">
                <effect>
                   <DropShadow color="#00000080" height="3" radius="1" width="3" />
                </effect>
@@ -42,35 +42,13 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="30.0">
-      <!-- Title with stylized rectangle backdrop -->
-      <StackPane>
-         <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle arcHeight="20" arcWidth="20" height="70" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="600">
-            <effect>
-               <DropShadow color="#00000099" height="15" radius="7" width="15" />
-            </effect>
-         </Rectangle>
-
-         <!-- Game title with wooden-like effect -->
-         <VBox alignment="CENTER" spacing="5">
-            <Text fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;" text="Available Maps">
-               <effect>
-                  <DropShadow color="#00000080" height="5" radius="2" width="5" />
-               </effect>
-            </Text>
-            <Text fill="#d9c9a0" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-style: italic;" text="Select a map to be used in the new game">
-               <effect>
-                  <DropShadow color="#00000080" height="2" radius="1" width="2" />
-               </effect>
-            </Text>
-         </VBox>
-      </StackPane>
+   <VBox alignment="CENTER" spacing="30.0" translateY="-120.0">
+      <!-- Removed Title with stylized rectangle backdrop (Available Maps) -->
 
       <!-- Game list panel -->
       <StackPane>
          <!-- Panel backdrop -->
-         <Rectangle arcHeight="15" arcWidth="15" height="280" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="520">
+         <Rectangle arcHeight="15" arcWidth="15" height="280" style="-fx-fill: #5d7542; -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="520">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
             </effect>
