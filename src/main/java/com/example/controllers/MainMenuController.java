@@ -8,8 +8,10 @@ import com.example.main.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
 /**
@@ -22,6 +24,17 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML private Button mapEditorBtn;
     @FXML private Button quitBtn;
     @FXML private Button settingsIconButton;
+
+    // New Game Sub-Menu elements
+    @FXML private VBox newGameSubMenuVBox;
+    @FXML private Button defaultGameBtn;
+    @FXML private Button customGameBtn;
+
+    // Load Game Sub-Menu elements
+    @FXML private VBox loadGameSubMenuVBox;
+    @FXML private ListView<String> savedGamesListView;
+    @FXML private Button loadSelectedBtn;
+    @FXML private Button deleteSelectedBtn;
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -30,6 +43,20 @@ public class MainMenuController extends Controller implements Initializable {
         
         // Add styling and animation
         setupButtonAnimations();
+
+        // Initialize sub-menu visibility
+        newGameSubMenuVBox.setVisible(false);
+        newGameSubMenuVBox.setManaged(false);
+        loadGameSubMenuVBox.setVisible(false);
+        loadGameSubMenuVBox.setManaged(false);
+
+        // Set actions for new game sub-menu buttons
+        defaultGameBtn.setOnAction(event -> goToDefaultGamePage());
+        customGameBtn.setOnAction(event -> goToCustomGamePage());
+
+        // Set actions for load game sub-menu buttons
+        loadSelectedBtn.setOnAction(event -> loadSelectedGame());
+        deleteSelectedBtn.setOnAction(event -> deleteSelectedGame());
     }
     
     private void setupButtonIcons() {
@@ -117,6 +144,12 @@ public class MainMenuController extends Controller implements Initializable {
             settingsIconButton.setOnMousePressed(e -> settingsIconButton.setScaleX(1.05));
             settingsIconButton.setOnMouseReleased(e -> settingsIconButton.setScaleX(1.1));
         }
+
+        // Apply styling to sub-menu buttons
+        if (defaultGameBtn != null) setupButtonStyle(defaultGameBtn, buttonCss, hoverCss, pressedCss);
+        if (customGameBtn != null) setupButtonStyle(customGameBtn, buttonCss, hoverCss, pressedCss);
+        if (loadSelectedBtn != null) setupButtonStyle(loadSelectedBtn, buttonCss, hoverCss, pressedCss);
+        if (deleteSelectedBtn != null) setupButtonStyle(deleteSelectedBtn, buttonCss, hoverCss, pressedCss);
     }
 
     private void setupButtonStyle(Button button, String normalStyle, String hoverStyle, String pressedStyle) {
@@ -157,13 +190,79 @@ public class MainMenuController extends Controller implements Initializable {
     }
 
     @FXML
-    public void goToNewGamePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/create_game_page.fxml");
+    public void toggleNewGameSubMenu() {
+        boolean isVisible = newGameSubMenuVBox.isVisible();
+        newGameSubMenuVBox.setVisible(!isVisible);
+        newGameSubMenuVBox.setManaged(!isVisible);
+        if (loadGameSubMenuVBox.isVisible()) {
+            loadGameSubMenuVBox.setVisible(false);
+            loadGameSubMenuVBox.setManaged(false);
+        }
     }
 
     @FXML
-    public void goToLoadGamePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/load_game_page.fxml");
+    public void toggleLoadGameSubMenu() {
+        boolean isVisible = loadGameSubMenuVBox.isVisible();
+        loadGameSubMenuVBox.setVisible(!isVisible);
+        loadGameSubMenuVBox.setManaged(!isVisible);
+        if (newGameSubMenuVBox.isVisible()) {
+            newGameSubMenuVBox.setVisible(false);
+            newGameSubMenuVBox.setManaged(false);
+        }
+        if (loadGameSubMenuVBox.isVisible()) {
+            populateSavedGamesList();
+        }
+    }
+
+    // Placeholder methods for new game actions (will be populated with logic from CreateGameController)
+    @FXML
+    public void goToDefaultGamePage() {
+        System.out.println("Default Game Started (Placeholder)");
+        // Logic to start default game
+        Main.getViewManager().switchTo("/com/example/fxml/game_config_page.fxml");
+    }
+
+    @FXML
+    public void goToCustomGamePage() {
+        System.out.println("Custom Game Started (Placeholder)");
+        // Logic to start custom game
+        Main.getViewManager().switchTo("/com/example/fxml/custom_game_page.fxml");
+    }
+
+    // Placeholder methods for load game actions (will be populated with logic from LoadGameController)
+    private void populateSavedGamesList() {
+        System.out.println("Populating saved games list (Placeholder)");
+        // Logic to load saved games into savedGamesListView
+        // For now, add some dummy data
+        savedGamesListView.getItems().clear();
+        savedGamesListView.getItems().addAll("Forest Campaign - Level 3 - 2025-06-14 17:12", 
+                                            "Desert Map - 2025-06-15 17:12", 
+                                            "Mountain Pass - Level 7 - 2025-06-13 17:12",
+                                            "Tutorial Map - 2025-06-12 17:12",
+                                            "Custom Map 1 - 2025-06-10 17:12");
+    }
+
+    @FXML
+    public void loadSelectedGame() {
+        String selectedGame = savedGamesListView.getSelectionModel().getSelectedItem();
+        if (selectedGame != null) {
+            System.out.println("Loading game: " + selectedGame + " (Placeholder)");
+            // Logic to load the selected game
+        } else {
+            System.out.println("No game selected to load.");
+        }
+    }
+
+    @FXML
+    public void deleteSelectedGame() {
+        String selectedGame = savedGamesListView.getSelectionModel().getSelectedItem();
+        if (selectedGame != null) {
+            System.out.println("Deleting game: " + selectedGame + " (Placeholder)");
+            // Logic to delete the selected game
+            savedGamesListView.getItems().remove(selectedGame);
+        } else {
+            System.out.println("No game selected to delete.");
+        }
     }
 
     @FXML
