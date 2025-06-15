@@ -42,6 +42,9 @@ public class GameScreenController extends Controller {
 	private javafx.animation.AnimationTimer hudTimer;
 	private boolean isPaused = false;
 
+	// This is for the tower attack radius highlight
+	private Parent pauseOverlay;
+	private Circle hoverRadius;
 
 	public static final int TILE_SIZE = 64;
 
@@ -49,7 +52,6 @@ public class GameScreenController extends Controller {
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
 	private boolean isFast;
-	private Parent pauseOverlay;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
 		contextMenu.setAutoHide(true);
@@ -127,6 +129,7 @@ public class GameScreenController extends Controller {
 
 
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
+		hideTowerRadius();
 		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
 			showBuildMenu(x, y, e.getScreenX(), e.getScreenY());
 		} else {
@@ -229,6 +232,36 @@ public class GameScreenController extends Controller {
 		);
 	}
 
+	/** Display a translucent circle around a tower indicating its attack range */
+	private void showTowerRadius(int x, int y) {
+		TileModel model = tiles[y][x].model;
+		if (!model.hasTower()) return;
+
+		double radius = model.getTower().getRange() * TILE_SIZE;
+		double cx = x * TILE_SIZE + TILE_SIZE / 2.0;
+		double cy = y * TILE_SIZE + TILE_SIZE / 2.0;
+
+		if (hoverRadius == null) {
+			hoverRadius = new Circle();
+			hoverRadius.setFill(Color.color(0, 0.5, 1.0, 0.15));
+			hoverRadius.setStroke(Color.web("#87bfbe"));
+			hoverRadius.setStrokeWidth(2);
+			towerLayer.getChildren().add(hoverRadius);
+		}
+
+		hoverRadius.setCenterX(cx);
+		hoverRadius.setCenterY(cy);
+		hoverRadius.setRadius(radius);
+		hoverRadius.toBack();
+		hoverRadius.setVisible(true);
+	}
+
+	/** Hide the tower radius circle, if present */
+	private void hideTowerRadius() {
+		if (hoverRadius != null) {
+			hoverRadius.setVisible(false);
+		}
+	}
 
 	private void constructTower(int x, int y, TileEnum towerType) {
 		Tile tile = tiles[y][x];
@@ -241,9 +274,11 @@ public class GameScreenController extends Controller {
 
 		tile.view = newView;
 		tile.model.setTower(towerType, 10, 5, 100);
-		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
-	}
 
+		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
+	}
 
 	private void sellTower(int x, int y) {
 		Tile tile = tiles[y][x];
@@ -256,7 +291,10 @@ public class GameScreenController extends Controller {
 
 		tile.view = newView;
 		tile.model.removeTower();
+		hideTowerRadius();
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
 

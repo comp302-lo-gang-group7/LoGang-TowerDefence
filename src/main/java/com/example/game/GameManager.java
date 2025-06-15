@@ -291,16 +291,20 @@ public class GameManager {
 
     public AnimatedEntity nearestEnemy(Tower tower) {
         double range = tower.getRange() * GameScreenController.TILE_SIZE;
+        double towerCenterX = (tower.getX() + 0.5) * GameScreenController.TILE_SIZE;
+        double towerCenterY = (tower.getY() + 0.5) * GameScreenController.TILE_SIZE;
 
         return enemies.stream()
                 .filter(e -> {
-                    double dx = Math.abs(tower.getX() * GameScreenController.TILE_SIZE - e.getX());
-                    double dy = Math.abs(tower.getY() * GameScreenController.TILE_SIZE - e.getY());
-                    return dx + dy <= range;
+                    double dx = towerCenterX - e.getX();
+                    double dy = towerCenterY - e.getY();
+                    double distance = Math.sqrt(dx * dx + dy * dy);
+                    return distance <= range;
                 })
                 .max(Comparator.comparingDouble(AnimatedEntity::getPathProgress))
                 .orElse(null);
     }
+
 
     public void removeEntity( Entity p )
     {
