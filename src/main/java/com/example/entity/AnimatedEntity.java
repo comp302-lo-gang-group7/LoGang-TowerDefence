@@ -180,13 +180,17 @@ public class AnimatedEntity extends Entity {
         gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
 
-        double iconSize = 15;
+        double iconSize = 10;
         double iconX = drawX + (spriteWidth * 0.8) - iconSize;
         double iconY = drawY + (spriteHeight * 0.75) - iconSize;
 
         if (speedModifier < 1.0 && SNOWFLAKE != null) {
             gc.drawImage(SNOWFLAKE, iconX + 10, iconY, iconSize, iconSize);
         }
+    }
+
+    public double getSpeedModifier() {
+        return speedModifier;
     }
 
     /**

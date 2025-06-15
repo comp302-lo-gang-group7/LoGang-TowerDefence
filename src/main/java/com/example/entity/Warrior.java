@@ -2,6 +2,7 @@ package com.example.entity;
 
 import com.example.controllers.GameScreenController;
 import com.example.game.GameManager;
+import com.example.ui.ImageLoader;
 import com.example.utils.Point;
 import com.example.entity.Goblin;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,6 +24,8 @@ public class Warrior extends AnimatedEntity {
     private static final Image THUNDER_ICON = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/effects/thunder.png"))
     );
+    private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
+
     private static final double GOBLIN_SPEED = 50;
 
     private final double baseSpeed;
@@ -59,19 +62,32 @@ public class Warrior extends AnimatedEntity {
     @Override
     public void render(GraphicsContext gc) {
         super.render(gc);
+
+        double spriteWidth = getSpriteWidth();
+        double spriteHeight = getSpriteHeight();
+        double drawX = getX() - spriteWidth / 2;
+        double drawY = getY() - spriteHeight / 2;
+
+        double iconSize = 10;
+        double baseIconY = drawY + spriteHeight * 0.75 - iconSize;
+        double baseIconX = drawX + spriteWidth - iconSize;
+
+        int iconOffset = 0;
+
+        // Draw thunder icon if boosting
         if (speedBoost) {
-            double spriteWidth = getSpriteWidth();
-            double spriteHeight = getSpriteHeight();
-            double drawX = getX() - spriteWidth / 2;
-            double drawY = getY() - spriteHeight / 2;
+            double iconX = baseIconX - iconOffset;
+            gc.drawImage(THUNDER_ICON, iconX, baseIconY, iconSize, iconSize);
+            iconOffset += iconSize + 2; // add spacing
+        }
 
-            double iconSize = 10;
-            double iconX = drawX + (spriteWidth * 0.8) - iconSize;
-            double iconY = drawY + (spriteHeight * 0.75) - iconSize;
-
-            gc.drawImage(THUNDER_ICON, iconX, iconY, iconSize, iconSize);
+        // Draw snowflake icon if slowed
+        if (getSpeedModifier() < 1.0) {
+            double iconX = baseIconX - iconOffset;
+            gc.drawImage(SNOWFLAKE, iconX, baseIconY, iconSize, iconSize);
         }
     }
+
 
     @Override
     public int modifyDamage(Tower source, int base) {
