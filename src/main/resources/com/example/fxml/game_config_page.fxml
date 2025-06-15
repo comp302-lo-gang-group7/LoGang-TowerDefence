@@ -47,12 +47,7 @@
 
       <!-- Game list panel -->
       <StackPane>
-         <!-- Panel backdrop -->
-         <Rectangle arcHeight="15" arcWidth="15" height="280" style="-fx-fill: #5d7542; -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="520">
-            <effect>
-               <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
-            </effect>
-         </Rectangle>
+         <!-- Removed Panel backdrop Rectangle -->
 
          <!-- Save game list -->
          <VBox alignment="CENTER" maxWidth="480" spacing="15">
@@ -62,8 +57,8 @@
 
             <!-- ListView for saved games -->
             <ListView fx:id="savedMapsListView" prefHeight="180" prefWidth="480"
-                      style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748;
-                     -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
+                      style="-fx-background-color: transparent; -fx-border-color: #a07748;
+                     -fx-border-width: 2; -fx-control-inner-background: transparent;" />
 
             <!-- Starting Gold Input -->
             <HBox alignment="CENTER_LEFT" spacing="10">
