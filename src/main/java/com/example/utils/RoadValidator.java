@@ -75,6 +75,47 @@ public class RoadValidator {
     }
 
     /**
+     * Identifies and returns a list of tower tiles that are not adjacent to any path tiles.
+     * Tower tiles must be placed next to a path for gameplay purposes.
+     *
+     * @param mapTileViews A 2D array of {@link TileView} representing the map.
+     * @return A list of {@link Point2D} objects representing the coordinates of
+     *         isolated tower tiles.
+     */
+    public static List<Point2D> findIsolatedTowerTiles(TileView[][] mapTileViews) {
+        List<Point2D> isolatedTowerTiles = new ArrayList<>();
+        int rows = mapTileViews.length;
+        int cols = mapTileViews[0].length;
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                TileEnum tileType = mapTileViews[row][col].getType();
+                
+                if (tileType == TileEnum.EMPTY_TOWER_TILE) {
+                    boolean hasAdjacentPath = false;
+                    
+                    // Check all four directions
+                    if (row > 0 && isRoadTile(mapTileViews[row-1][col].getType())) {
+                        hasAdjacentPath = true;
+                    } else if (col < cols-1 && isRoadTile(mapTileViews[row][col+1].getType())) {
+                        hasAdjacentPath = true;
+                    } else if (row < rows-1 && isRoadTile(mapTileViews[row+1][col].getType())) {
+                        hasAdjacentPath = true;
+                    } else if (col > 0 && isRoadTile(mapTileViews[row][col-1].getType())) {
+                        hasAdjacentPath = true;
+                    }
+                    
+                    if (!hasAdjacentPath) {
+                        isolatedTowerTiles.add(new Point2D(col, row));
+                    }
+                }
+            }
+        }
+        
+        return isolatedTowerTiles;
+    }
+
+    /**
      * Determines if a tile can connect in the specified direction.
      *
      * @param tileType  The type of the tile.
@@ -160,7 +201,7 @@ public class RoadValidator {
      * @param tileType The type of the tile.
      * @return {@code true} if the tile is a road tile, {@code false} otherwise.
      */
-    private static boolean isRoadTile(TileEnum tileType) {
+    public static boolean isRoadTile(TileEnum tileType) {
         String name = tileType.name();
         return name.contains("PATH") || name.contains("CORNER");
     }
