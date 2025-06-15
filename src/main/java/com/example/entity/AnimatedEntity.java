@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.ui.ImageLoader;
 import com.example.utils.Point;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -12,7 +13,10 @@ public class AnimatedEntity extends Entity {
     private final double frameDuration;
     private double frameTimer = 0;
     private int currentFrame = 0;
-
+    private double speedModifier = 1.0;
+    private double slowTimer = 0;
+    private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
+    
     // path + movement
     private final List<Point> path;
     /**
@@ -62,7 +66,14 @@ public class AnimatedEntity extends Entity {
 
         // 2) movement
         if (waypointIndex < path.size()) {
-            double remaining = speed * dt;
+            if (slowTimer > 0) {
+                slowTimer -= dt;
+                if (slowTimer <= 0) {
+                    speedModifier = 1.0;
+                }
+            }
+
+            double remaining = speed * speedModifier * dt;
 
             while (remaining > 0 && waypointIndex < path.size()) {
                 Point target = path.get(waypointIndex);
@@ -101,6 +112,28 @@ public class AnimatedEntity extends Entity {
         return waypointIndex >= path.size();
     }
 
+    /**
+     * Returns a numeric progress value representing how far this entity has
+     * advanced along its path. Higher values mean further progression.
+     */
+    public double getPathProgress()
+    {
+        if (waypointIndex <= 0)
+            return 0;
+        if (waypointIndex >= path.size())
+            return path.size();
+
+        int prevIndex = waypointIndex - 1;
+        Point prev = path.get(prevIndex);
+        Point next = path.get(waypointIndex);
+
+        double segmentLength = Math.hypot(next.x() - prev.x(), next.y() - prev.y());
+        if (segmentLength < 1e-6)
+            return waypointIndex;
+
+        double distFromPrev = Math.hypot(x - prev.x(), y - prev.y());
+        return prevIndex + Math.min(1.0, distFromPrev / segmentLength);
+    }
 
     public Point getFuturePosition()
     {
@@ -111,6 +144,13 @@ public class AnimatedEntity extends Entity {
         else {
             return path.getLast();
         }
+    }
+
+    public void applySlow(double factor, double duration) {
+        if (slowTimer <= 0) {
+            speedModifier = factor;
+        }
+        slowTimer = duration;
     }
 
     @Override
@@ -139,8 +179,57 @@ public class AnimatedEntity extends Entity {
         // Foreground (green)
         gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
+
+        double iconSize = 10;
+        double iconX = drawX + (spriteWidth * 0.8) - iconSize;
+        double iconY = drawY + (spriteHeight * 0.75) - iconSize;
+
+        if (speedModifier < 1.0 && SNOWFLAKE != null) {
+            gc.drawImage(SNOWFLAKE, iconX + 10, iconY, iconSize, iconSize);
+        }
     }
 
+    public double getSpeedModifier() {
+        return speedModifier;
+    }
+
+    /**
+     * Allows subclasses to modify incoming damage based on the attacking tower
+     * type. By default no modification is made.
+     *
+     * @param source the tower dealing the damage
+     * @param base   the raw damage amount
+     * @return the adjusted damage this entity should take
+     */
+    public int modifyDamage(Tower source, int base) {
+        return base;
+    }
+
+    /** Accessor for subclasses that need the base movement speed. */
+    public double getSpeed() {
+        return speed;
+    }
+
+    /** Width of the currently displayed sprite frame. */
+    protected double getSpriteWidth() {
+        return frames[currentFrame].getWidth();
+    }
+
+    /** Height of the currently displayed sprite frame. */
+    protected double getSpriteHeight() {
+        return frames[currentFrame].getHeight();
+    }
+
+    /**
+     * Resets this entity back to the first point of its path without
+     * altering hit points or any other state.
+     */
+    public void resetToStart() {
+        Point start = path.getFirst();
+        this.x = start.x();
+        this.y = start.y();
+        this.waypointIndex = 0;
+    }
 
 
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {

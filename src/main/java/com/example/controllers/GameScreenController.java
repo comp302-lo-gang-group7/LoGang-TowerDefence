@@ -42,6 +42,9 @@ public class GameScreenController extends Controller {
 	private javafx.animation.AnimationTimer hudTimer;
 	private boolean isPaused = false;
 
+	// This is for the tower attack radius highlight
+	private Parent pauseOverlay;
+	private Circle hoverRadius;
 
 	public static final int TILE_SIZE = 64;
 
@@ -49,7 +52,7 @@ public class GameScreenController extends Controller {
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
 	private boolean isFast;
-	private Parent pauseOverlay;
+	private Parent gameOverOverlay;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
 		contextMenu.setAutoHide(true);
@@ -62,6 +65,13 @@ public class GameScreenController extends Controller {
 						.asString()
 						.concat(String.format("/%d", playerState.getMaxLives()))
 		);
+
+		// show game over overlay when lives reach zero
+		playerState.getLivesProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal.intValue() <= 0) {
+				showGameOverOverlay();
+			}
+		});
 
 		// load map data
         TileView[][] mapTiles;
@@ -107,6 +117,12 @@ public class GameScreenController extends Controller {
 		Canvas gameCanvas = new Canvas(cols * TILE_SIZE, rows * TILE_SIZE);
 		entityLayer.getChildren().add(gameCanvas);
 
+		gameArea.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+			if (GameManager.getInstance().handleClick(e.getX(), e.getY())) {
+				e.consume();
+			}
+		});
+
 		// 2) Grab all of your Entities out of the model
 		List<Entity> allEntities = gameModel.getEntities();
 
@@ -127,10 +143,11 @@ public class GameScreenController extends Controller {
 
 
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
+		hideTowerRadius();
 		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
 			showBuildMenu(x, y, e.getScreenX(), e.getScreenY());
 		} else {
-			showSellMenu(x, y, e.getScreenX(), e.getScreenY());
+			showTowerMenu(x, y, e.getScreenX(), e.getScreenY());
 		}
 	}
 
@@ -142,8 +159,12 @@ public class GameScreenController extends Controller {
 		showRadialMenu(tileX, tileY, opts);
 	}
 
-	private void showSellMenu(int tileX, int tileY, double sx, double sy) {
+	private void showTowerMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
+		Tile tile = tiles[tileY][tileX];
+		if (tile.model.getTower().upgradeLevel < 2) {
+			opts.add(new Option("Upgrade", () -> upgradeTower(tileX, tileY), "/com/example/assets/buttons/Star_Button.png"));
+		}
 		opts.add(new Option("Sell", () -> sellTower(tileX, tileY), "/com/example/assets/buttons/Bin_Button.png"));
 		showRadialMenu(tileX, tileY, opts);
 	}
@@ -229,6 +250,36 @@ public class GameScreenController extends Controller {
 		);
 	}
 
+	/** Display a translucent circle around a tower indicating its attack range */
+	private void showTowerRadius(int x, int y) {
+		TileModel model = tiles[y][x].model;
+		if (!model.hasTower()) return;
+
+		double radius = model.getTower().getRange() * TILE_SIZE;
+		double cx = x * TILE_SIZE + TILE_SIZE / 2.0;
+		double cy = y * TILE_SIZE + TILE_SIZE / 2.0;
+
+		if (hoverRadius == null) {
+			hoverRadius = new Circle();
+			hoverRadius.setFill(Color.color(0, 0.5, 1.0, 0.15));
+			hoverRadius.setStroke(Color.web("#87bfbe"));
+			hoverRadius.setStrokeWidth(2);
+			towerLayer.getChildren().add(hoverRadius);
+		}
+
+		hoverRadius.setCenterX(cx);
+		hoverRadius.setCenterY(cy);
+		hoverRadius.setRadius(radius);
+		hoverRadius.toBack();
+		hoverRadius.setVisible(true);
+	}
+
+	/** Hide the tower radius circle, if present */
+	private void hideTowerRadius() {
+		if (hoverRadius != null) {
+			hoverRadius.setVisible(false);
+		}
+	}
 
 	private void constructTower(int x, int y, TileEnum towerType) {
 		Tile tile = tiles[y][x];
@@ -240,10 +291,12 @@ public class GameScreenController extends Controller {
 		towerLayer.getChildren().add(newView);
 
 		tile.view = newView;
-		tile.model.setTower(towerType, 10, 5, 100);
-		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
-	}
+		tile.model.setTower(towerType, 10, 5, 100, 1);
 
+		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
+	}
 
 	private void sellTower(int x, int y) {
 		Tile tile = tiles[y][x];
@@ -256,9 +309,22 @@ public class GameScreenController extends Controller {
 
 		tile.view = newView;
 		tile.model.removeTower();
+		hideTowerRadius();
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
+	private void upgradeTower(int x, int y) {
+		Tile tile = tiles[y][x];
+		TileEnum type = tile.model.getType();
+		switch (type) {
+			case ARCHERY_TOWER -> tile.model.upgradeTower(12, 8);
+			case MAGE_TOWER -> tile.model.upgradeTower(12, 7);
+			case ARTILLERY_TOWER -> tile.model.upgradeTower(14, 10);
+			default -> {}
+		}
+	}
 
 	@FXML
 	public void pauseGame() {
@@ -335,6 +401,21 @@ public class GameScreenController extends Controller {
 		speedUp.setGraphic(speedView);
 		pauseButton.setGraphic(optionsView);
 		exitButton.setGraphic(exitView);
+	}
+
+	private void showGameOverOverlay() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (gameOverOverlay != null) {
+			return;
+		}
+		try {
+			gameOverOverlay = FXMLLoader.load(getClass().getResource("/com/example/fxml/game_over.fxml"));
+			gameArea.getChildren().add(gameOverOverlay);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

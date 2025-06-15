@@ -34,28 +34,35 @@ public class TileModel {
 		return tower != null;
 	}
 
-	public void setTower(TileEnum towerType, int hpValue, int damage, int cost) {
+	public void setTower(TileEnum towerType, int hpValue, int damage, int cost, int upgradeLevel) {
 		this.type = towerType;
 		switch ( towerType ) {
 			case ARCHERY_TOWER:
 			{
-				tower = new ArcherTower(x, y, hpValue, damage, cost, 1);
+				tower = new ArcherTower(x, y, hpValue, damage, cost, upgradeLevel);
 				break;
 			}
 			case MAGE_TOWER:
 			{
-				tower = new MageTower(x, y, hpValue, damage, cost, 1);
+				tower = new MageTower(x, y, hpValue, damage, cost, upgradeLevel);
 				break;
 			}
 			case ARTILLERY_TOWER:
 			{
-				tower = new ArtilleryTower(x, y, hpValue, damage, cost, 1);
+				tower = new ArtilleryTower(x, y, hpValue, damage, cost, upgradeLevel);
 				break;
 			}
 			default:
 				throw new IllegalArgumentException("Invalid tower type");
 		}
 		GameManager.getInstance().placeTower(tower);
+	}
+
+	public void upgradeTower(int hpValue, int damage) {
+		if (tower == null) return;
+		GameManager.getInstance().removeTower(tower);
+		int level = tower.upgradeLevel + 1;
+		setTower(this.type, hpValue, damage, tower.goldCost, level);
 	}
 
 	public void removeTower() {
