@@ -20,7 +20,9 @@ import java.util.List;
 public class GameManager {
     private final Canvas canvas;
     private final GraphicsContext gc;
-    private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
+    private final List<Entity> entities;
+    private final List<Entity> delayedAdd = new LinkedList<>();
+    private final List<Entity> delayedRemove = new LinkedList<>();
     private final List<AnimatedEntity> enemies = new LinkedList<>();
     private final IntegerProperty currentWaveProperty = new SimpleIntegerProperty(0);
     private long lastTime = 0;
