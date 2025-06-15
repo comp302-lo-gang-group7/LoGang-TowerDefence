@@ -89,8 +89,8 @@
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <!-- New Game Sub-Menu -->
             <VBox fx:id="newGameSubMenuVBox" alignment="CENTER" spacing="8.0" maxWidth="240.0" visible="false" managed="false">
-                <Button fx:id="defaultGameBtn" text="Default Game" prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-                <Button fx:id="customGameBtn" text="Custom Game" prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
+                <Button fx:id="defaultGameBtn" text="Default Game" prefWidth="200.0" prefHeight="30.0" styleClass="menu-button" />
+                <Button fx:id="customGameBtn" text="Custom Game" prefWidth="200.0" prefHeight="30.0" styleClass="menu-button" />
             </VBox>
             <Button fx:id="loadGameBtn" text="Load Game" onAction="#toggleLoadGameSubMenu"
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
