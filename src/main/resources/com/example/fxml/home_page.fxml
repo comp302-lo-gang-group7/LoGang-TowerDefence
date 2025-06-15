@@ -135,10 +135,10 @@
          </StackPane>
       </right>
       <left>
-         <StackPane alignment="BOTTOM_LEFT">
+         <StackPane>
             <Rectangle width="40" height="40" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            <Button fx:id="settingsIconButton" onAction="#goToSettings" style="-fx-background-color: transparent;">
+            <Button fx:id="settingsIconButton" onAction="#goToSettings" style="-fx-background-color: transparent;" prefWidth="40.0" prefHeight="40.0">
                <graphic>
                   
                </graphic>
