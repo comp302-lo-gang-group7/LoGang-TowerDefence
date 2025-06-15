@@ -175,6 +175,20 @@ public class AnimatedEntity extends Entity {
         return base;
     }
 
+    /** Accessor for subclasses that need the base movement speed. */
+    public double getSpeed() {
+        return speed;
+    }
+
+    /** Width of the currently displayed sprite frame. */
+    protected double getSpriteWidth() {
+        return frames[currentFrame].getWidth();
+    }
+
+    /** Height of the currently displayed sprite frame. */
+    protected double getSpriteHeight() {
+        return frames[currentFrame].getHeight();
+    }
 
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);

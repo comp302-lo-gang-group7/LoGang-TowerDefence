@@ -95,6 +95,20 @@ public class GameManager {
         for (int i = 0; i < warriors; i++) spawnWarrior();
     }
 
+    /**
+     * Returns the closest {@link Goblin} to the provided entity or {@code null}
+     * if no goblins are present.
+     */
+    public Goblin nearestGoblin( AnimatedEntity entity )
+    {
+        return enemies.stream()
+                .filter(e -> e instanceof Goblin)
+                .map(e -> (Goblin) e)
+                .min(Comparator.comparing(g ->
+                        Math.pow(g.getX() - entity.getX(), 2) + Math.pow(g.getY() - entity.getY(), 2)))
+                .orElse(null);
+    }
+
     public void start() {
         gameLoop = new AnimationTimer() {
             @Override
