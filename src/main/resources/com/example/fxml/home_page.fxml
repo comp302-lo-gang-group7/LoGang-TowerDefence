@@ -48,13 +48,13 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="TOP_CENTER" spacing="30.0" translateY="-50.0">
+   <VBox alignment="CENTER" spacing="25.0">
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Button container -->
-         <VBox spacing="15.0" maxWidth="380.0">
+         <VBox spacing="15.0" maxWidth="380.0" prefHeight="445.0">
             <padding>
-               <Insets top="25.0" right="10.0" bottom="25.0" left="10.0" />
+               <Insets top="20.0" right="10.0" bottom="20.0" left="10.0" />
             </padding>
                
             <!-- Buttons without icons (added in controller) -->
