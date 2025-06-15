@@ -386,15 +386,13 @@ public class MapEditorController implements Initializable {
             // Add a red pulsing glow effect
             DropShadow errorEffect = new DropShadow();
             errorEffect.setColor(Color.RED);
-            errorEffect.setRadius(10);
-            errorEffect.setSpread(0.7);
             tileView.setEffect(errorEffect);
             
             // Add subtle animation for better visibility
             FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
             fade.setFromValue(0.7);
             fade.setToValue(1.0);
-            fade.setCycleCount(6); // Pulse 3 times (back and forth)
+            fade.setCycleCount(4); // Pulse 3 times (back and forth)
             fade.setAutoReverse(true);
             fade.play();
         }
@@ -411,47 +409,54 @@ public class MapEditorController implements Initializable {
     }
 
     /**
-     * NEW METHOD: Highlights tower tiles that are not adjacent to any path
-     */
-    private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
-        // Add a subtle pulsing animation to the isolated tower tiles for better visibility
-        List<TileView> highlightedTiles = new ArrayList<>();
+ * Highlights tower tiles that are not adjacent to any path tiles
+ * This improved version ensures all sides of the tile are visibly highlighted
+ */
+private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
+    // Add a subtle pulsing animation to the isolated tower tiles for better visibility
+    List<TileView> highlightedTiles = new ArrayList<>();
+    
+    for (Point2D p : isolatedTowerTiles) {
+        int col = (int) p.getX();
+        int row = (int) p.getY();
         
-        for (Point2D p : isolatedTowerTiles) {
-            int col = (int) p.getX();
-            int row = (int) p.getY();
-            
-            TileView tileView = mapTileViews[row][col];
-            
-            // Store reference to highlighted tiles
-            highlightedTiles.add(tileView);
-            
-            // Add a yellow pulsing glow effect to distinguish from road errors
-            DropShadow errorEffect = new DropShadow();
-            errorEffect.setColor(Color.YELLOW);
-            errorEffect.setRadius(10);
-            errorEffect.setSpread(0.7);
-            tileView.setEffect(errorEffect);
-            
-            // Add subtle animation for better visibility
-            FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
-            fade.setFromValue(0.7);
-            fade.setToValue(1.0);
-            fade.setCycleCount(6); // Pulse 3 times (back and forth)
-            fade.setAutoReverse(true);
-            fade.play();
-        }
+        TileView tileView = mapTileViews[row][col];
         
-        // Remove highlights after 5 seconds
-        PauseTransition pause = new PauseTransition(Duration.seconds(5));
-        pause.setOnFinished(e -> {
-            for (TileView tile : highlightedTiles) {
-                tile.setEffect(null);
-                tile.setOpacity(1.0);
-            }
-        });
-        pause.play();
+        // Store reference to highlighted tiles
+        highlightedTiles.add(tileView);
+        
+        // Get the parent pane of the TileView
+        Pane cell = (Pane) tileView.getParent();
+                
+        // Add a yellow pulsing glow effect to distinguish from road errors
+        DropShadow errorEffect = new DropShadow();
+        errorEffect.setColor(Color.RED);
+        tileView.setEffect(errorEffect);
+        
+        // Add subtle animation for better visibility
+        FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
+        fade.setFromValue(0.7);
+        fade.setToValue(1.0);
+        fade.setCycleCount(4); // Pulse 3 times (back and forth)
+        fade.setAutoReverse(true);
+        fade.play();
     }
+    
+    // Remove highlights after 5 seconds
+    PauseTransition pause = new PauseTransition(Duration.seconds(5));
+    pause.setOnFinished(e -> {
+        for (TileView tile : highlightedTiles) {
+            // Remove effect from tile
+            tile.setEffect(null);
+            tile.setOpacity(1.0);
+            
+            // Reset the parent cell's border
+            Pane cell = (Pane) tile.getParent();
+            cell.setStyle("-fx-border-color: #666; -fx-border-width: 1;");
+        }
+    });
+    pause.play();
+}
 
     @FXML
     private void saveMap() {
