@@ -1,29 +1,43 @@
 package com.example.entity;
 
-import com.example.utils.Damageable;
-import com.example.utils.HP;
-import com.example.map.TileModel;
-import javafx.scene.image.Image;
+import com.example.controllers.GameScreenController;
+import com.example.game.GameManager;
+import javafx.scene.canvas.GraphicsContext;
 
-public abstract class Tower extends TileModel implements Damageable
+public abstract class Tower extends Entity
 {
-	private final HP hp;
-	private final int baseDamage;
+	public final int baseDamage;
+	public int goldCost;
+	public int upgradeLevel;
 
-	public Tower(int x, int y, int baseHp, int baseDamage, Image image)
+	private double timerTime = 0;
+	private double attackCooldown = 0.5;
+	private double minRadius = 5;
+
+	public Tower(int x, int y, int baseHp, int baseDamage, int goldCost, int upgradeLevel)
 	{
-		super(x, y);
+		super(x, y, baseHp);
 		this.baseDamage = baseDamage;
-		this.hp = new HP(baseHp);
 	}
 
-	public HP getHP()
+	@Override
+	public void update( double dt )
 	{
-		return hp;
+		if ( timerTime < attackCooldown )
+			timerTime += dt;
+                else
+                {
+                        AnimatedEntity nearestEnemy = GameManager.getInstance().nearestEnemy(this);
+                        if (nearestEnemy != null &&
+                                Math.abs(getX() * 64 - nearestEnemy.getX()) + Math.abs(getY() * 64 - nearestEnemy.getY())
+                                        <= minRadius * GameScreenController.TILE_SIZE)
+                        {
+                                timerTime = 0;
+                                GameManager.getInstance().attackEntity(this, nearestEnemy);
+                        }
+                }
 	}
 
-	public int getBaseDamage()
-	{
-		return baseDamage;
-	}
+	@Override
+	public void render( GraphicsContext gc ) {}
 }

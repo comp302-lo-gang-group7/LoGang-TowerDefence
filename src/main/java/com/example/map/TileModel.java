@@ -1,99 +1,79 @@
 package com.example.map;
 
+import com.example.entity.ArcherTower;
+import com.example.entity.ArtilleryTower;
+import com.example.entity.MageTower;
 import com.example.entity.Tower;
+import com.example.game.GameManager;
 import com.example.utils.HP;
 import com.example.utils.Damageable;
 
-public class TileModel implements Damageable {
-	private final int tileX, tileY;
-	private boolean hasTower;
-	private TileEnum towerType;
-	private HP hp;
-	private int baseDamage;
-	private int goldCost;
-	private int upgradeLevel;
+public class TileModel {
+	private final int x, y;
+	private TileEnum type;
 
-	public TileModel(int tileX, int tileY) {
-		this.tileX = tileX;
-		this.tileY = tileY;
-		this.hasTower = false;
-		this.towerType = null;
-		this.hp = null;
-		this.baseDamage = 0;
-		this.goldCost = 0;
-		this.upgradeLevel = 0;
+	private Tower tower;
+
+	public TileModel(int x, int y) {
+		this.x = x;
+		this.y = y;
+		this.type = null;
 	}
 
 	// --- Location ---
-	public int getTileX() {
-		return tileX;
+	public int getX() {
+		return x;
 	}
 
-	public int getTileY() {
-		return tileY;
+	public int getY() {
+		return y;
 	}
 
 	// --- Tower state ---
 	public boolean hasTower() {
-		return hasTower;
+		return tower != null;
 	}
 
 	public void setTower(TileEnum towerType, int hpValue, int damage, int cost) {
-		this.hasTower = true;
-		this.towerType = towerType;
-		this.hp = new HP(hpValue);
-		this.baseDamage = damage;
-		this.goldCost = cost;
-		this.upgradeLevel = 1;
+		this.type = towerType;
+		switch ( towerType ) {
+			case ARCHERY_TOWER:
+			{
+				tower = new ArcherTower(x, y, hpValue, damage, cost, 1);
+				break;
+			}
+			case MAGE_TOWER:
+			{
+				tower = new MageTower(x, y, hpValue, damage, cost, 1);
+				break;
+			}
+			case ARTILLERY_TOWER:
+			{
+				tower = new ArtilleryTower(x, y, hpValue, damage, cost, 1);
+				break;
+			}
+			default:
+				throw new IllegalArgumentException("Invalid tower type");
+		}
+		GameManager.getInstance().placeTower(tower);
 	}
 
 	public void removeTower() {
-		this.hasTower = false;
-		this.towerType = null;
-		this.hp = null;
-		this.baseDamage = 0;
-		this.goldCost = 0;
-		this.upgradeLevel = 0;
+		GameManager.getInstance().removeTower(tower);
+		this.type = TileEnum.EMPTY_TOWER_TILE;
+		this.tower = null;
 	}
 
-	public TileEnum getTowerType() {
-		return towerType;
+	public Tower getTower()
+	{
+		return tower;
 	}
 
-	public int getBaseDamage() {
-		return baseDamage;
+	public TileEnum getType() {
+		return type;
 	}
 
-	public int getGoldCost() {
-		return goldCost;
-	}
-
-// For future uses
-//	public int getUpgradeLevel() {
-//		return upgradeLevel;
-//	}
-//
-//	public void upgrade(int newDamage, int newCost) {
-//		this.baseDamage = newDamage;
-//		this.goldCost += newCost;
-//		this.upgradeLevel++;
-//	}
-
-	// --- Damageable interface ---
-	@Override
-	public HP getHP() {
-		return hp;
-	}
-
-	@Override
-	public void applyDamage(int amount) {
-		if (hp != null) {
-			hp.changeHp(amount);
-			if (hp.getHp() == 0) removeTower();
-		}
-	}
-
-	public void setTowerType(TileEnum towerType) {
-		this.towerType = towerType;
+	public void setType( TileEnum type ) {
+		this.type = type;
 	}
 }

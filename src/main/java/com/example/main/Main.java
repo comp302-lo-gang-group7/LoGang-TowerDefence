@@ -1,9 +1,12 @@
 package com.example.main;
 
-import com.example.ui.*;
+import java.io.IOException;
+
+import com.example.ui.ViewManager;
+
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import java.io.IOException;
 
 public class Main extends javafx.application.Application {
     public static ViewManager viewManager;
@@ -20,6 +23,10 @@ public class Main extends javafx.application.Application {
         
         viewManager = new ViewManager(stage);
         viewManager.switchTo("/com/example/fxml/home_page.fxml");
+
+        // Set custom cursor
+        Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+        viewManager.setCustomCursor(customCursorImage);
         
         stage.show();
     }

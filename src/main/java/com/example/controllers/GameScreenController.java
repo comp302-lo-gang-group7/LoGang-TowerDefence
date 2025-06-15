@@ -38,10 +38,12 @@ public class GameScreenController extends Controller {
 	@FXML private Label waveLabel;
 	@FXML private Button speedUp, pauseButton, exitButton;
 	private GameManager gameManager;
+	private PlayerState playerState;
+	private javafx.animation.AnimationTimer hudTimer;
 	private boolean isPaused = false;
 
 
-	private static final int TILE_SIZE = 64;
+	public static final int TILE_SIZE = 64;
 
     private Tile[][] tiles;
     private TileRenderer renderer;
@@ -49,10 +51,17 @@ public class GameScreenController extends Controller {
 	private boolean isFast;
 	private Parent pauseOverlay;
 
-	public void init( String mapName, int startingGold) {
+	public void init( String mapName, int startingGold, List<int[]> waves) {
 		contextMenu.setAutoHide(true);
-		goldLabel.setText(String.format("%d", startingGold));
 		setupButtonIcons();
+
+		playerState = new PlayerState(startingGold, 10);
+		goldLabel.textProperty().bind(playerState.getGoldProperty().asString());
+		healthLabel.textProperty().bind(
+				playerState.getLivesProperty()
+						.asString()
+						.concat(String.format("/%d", playerState.getMaxLives()))
+		);
 
 		// load map data
         TileView[][] mapTiles;
@@ -102,13 +111,19 @@ public class GameScreenController extends Controller {
 		List<Entity> allEntities = gameModel.getEntities();
 
 		// 3) Hook up & start the GameManager loop
-		GameManager.initialize(gameCanvas, allEntities, gameModel);
+		GameManager.initialize(gameCanvas, allEntities, gameModel, playerState);
 
 		this.gameManager = GameManager.getInstance();
-		gameManager.spawnGoblin();
-		gameManager.spawnWarrior();
+
+		waveLabel.textProperty().bind(
+				gameManager.getCurrentWaveProperty()
+						.asString()
+						.concat(String.format("/%d", waves.size()))
+		);
+
+		gameManager.setWaves(waves);
 		gameManager.start();
-	}
+        }
 
 
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {

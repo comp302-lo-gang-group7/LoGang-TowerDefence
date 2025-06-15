@@ -1,13 +1,13 @@
 package com.example.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import com.example.main.Main;
-import com.example.ui.ViewManager;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 public class CreateGameController extends Controller implements Initializable {
 
@@ -46,7 +46,6 @@ public class CreateGameController extends Controller implements Initializable {
                            "-fx-padding: 12 15 12 15; " +
                            "-fx-border-width: 2; " +
                            "-fx-border-radius: 8; " +
-                           "-fx-cursor: hand; " +
                            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 6, 0.0, 0, 2);";
         
         // Style for pressed state - darker brown
@@ -106,6 +105,11 @@ public class CreateGameController extends Controller implements Initializable {
     @FXML
     public void goToDefaultGamePage() {
         Main.getViewManager().switchTo("/com/example/fxml/game_config_page.fxml");
+    }
+
+    @FXML
+    public void goToCustomGamePage() {
+        Main.getViewManager().switchTo("/com/example/fxml/custom_game_page.fxml");
     }
 
     @FXML

@@ -24,7 +24,7 @@
       </ImageView>
    </StackPane>
 
-   <!-- Decorative green header bar -->
+   <!-- Replace the header section with this: -->
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
@@ -34,12 +34,6 @@
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="CREATE NEW GAME" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
-               <effect>
-                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
-               </effect>
-            </Text>
          </StackPane>
       </top>
    </BorderPane>
@@ -92,7 +86,7 @@
             <!-- Game mode buttons -->
             <Button fx:id="defaultGameBtn" text="Create Default Game" onAction="#goToDefaultGamePage" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
-            <Button fx:id="customGameBtn" text="Create Custom Game" 
+            <Button fx:id="customGameBtn" text="Create Custom Game" onAction="#goToCustomGamePage"
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />
             <Button fx:id="backBtn" text="Back to Main Menu" onAction="#goToHomePage" 
                     prefWidth="240.0" prefHeight="40.0" styleClass="menu-button" />

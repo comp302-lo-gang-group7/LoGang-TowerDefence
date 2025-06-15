@@ -1,15 +1,16 @@
 package com.example.controllers;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import com.example.main.Main;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.layout.StackPane;
-
-import java.net.URL;
-import java.util.ResourceBundle;
+import javafx.scene.shape.SVGPath;
 
 /**
  * Controller for the main menu page. Uses ViewManager to handle navigation.
@@ -87,7 +88,6 @@ public class MainMenuController extends Controller implements Initializable {
             "-fx-border-color: linear-gradient(#c6965f, #b88d5a); " +
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
-            "-fx-cursor: hand; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 6, 0.0, 0, 2);";
         
         String pressedCss = 
