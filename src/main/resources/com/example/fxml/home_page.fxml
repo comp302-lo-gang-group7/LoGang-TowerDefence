@@ -48,7 +48,7 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="30.0" VBox.offsetY="-50">
+   <VBox alignment="CENTER" spacing="30.0" translateY="-50.0">
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Button container -->
