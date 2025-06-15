@@ -138,13 +138,9 @@
          <StackPane alignment="BOTTOM_LEFT">
             <Rectangle width="40" height="40" 
                      style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            <Button onAction="#goToSettings" style="-fx-background-color: transparent;">
+            <Button fx:id="settingsIconButton" onAction="#goToSettings" style="-fx-background-color: transparent;">
                <graphic>
-                  <ImageView fitHeight="30" fitWidth="30" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../assets/buttons/Settings_Button.png" />
-                     </image>
-                  </ImageView>
+                  
                </graphic>
             </Button>
          </StackPane>
