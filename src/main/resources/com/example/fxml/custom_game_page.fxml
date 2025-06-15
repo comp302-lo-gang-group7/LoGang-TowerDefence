@@ -27,7 +27,7 @@
                         <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                     </effect>
                 </Rectangle>
-                <Text fill="#e8f4d9" text="CUSTOM GAME CONFIG" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
+                <Text fill="#e8f4d9" text="Custom Game Setup" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
                     <effect>
                         <DropShadow color="#00000080" height="3" radius="1" width="3" />
                     </effect>
@@ -37,30 +37,15 @@
     </BorderPane>
     <VBox alignment="CENTER" spacing="30.0">
         <StackPane>
-            <Rectangle width="600" height="70" arcWidth="20" arcHeight="20" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-                <effect>
-                    <DropShadow color="#00000099" height="15" radius="7" width="15" />
-                </effect>
-            </Rectangle>
             <VBox alignment="CENTER" spacing="5">
                 <Text fill="#f0e3c8" text="Custom Game Setup" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;">
                     <effect>
                         <DropShadow color="#00000080" height="5" radius="2" width="5" />
                     </effect>
                 </Text>
-                <Text fill="#d9c9a0" text="Configure waves and map" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-style: italic;">
-                    <effect>
-                        <DropShadow color="#00000080" height="2" radius="1" width="2" />
-                    </effect>
-                </Text>
             </VBox>
         </StackPane>
         <StackPane>
-            <Rectangle width="520" height="420" arcWidth="15" arcHeight="15" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-                <effect>
-                    <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
-                </effect>
-            </Rectangle>
             <VBox alignment="CENTER" maxWidth="480" spacing="10">
                 <padding>
                     <Insets top="20" right="20" bottom="20" left="20" />
@@ -70,7 +55,7 @@
                     <Text text="Starting Gold:" fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" />
                     <TextField fx:id="goldInput" promptText="1000" prefWidth="120" style="-fx-background-color: #e8d9b5; -fx-text-fill: #4e331f; -fx-font-size: 14px; -fx-font-family: 'Segoe UI';" />
                 </HBox>
-                <VBox fx:id="wavesBox" spacing="10" />
+                <VBox fx:id="wavesBox" spacing="10" style="-fx-text-fill: #f0e3c8;" />
                 <HBox alignment="CENTER" spacing="10">
                     <Button text="Add Wave" onAction="#addWave" prefWidth="100" />
                     <Button text="Remove Wave" onAction="#removeWave" prefWidth="100" />
