@@ -410,6 +410,49 @@ public class MapEditorController implements Initializable {
         pause.play();
     }
 
+    /**
+     * NEW METHOD: Highlights tower tiles that are not adjacent to any path
+     */
+    private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
+        // Add a subtle pulsing animation to the isolated tower tiles for better visibility
+        List<TileView> highlightedTiles = new ArrayList<>();
+        
+        for (Point2D p : isolatedTowerTiles) {
+            int col = (int) p.getX();
+            int row = (int) p.getY();
+            
+            TileView tileView = mapTileViews[row][col];
+            
+            // Store reference to highlighted tiles
+            highlightedTiles.add(tileView);
+            
+            // Add a yellow pulsing glow effect to distinguish from road errors
+            DropShadow errorEffect = new DropShadow();
+            errorEffect.setColor(Color.YELLOW);
+            errorEffect.setRadius(10);
+            errorEffect.setSpread(0.7);
+            tileView.setEffect(errorEffect);
+            
+            // Add subtle animation for better visibility
+            FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
+            fade.setFromValue(0.7);
+            fade.setToValue(1.0);
+            fade.setCycleCount(6); // Pulse 3 times (back and forth)
+            fade.setAutoReverse(true);
+            fade.play();
+        }
+        
+        // Remove highlights after 5 seconds
+        PauseTransition pause = new PauseTransition(Duration.seconds(5));
+        pause.setOnFinished(e -> {
+            for (TileView tile : highlightedTiles) {
+                tile.setEffect(null);
+                tile.setOpacity(1.0);
+            }
+        });
+        pause.play();
+    }
+
     @FXML
     private void saveMap() {
         String mapName = mapSelectionCombo.getEditor().getText().trim();
@@ -434,6 +477,20 @@ public class MapEditorController implements Initializable {
             
             // Highlight the disconnected roads
             highlightDisconnectedRoads(disconnectedRoads);
+            return;
+        }
+        
+        // NEW: Check for tower tiles not adjacent to paths
+        List<Point2D> isolatedTowerTiles = RoadValidator.findIsolatedTowerTiles(mapTileViews);
+        if (!isolatedTowerTiles.isEmpty()) {
+            MapEditorUtils.showInfoAlert(
+                    "Invalid Tower Placement",
+                    "Tower positions must be adjacent to a path. Please fix the highlighted tower positions.",
+                    this
+            );
+            
+            // Highlight the isolated tower tiles
+            highlightIsolatedTowerTiles(isolatedTowerTiles);
             return;
         }
 
