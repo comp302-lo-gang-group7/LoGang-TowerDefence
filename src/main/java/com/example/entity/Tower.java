@@ -6,18 +6,20 @@ import javafx.scene.canvas.GraphicsContext;
 
 public abstract class Tower extends Entity
 {
-	public final int baseDamage;
+	public int baseDamage;
 	public int goldCost;
 	public int upgradeLevel;
 
-	private double timerTime = 0;
-	private double attackCooldown = 0.5;
-	private double range = 2;
+	protected double timerTime = 0;
+	protected double attackCooldown = 0.5;
+	protected double range = 2;
 
 	public Tower(int x, int y, int baseHp, int baseDamage, int goldCost, int upgradeLevel)
 	{
 		super(x, y, baseHp);
 		this.baseDamage = baseDamage;
+		this.goldCost = goldCost;
+		this.upgradeLevel = upgradeLevel;
 	}
 
 	public double getRange()

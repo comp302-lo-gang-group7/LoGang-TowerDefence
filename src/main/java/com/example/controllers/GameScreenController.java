@@ -133,7 +133,7 @@ public class GameScreenController extends Controller {
 		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
 			showBuildMenu(x, y, e.getScreenX(), e.getScreenY());
 		} else {
-			showSellMenu(x, y, e.getScreenX(), e.getScreenY());
+			showTowerMenu(x, y, e.getScreenX(), e.getScreenY());
 		}
 	}
 
@@ -145,8 +145,12 @@ public class GameScreenController extends Controller {
 		showRadialMenu(tileX, tileY, opts);
 	}
 
-	private void showSellMenu(int tileX, int tileY, double sx, double sy) {
+	private void showTowerMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
+		Tile tile = tiles[tileY][tileX];
+		if (tile.model.getTower().upgradeLevel < 2) {
+			opts.add(new Option("Upgrade", () -> upgradeTower(tileX, tileY), "/com/example/assets/buttons/Star_Button.png"));
+		}
 		opts.add(new Option("Sell", () -> sellTower(tileX, tileY), "/com/example/assets/buttons/Bin_Button.png"));
 		showRadialMenu(tileX, tileY, opts);
 	}
@@ -273,7 +277,7 @@ public class GameScreenController extends Controller {
 		towerLayer.getChildren().add(newView);
 
 		tile.view = newView;
-		tile.model.setTower(towerType, 10, 5, 100);
+		tile.model.setTower(towerType, 10, 5, 100, 1);
 
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
 		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
@@ -297,6 +301,16 @@ public class GameScreenController extends Controller {
 		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
+	private void upgradeTower(int x, int y) {
+		Tile tile = tiles[y][x];
+		TileEnum type = tile.model.getType();
+		switch (type) {
+			case ARCHERY_TOWER -> tile.model.upgradeTower(12, 8);
+			case MAGE_TOWER -> tile.model.upgradeTower(12, 7);
+			case ARTILLERY_TOWER -> tile.model.upgradeTower(14, 10);
+			default -> {}
+		}
+	}
 
 	@FXML
 	public void pauseGame() {

@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.ui.ImageLoader;
 import com.example.utils.Point;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -12,7 +13,10 @@ public class AnimatedEntity extends Entity {
     private final double frameDuration;
     private double frameTimer = 0;
     private int currentFrame = 0;
-
+    private double speedModifier = 1.0;
+    private double slowTimer = 0;
+    private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
+    
     // path + movement
     private final List<Point> path;
     /**
@@ -62,7 +66,14 @@ public class AnimatedEntity extends Entity {
 
         // 2) movement
         if (waypointIndex < path.size()) {
-            double remaining = speed * dt;
+            if (slowTimer > 0) {
+                slowTimer -= dt;
+                if (slowTimer <= 0) {
+                    speedModifier = 1.0;
+                }
+            }
+
+            double remaining = speed * speedModifier * dt;
 
             while (remaining > 0 && waypointIndex < path.size()) {
                 Point target = path.get(waypointIndex);
@@ -135,6 +146,13 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+    public void applySlow(double factor, double duration) {
+        if (slowTimer <= 0) {
+            speedModifier = factor;
+        }
+        slowTimer = duration;
+    }
+
     @Override
     public void render(GraphicsContext gc) {
         // 1. Draw the sprite centered on entity position
@@ -161,6 +179,14 @@ public class AnimatedEntity extends Entity {
         // Foreground (green)
         gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
+
+        double iconSize = 15;
+        double iconX = drawX + (spriteWidth * 0.8) - iconSize;
+        double iconY = drawY + (spriteHeight * 0.75) - iconSize;
+
+        if (speedModifier < 1.0 && SNOWFLAKE != null) {
+            gc.drawImage(SNOWFLAKE, iconX + 10, iconY, iconSize, iconSize);
+        }
     }
 
     /**

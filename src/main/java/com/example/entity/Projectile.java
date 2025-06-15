@@ -75,6 +75,11 @@ public class Projectile extends Entity
 				int dmg = target.modifyDamage(parent, parent.baseDamage);
 				target.applyDamage(dmg);
 
+				if (parent instanceof MageTower m && m.upgradeLevel >= 2 && target instanceof AnimatedEntity a) {
+					a.applySlow(0.8, 4.0);
+				}
+				GameManager.getInstance().removeEntity(this);
+
 				if (parent instanceof MageTower && Math.random() < 0.03 && target.getHP() > 0) {
 					target.resetToStart();
 				}
