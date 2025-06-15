@@ -101,6 +101,28 @@ public class AnimatedEntity extends Entity {
         return waypointIndex >= path.size();
     }
 
+    /**
+     * Returns a numeric progress value representing how far this entity has
+     * advanced along its path. Higher values mean further progression.
+     */
+    public double getPathProgress()
+    {
+        if (waypointIndex <= 0)
+            return 0;
+        if (waypointIndex >= path.size())
+            return path.size();
+
+        int prevIndex = waypointIndex - 1;
+        Point prev = path.get(prevIndex);
+        Point next = path.get(waypointIndex);
+
+        double segmentLength = Math.hypot(next.x() - prev.x(), next.y() - prev.y());
+        if (segmentLength < 1e-6)
+            return waypointIndex;
+
+        double distFromPrev = Math.hypot(x - prev.x(), y - prev.y());
+        return prevIndex + Math.min(1.0, distFromPrev / segmentLength);
+    }
 
     public Point getFuturePosition()
     {

@@ -289,11 +289,16 @@ public class GameManager {
 		}
 	}
 
-    public AnimatedEntity nearestEnemy( Tower tower )
-    {
+    public AnimatedEntity nearestEnemy(Tower tower) {
+        double range = tower.getRange() * GameScreenController.TILE_SIZE;
+
         return enemies.stream()
-                .min(Comparator.comparing(e ->
-                        Math.pow(e.getX() - tower.getX(), 2) + Math.pow(e.getY() - tower.getY(), 2)))
+                .filter(e -> {
+                    double dx = Math.abs(tower.getX() * GameScreenController.TILE_SIZE - e.getX());
+                    double dy = Math.abs(tower.getY() * GameScreenController.TILE_SIZE - e.getY());
+                    return dx + dy <= range;
+                })
+                .max(Comparator.comparingDouble(AnimatedEntity::getPathProgress))
                 .orElse(null);
     }
 

@@ -20,6 +20,11 @@ public abstract class Tower extends Entity
 		this.baseDamage = baseDamage;
 	}
 
+	public double getRange()
+	{
+		return minRadius;
+	}
+
 	@Override
 	public void update( double dt )
 	{
