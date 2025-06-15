@@ -452,23 +452,25 @@ public class MapEditorController implements Initializable {
     }
 
     private void setupButtonImages() {
-        // Define the button styles
-        String buttonStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
-        String buttonHoverStyle = MapEditorUtils.BUTTON_HOVER_STYLE;
-        String buttonPressedStyle = MapEditorUtils.BUTTON_PRESSED_STYLE;
+    // Define the button styles
+    String buttonStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
+    String buttonHoverStyle = MapEditorUtils.BUTTON_HOVER_STYLE;
+    String buttonPressedStyle = MapEditorUtils.BUTTON_PRESSED_STYLE;
+    
+    // Apply styles to all navigation/action buttons
+    Button[] actionButtons = {homeBtn, editModeBtn, deleteModeBtn, clearMapBtn, saveMapBtn};
+    
+    for (Button button : actionButtons) {
+        // Apply normal style
+        button.setStyle(buttonStyle);
         
-        // Apply styles to all navigation/action buttons
-        Button[] actionButtons = {homeBtn, editModeBtn, deleteModeBtn, clearMapBtn, saveMapBtn};
-        
-        for (Button button : actionButtons) {
-            // Apply normal style
-            button.setStyle(buttonStyle);
-            
-            // Add hover effects
+        // Don't apply general handlers to mode buttons - they'll be handled separately
+        if (button != editModeBtn && button != deleteModeBtn) {
+            // Add hover effects for non-mode buttons
             button.setOnMouseEntered(e -> button.setStyle(buttonHoverStyle));
             button.setOnMouseExited(e -> button.setStyle(buttonStyle));
             
-            // Add pressed effects
+            // Add pressed effects for non-mode buttons
             button.setOnMousePressed(e -> button.setStyle(buttonPressedStyle));
             button.setOnMouseReleased(e -> {
                 if (button.isHover()) {
@@ -477,15 +479,20 @@ public class MapEditorController implements Initializable {
                     button.setStyle(buttonStyle);
                 }
             });
-            
-            // Set button dimensions
-            button.setPrefHeight(32);
-            button.setPrefWidth(120);
         }
         
-        // Set the current mode button (initially Edit Mode) to be highlighted
-        updateModeButtonStyles();
+        // Set button dimensions
+        button.setPrefHeight(32);
+        button.setPrefWidth(120);
     }
+    
+    // Handle mode buttons separately
+    editModeBtn.setOnMousePressed(e -> editModeBtn.setStyle(buttonPressedStyle));
+    deleteModeBtn.setOnMousePressed(e -> deleteModeBtn.setStyle(buttonPressedStyle));
+    
+    // Set the current mode button (initially Edit Mode) to be highlighted
+    updateModeButtonStyles();
+}
 
     private void createTilePalette() {
         for (int row = 0; row < PALETTE_ROWS; row++) {
@@ -968,9 +975,9 @@ public class MapEditorController implements Initializable {
         // Reset styles for both buttons
         String normalStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
         String activeStyle = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
-                             "-fx-text-fill: #ffcc66; -fx-font-family: 'Segoe UI'; " +
+                             "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                              "-fx-font-size: 14px; -fx-font-weight: bold; " +
-                             "-fx-border-color: #ffcc66; -fx-border-width: 2; " +
+                             "-fx-border-color: rgb(38, 163, 48); -fx-border-width: 2; " +
                              "-fx-border-radius: 5; -fx-background-radius: 5;";
         
         // Update based on current mode
