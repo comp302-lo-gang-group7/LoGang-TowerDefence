@@ -31,13 +31,13 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle width="800" height="60"
+            <Rectangle width="800" height="60" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="Clash of Towers"
+            <Text fill="#e8f4d9" text="Clash of Towers" 
                   style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;">
                <effect>
                   <DropShadow color="#00000080" height="5" radius="2" width="5" />
@@ -48,11 +48,12 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="25.0">
+   <VBox alignment="CENTER" spacing="25.0" translateY="-50.0">
+
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Button container -->
-         <VBox spacing="15.0" maxWidth="380.0" prefHeight="445.0">
+         <VBox alignment="CENTER" spacing="15.0" maxWidth="380.0" prefHeight="445.0">
             <padding>
                <Insets top="20.0" right="10.0" bottom="20.0" left="10.0" />
             </padding>
@@ -76,9 +77,9 @@
                     <Button fx:id="deleteSelectedBtn" text="Delete Selected" prefWidth="140.0" prefHeight="45.0" styleClass="menu-button" />
                 </HBox>
             </VBox>
-            <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage"
+            <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage" 
                     prefWidth="260.0" prefHeight="45.0" styleClass="menu-button" />
-            <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication"
+            <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication" 
                     prefWidth="260.0" prefHeight="45.0" styleClass="menu-button" />
          </VBox>
       </StackPane>
