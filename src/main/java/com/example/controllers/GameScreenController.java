@@ -117,6 +117,12 @@ public class GameScreenController extends Controller {
 		Canvas gameCanvas = new Canvas(cols * TILE_SIZE, rows * TILE_SIZE);
 		entityLayer.getChildren().add(gameCanvas);
 
+		gameArea.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+			if (GameManager.getInstance().handleClick(e.getX(), e.getY())) {
+				e.consume();
+			}
+		});
+
 		// 2) Grab all of your Entities out of the model
 		List<Entity> allEntities = gameModel.getEntities();
 

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class GameManager {
     private final Canvas canvas;
@@ -36,6 +37,8 @@ public class GameManager {
     private int currentWaveIndex = 0;
     private double timeUntilNextWave = 0;
     private boolean waveInProgress = false;
+    private final Random rng = new Random();
+    private static final int LEVEL1_ARCHER_COST = 100;
 
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
@@ -138,7 +141,7 @@ public class GameManager {
                     if (enemy.getHP() <= 0) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
-                        playerState.addGold(10);
+                        spawnGoldBag(enemy.getX(), enemy.getY());
                     } else if (enemy.hasReachedGoal()) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
@@ -266,6 +269,23 @@ public class GameManager {
                     e);
             this.delayedAdd.add(p);
         }
+    }
+
+    private void spawnGoldBag(double x, double y) {
+        int amount = 2 + rng.nextInt(LEVEL1_ARCHER_COST / 2 - 1);
+        GoldBag bag = new GoldBag(x, y, amount);
+        this.delayedAdd.add(bag);
+    }
+
+    public boolean handleClick(double x, double y) {
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            Entity e = entities.get(i);
+            if (e instanceof GoldBag bag && bag.contains(x, y)) {
+                bag.onClick();
+                return true;
+            }
+        }
+        return false;
     }
 
 	public void spawnEffect( Tower parent, double x, double y )
