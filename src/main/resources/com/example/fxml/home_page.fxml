@@ -49,11 +49,11 @@
 
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="25.0" translateY="-50.0">
-
+         
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Button container -->
-         <VBox alignment="TOP_CENTER" spacing="15.0" maxWidth="380.0" prefHeight="460.0">
+         <VBox alignment="CENTER" spacing="15.0" maxWidth="380.0" prefHeight="450.0">
             <padding>
                <Insets top="20.0" right="10.0" bottom="20.0" left="10.0" />
             </padding>
