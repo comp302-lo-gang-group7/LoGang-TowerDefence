@@ -31,16 +31,16 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle width="800" height="60" 
+            <Rectangle width="800" height="60"
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="WOODLAND TOWER DEFENSE" 
+            <Text fill="#e8f4d9" text="Clash of Towers"
                   style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
                <effect>
-                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
+                  <DropShadow color="#00000080" height="5" radius="2" width="5" />
                </effect>
             </Text>
          </StackPane>
@@ -48,34 +48,7 @@
    </BorderPane>
 
    <!-- Main content -->
-   <VBox alignment="CENTER" spacing="30.0">
-      <!-- Title with stylized rectangle backdrop -->
-      <StackPane>
-         <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle width="600" height="90" arcWidth="20" arcHeight="20" 
-                    style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="15" radius="7" width="15" />
-            </effect>
-         </Rectangle>
-         
-         <!-- Game title with wooden-like effect -->
-         <VBox alignment="CENTER" spacing="5">
-            <Text fill="#f0e3c8" text="Clash of Towers" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 40px; -fx-font-weight: bold;">
-               <effect>
-                  <DropShadow color="#00000080" height="5" radius="2" width="5" />
-               </effect>
-            </Text>
-            <Text fill="#d9c9a0" text="Strategic Tower Defense Game" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-style: italic;">
-               <effect>
-                  <DropShadow color="#00000080" height="2" radius="1" width="2" />
-               </effect>
-            </Text>
-         </VBox>
-      </StackPane>
-         
+   <VBox alignment="CENTER" spacing="30.0" VBox.offsetY="-50">
       <!-- Menu panel with wooden styling -->
       <StackPane>
          <!-- Button container -->
