@@ -74,6 +74,11 @@ public class Projectile extends Entity
 				this.active = false;
 				int dmg = target.modifyDamage(parent, parent.baseDamage);
 				target.applyDamage(dmg);
+
+				if (parent instanceof MageTower && Math.random() < 0.03 && target.getHP() > 0) {
+					target.resetToStart();
+				}
+
 				GameManager.getInstance().removeEntity(this);
 				GameManager.getInstance().spawnEffect(parent, x, y);
 			}

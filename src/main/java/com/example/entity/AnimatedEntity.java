@@ -190,6 +190,18 @@ public class AnimatedEntity extends Entity {
         return frames[currentFrame].getHeight();
     }
 
+    /**
+     * Resets this entity back to the first point of its path without
+     * altering hit points or any other state.
+     */
+    public void resetToStart() {
+        Point start = path.getFirst();
+        this.x = start.x();
+        this.y = start.y();
+        this.waypointIndex = 0;
+    }
+
+
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
         GraphicsContext gc = tempCanvas.getGraphicsContext2D();
