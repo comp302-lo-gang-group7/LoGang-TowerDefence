@@ -26,7 +26,7 @@
       </ImageView>
    </StackPane>
 
-   <!-- Decorative green header bar -->
+   <!-- Replace the header section with this: -->
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
@@ -36,12 +36,6 @@
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
             </Rectangle>
-            <Text fill="#e8f4d9" text="LOAD SAVED GAME" 
-                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
-               <effect>
-                  <DropShadow color="#00000080" height="3" radius="1" width="3" />
-               </effect>
-            </Text>
          </StackPane>
       </top>
    </BorderPane>
