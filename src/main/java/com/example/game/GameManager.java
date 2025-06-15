@@ -12,6 +12,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,6 @@ public class GameManager {
     private final GraphicsContext gc;
     private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
     private final List<AnimatedEntity> enemies = new LinkedList<>();
-    private List<int[]> waves = new LinkedList<>();
     private final IntegerProperty currentWaveProperty = new SimpleIntegerProperty(0);
     private long lastTime = 0;
     private GameModel gameModel;
@@ -30,6 +30,10 @@ public class GameManager {
     private double gameSpeedMultiplier = 1.0; // default speed
     private AnimationTimer gameLoop;
     private static GameManager instance;
+    private final List<Wave> waves = new ArrayList<>();
+    private int currentWaveIndex = 0;
+    private double timeUntilNextWave = 0;
+    private boolean waveInProgress = false;
 
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
@@ -41,9 +45,30 @@ public class GameManager {
         instance = new GameManager(canvas, entities, model, state);
     }
 
-    public void setWaves(List<int[]> waves) {
-        this.waves = waves != null ? waves : new LinkedList<>();
+    /**
+     * Configure waves using the legacy simple format from the custom game page.
+     * Each int[] represents one wave with [goblins, warriors].
+     */
+    public void setWaves(List<int[]> waveConfigs) {
+        List<Wave> converted = new ArrayList<>();
+        if (waveConfigs != null) {
+            for (int[] cfg : waveConfigs) {
+                int goblins = cfg.length > 0 ? cfg[0] : 0;
+                int warriors = cfg.length > 1 ? cfg[1] : 0;
+                converted.add(new Wave(new EntityGroup(goblins, warriors, 0)));
+            }
+        }
+        setWavesFromGroups(converted);
+    }
+
+    /** Configure waves using the new grouped format. */
+    public void setWavesFromGroups(List<Wave> newWaves) {
+        this.waves.clear();
+        if (newWaves != null) this.waves.addAll(newWaves);
         this.currentWaveProperty.set(0);
+        this.currentWaveIndex = 0;
+        this.waveInProgress = false;
+        this.timeUntilNextWave = 4; // initial grace before first group
     }
 
     public static GameManager getInstance() {
@@ -59,6 +84,13 @@ public class GameManager {
         this.entities = entities;
         this.gameModel = model;
         this.playerState = state;
+    }
+
+    private void spawnGroup(EntityGroup cfg) {
+        int goblins = cfg.goblins;
+        int warriors = cfg.warriors;
+        for (int i = 0; i < goblins; i++) spawnGoblin();
+        for (int i = 0; i < warriors; i++) spawnWarrior();
     }
 
     public void start() {
@@ -101,11 +133,25 @@ public class GameManager {
                 entities.addAll(delayedAdd);
                 entities.removeAll(delayedRemove);
 
-                // if wave cleared, spawn next
-                if (enemies.isEmpty() && currentWaveProperty.get() < waves.size()) {
-                    spawnWave(waves.get(currentWaveProperty.get()));
-                    currentWaveProperty.set(currentWaveProperty.get() + 1);
+                timeUntilNextWave -= dt;
+                if (timeUntilNextWave <= 0 && currentWaveIndex < waves.size()) {
+                    Wave wave = waves.get(currentWaveIndex);
+                    if (!waveInProgress) {
+                        currentWaveProperty.set(currentWaveIndex + 1);
+                        waveInProgress = true;
+
+                        EntityGroup grp = wave.group;
+                        spawnGroup(grp);
+                        timeUntilNextWave = grp.delayAfter;
+                    }
                 }
+
+                if (waveInProgress && enemies.isEmpty()) {
+                    currentWaveIndex++;
+                    waveInProgress = false;
+                    timeUntilNextWave = 5; // optional inter-wave delay
+                }
+
 
                 // render as before…
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
