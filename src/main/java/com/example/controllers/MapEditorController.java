@@ -125,7 +125,7 @@ public class MapEditorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     // 1) Resize and renderer
-    // Main.getViewManager().resizeWindow(windowWidth, windowHeight);
+    Main.getViewManager().resizeWindow(windowWidth, windowHeight);
     tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
     // 2) Allocate the backing array
@@ -957,7 +957,7 @@ public class MapEditorController implements Initializable {
 
 
         if (canLeave) {
-            // Main.getViewManager().resizeWindow(640, 450);
+            Main.getViewManager().resizeWindow(800, 600);
             Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
         }
     }

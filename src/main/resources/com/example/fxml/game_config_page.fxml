@@ -14,11 +14,11 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.control.TextField?>
-<StackPane prefHeight="450.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.GameConfigController">
+<StackPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.GameConfigController">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitHeight="450" fitWidth="640">
+      <ImageView fitHeight="600" fitWidth="800">
          <Image url="@../assets/home_page_grass.png"/>
       </ImageView>
    </StackPane>
@@ -27,7 +27,7 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="640">
+            <Rectangle height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="800">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>
@@ -46,7 +46,7 @@
       <!-- Title with stylized rectangle backdrop -->
       <StackPane>
          <!-- Title backdrop - Wooden-styled rectangle -->
-         <Rectangle arcHeight="20" arcWidth="20" height="70" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="500">
+         <Rectangle arcHeight="20" arcWidth="20" height="70" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="600">
             <effect>
                <DropShadow color="#00000099" height="15" radius="7" width="15" />
             </effect>
@@ -70,20 +70,20 @@
       <!-- Game list panel -->
       <StackPane>
          <!-- Panel backdrop -->
-         <Rectangle arcHeight="15" arcWidth="15" height="240" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="500">
+         <Rectangle arcHeight="15" arcWidth="15" height="280" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;" width="520">
             <effect>
                <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
             </effect>
          </Rectangle>
 
          <!-- Save game list -->
-         <VBox alignment="CENTER" maxWidth="460" spacing="15">
+         <VBox alignment="CENTER" maxWidth="480" spacing="15">
             <padding>
                <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
 
             <!-- ListView for saved games -->
-            <ListView fx:id="savedMapsListView" prefHeight="140" prefWidth="420"
+            <ListView fx:id="savedMapsListView" prefHeight="180" prefWidth="480"
                       style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748;
                      -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
 
@@ -120,7 +120,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle height="40" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="640">
+            <Rectangle height="40" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;" width="800">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                </effect>

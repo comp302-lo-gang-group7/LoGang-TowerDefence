@@ -13,16 +13,16 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="450.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.CustomGameController">
+<StackPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.CustomGameController">
     <StackPane>
-        <ImageView fitHeight="450" fitWidth="640">
+        <ImageView fitHeight="600" fitWidth="800">
             <Image url="@../assets/home_page_grass.png" />
         </ImageView>
     </StackPane>
     <BorderPane pickOnBounds="false">
         <top>
             <StackPane>
-                <Rectangle width="640" height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
+                <Rectangle width="800" height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                     <effect>
                         <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                     </effect>
@@ -37,7 +37,7 @@
     </BorderPane>
     <VBox alignment="CENTER" spacing="30.0">
         <StackPane>
-            <Rectangle width="500" height="70" arcWidth="20" arcHeight="20" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
+            <Rectangle width="600" height="70" arcWidth="20" arcHeight="20" style="-fx-fill: linear-gradient(#6b4c2e, #4e331f); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
                 <effect>
                     <DropShadow color="#00000099" height="15" radius="7" width="15" />
                 </effect>
@@ -56,16 +56,16 @@
             </VBox>
         </StackPane>
         <StackPane>
-            <Rectangle width="500" height="320" arcWidth="15" arcHeight="15" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
+            <Rectangle width="520" height="420" arcWidth="15" arcHeight="15" style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
                 <effect>
                     <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
                 </effect>
             </Rectangle>
-            <VBox alignment="CENTER" maxWidth="460" spacing="10">
+            <VBox alignment="CENTER" maxWidth="480" spacing="10">
                 <padding>
                     <Insets top="20" right="20" bottom="20" left="20" />
                 </padding>
-                <ListView fx:id="savedMapsListView" prefHeight="100" prefWidth="420" style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748; -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
+                <ListView fx:id="savedMapsListView" prefHeight="180" prefWidth="480" style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748; -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
                 <HBox alignment="CENTER_LEFT" spacing="10">
                     <Text text="Starting Gold:" fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" />
                     <TextField fx:id="goldInput" promptText="1000" prefWidth="120" style="-fx-background-color: #e8d9b5; -fx-text-fill: #4e331f; -fx-font-size: 14px; -fx-font-family: 'Segoe UI';" />
@@ -85,7 +85,7 @@
     <BorderPane pickOnBounds="false">
         <bottom>
             <StackPane>
-                <Rectangle width="640" height="40" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
+                <Rectangle width="800" height="40" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                     <effect>
                         <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
                     </effect>
