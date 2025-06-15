@@ -1,17 +1,21 @@
 package com.example.utils;
 
+import com.example.main.Main;
+
 import javafx.animation.ScaleTransition;
-import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -40,8 +44,7 @@ public class MapEditorUtils {
                                                     "-fx-text-fill: #f5ead9; -fx-font-family: 'Segoe UI'; " +
                                                     "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                     "-fx-border-color: #a07748; -fx-border-width: 2; " +
-                                                    "-fx-border-radius: 5; -fx-background-radius: 5; " +
-                                                    "-fx-cursor: hand;";
+                                                    "-fx-border-radius: 5; -fx-background-radius: 5;";
     
     public static final String BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
                                                       "-fx-text-fill: #d9c9a0; -fx-font-family: 'Segoe UI'; " +
@@ -59,8 +62,7 @@ public class MapEditorUtils {
                                                        "-fx-text-fill: #f5ffe9; -fx-font-family: 'Segoe UI'; " +
                                                        "-fx-font-size: 14px; -fx-font-weight: bold; " + 
                                                        "-fx-border-color: #6a894d; -fx-border-width: 2; " +
-                                                       "-fx-border-radius: 5; -fx-background-radius: 5; " +
-                                                       "-fx-cursor: hand;";
+                                                       "-fx-border-radius: 5; -fx-background-radius: 5; ";
     
     public static final String OK_BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#2e5a23, #447240); " +
                                                          "-fx-text-fill: #d9f0c0; -fx-font-family: 'Segoe UI'; " +
@@ -145,14 +147,28 @@ public class MapEditorUtils {
         dialogScene.setFill(Color.web("#5d4228"));
         dialogStage.setScene(dialogScene);
         
+        // Set custom cursor for the dialog scene
+        Image customCursorImage = new Image(MapEditorUtils.class.getResourceAsStream("/com/example/assets/ui/01.png"));
+        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+        dialogScene.setCursor(customCursor);
+        root.setCursor(customCursor);
+        
         // Center on parent
         dialogStage.centerOnScreen();
         
         // Make the dialog draggable by the title bar
         setupDraggableStage(titleBar, dialogStage);
         
+        // Set custom cursor for the OK button
+        okButton.setCursor(customCursor);
+        
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
+
+        // Restore custom cursor to main scene
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
     }
 
     public static void showErrorAlert(String title, String header, String content, Object caller) {
@@ -211,6 +227,11 @@ public class MapEditorUtils {
         Button okButton = (Button) dialogPane.lookupButton(okButtonType);
         okButton.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold;");
 
+        // Set custom cursor for the OK button
+        Image customCursorImage = new Image(MapEditorUtils.class.getResourceAsStream("/com/example/assets/ui/01.png"));
+        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+        okButton.setCursor(customCursor);
+
         okButton.setOnMouseEntered(e ->
                 okButton.setStyle("-fx-background-color: #ef5350; -fx-text-fill: white; -fx-font-weight: bold;")
         );
@@ -218,7 +239,16 @@ public class MapEditorUtils {
                 okButton.setStyle("-fx-background-color: #c62828; -fx-text-fill: white; -fx-font-weight: bold;")
         );
 
+        // Set custom cursor for the dialog pane and its scene
+        dialog.getDialogPane().setCursor(customCursor);
+        dialog.getDialogPane().getScene().setCursor(customCursor);
+
         dialog.showAndWait();
+
+        // Restore custom cursor to main scene
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
     }
 
 
@@ -256,21 +286,22 @@ public class MapEditorUtils {
         HBox buttonBox = new HBox(20);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(20, 0, 10, 0));
-        buttonBox.setStyle("-fx-background-color: #5d4228;"); // Ensure consistent background
+        buttonBox.setStyle("-fx-background-color: #5d4228;");
         
-        // Create OK button (now green)
+        // Create OK button
         Button okButton = new Button("OK");
         okButton.setPrefWidth(100);
         okButton.setPrefHeight(30);
-        okButton.setStyle(OK_BUTTON_NORMAL_STYLE);
+        okButton.setStyle(MapEditorUtils.OK_BUTTON_NORMAL_STYLE);
         
+        // Set custom cursor for the OK button
+        Image customCursorImage = new Image(MapEditorUtils.class.getResourceAsStream("/com/example/assets/ui/01.png"));
+        ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+        okButton.setCursor(customCursor);
+
         // OK button hover effect
-        okButton.setOnMouseEntered(e -> okButton.setStyle(OK_BUTTON_HOVER_STYLE));
-        okButton.setOnMouseExited(e -> okButton.setStyle(OK_BUTTON_NORMAL_STYLE));
-        
-        // Add pressed style for feedback
-        okButton.setOnMousePressed(e -> okButton.setStyle(OK_BUTTON_PRESSED_STYLE));
-        okButton.setOnMouseReleased(e -> okButton.setStyle(OK_BUTTON_HOVER_STYLE));
+        okButton.setOnMouseEntered(e -> okButton.setStyle(MapEditorUtils.OK_BUTTON_HOVER_STYLE));
+        okButton.setOnMouseExited(e -> okButton.setStyle(MapEditorUtils.OK_BUTTON_NORMAL_STYLE));
         
         // OK button click action
         okButton.setOnAction(e -> {
@@ -278,19 +309,18 @@ public class MapEditorUtils {
             dialogStage.close();
         });
         
-        // Create Cancel button (standard wood color)
+        // Create Cancel button
         Button cancelButton = new Button("Cancel");
         cancelButton.setPrefWidth(100);
         cancelButton.setPrefHeight(30);
-        cancelButton.setStyle(BUTTON_NORMAL_STYLE);
+        cancelButton.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
+
+        // Set custom cursor for the Cancel button
+        cancelButton.setCursor(customCursor);
         
         // Cancel button hover effect
-        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
-        cancelButton.setOnMouseExited(e -> cancelButton.setStyle(BUTTON_NORMAL_STYLE));
-        
-        // Add pressed style for feedback
-        cancelButton.setOnMousePressed(e -> cancelButton.setStyle(BUTTON_PRESSED_STYLE));
-        cancelButton.setOnMouseReleased(e -> cancelButton.setStyle(BUTTON_HOVER_STYLE));
+        cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE));
+        cancelButton.setOnMouseExited(e -> cancelButton.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE));
         
         // Cancel button click action
         cancelButton.setOnAction(e -> {
@@ -312,11 +342,14 @@ public class MapEditorUtils {
         // Apply drop shadow effect
         root.setEffect(new DropShadow(15, Color.rgb(0, 0, 0, 0.5)));
         
-        // Set up the scene with proper size to prevent buttons from being cut off
-        Scene dialogScene = new Scene(root, 400, 220);
-        // Ensure scene background is properly colored
+        // Set up the scene
+        Scene dialogScene = new Scene(root, 400, 200);
         dialogScene.setFill(Color.web("#5d4228"));
         dialogStage.setScene(dialogScene);
+
+        // Set custom cursor for the dialog scene
+        dialogScene.setCursor(customCursor);
+        root.setCursor(customCursor);
         
         // Center on parent
         dialogStage.centerOnScreen();
@@ -327,7 +360,11 @@ public class MapEditorUtils {
         // Show dialog and wait for it to close
         dialogStage.showAndWait();
         
-        // Return result
+        // Restore custom cursor to main scene
+        if (Main.getViewManager() != null && Main.getViewManager().getScene() != null && Main.getViewManager().getCustomCursor() != null) {
+            Main.getViewManager().getScene().setCursor(Main.getViewManager().getCustomCursor());
+        }
+
         return dialogConfirmed;
     }
 

@@ -155,7 +155,6 @@ public class SettingsController extends Controller implements Initializable {
             "-fx-border-color: linear-gradient(#c6965f, #b88d5a); " +
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
-            "-fx-cursor: hand; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 6, 0.0, 0, 2);";
         
         String pressedCss = 

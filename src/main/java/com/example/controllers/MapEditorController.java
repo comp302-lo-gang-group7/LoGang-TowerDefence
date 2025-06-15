@@ -1,5 +1,16 @@
 package com.example.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import com.example.main.Main;
 import com.example.map.TileEnum;
 import com.example.map.TileView;
@@ -9,35 +20,28 @@ import com.example.utils.TileRenderer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
-import javafx.scene.control.cell.ComboBoxListCell;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import java.util.function.Predicate;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -47,8 +51,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 
 public class MapEditorController implements Initializable {
     @FXML private GridPane paletteGrid;
@@ -150,18 +152,24 @@ public class MapEditorController implements Initializable {
     // 6) Set initial mode
     currentMode = EditorMode.EDIT;
     updateModeButtonStyles();
+
+    // 7) Set custom cursor for the entire scene
+    if (Main.getViewManager().getScene() != null) {
+        Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+        Main.getViewManager().setCustomCursor(customCursorImage);
+    }
 }
 
     /**
      * After loading tiles into mapTileViews, scan for any 2×2 blocks
-     * of “group” tiles (e.g. your castle quadrants) and register them
+     * of "group" tiles (e.g. your castle quadrants) and register them
      * in groupTileMap so dragging one corner will move all four.
      */
     private void detectGroupsFromLoaded() {
         groupTileMap.clear();
         boolean[][] used = new boolean[MAP_ROWS][MAP_COLS];
 
-        // anything in bottom-two‐rows of tileset & first two cols is a “group” piece
+        // anything in bottom-two‐rows of tileset & first two cols is a "group" piece
         Predicate<TileEnum> isGroupPiece = t ->
                 t.getRow() >= PALETTE_ROWS - 2 && t.getCol() < 2;
 
@@ -374,6 +382,11 @@ public class MapEditorController implements Initializable {
             // Apply normal style
             button.setStyle(buttonStyle);
             
+            // Set custom cursor for the button
+            Image customCursorImage = new Image(getClass().getResourceAsStream("/com/example/assets/ui/01.png"));
+            ImageCursor customCursor = new ImageCursor(customCursorImage, customCursorImage.getWidth() / 2, customCursorImage.getHeight() / 2);
+            button.setCursor(customCursor);
+
             // Add hover effects
             button.setOnMouseEntered(e -> button.setStyle(buttonHoverStyle));
             button.setOnMouseExited(e -> button.setStyle(buttonStyle));
@@ -1027,8 +1040,7 @@ public class MapEditorController implements Initializable {
                                  "-fx-border-color: #a07748; " +
                                  "-fx-border-width: 2; " +
                                  "-fx-border-radius: 3; " +
-                                 "-fx-background-radius: 3; " +
-                                 "-fx-cursor: hand;";
+                                 "-fx-background-radius: 3; ";
     
         String buttonPressedStyle = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
                                   "-fx-text-fill: #d9c9a0; " +
