@@ -1,14 +1,9 @@
 package com.example.controllers;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 import com.example.main.Main;
@@ -16,11 +11,16 @@ import com.example.map.TileEnum;
 import com.example.map.TileView;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.MapEditorUtils;
+import com.example.utils.MapValidator;
+import com.example.utils.RoadValidator;
 import com.example.utils.TileRenderer;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
@@ -29,6 +29,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.ComboBoxListCell;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -43,6 +44,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -51,6 +53,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
+
 
 public class MapEditorController implements Initializable {
     @FXML private GridPane paletteGrid;
@@ -341,16 +345,159 @@ public class MapEditorController implements Initializable {
         return null;
     }
 
+    /**
+     * Validates that all road tiles are properly connected before saving
+     */
+    private boolean validateRoadConnections() {
+        List<Point2D> disconnectedRoads = RoadValidator.findDisconnectedRoads(mapTileViews);
+        
+        if (!disconnectedRoads.isEmpty()) {
+            // Use the existing wooden-styled error alert that matches the game's aesthetic
+            MapEditorUtils.showErrorAlert(
+                "Invalid Road Connections",
+                "Disconnected Road Tiles",
+                "Some road tiles are not properly connected. Please fix the highlighted paths before saving.",
+                this
+            );
+            
+            // Highlight the disconnected roads
+            highlightDisconnectedRoads(disconnectedRoads);
+            
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * Highlights disconnected road tiles to help identify issues
+     */
+    private void highlightDisconnectedRoads(List<Point2D> disconnectedRoads) {
+        // Add a subtle pulsing animation to the disconnected tiles for better visibility
+        List<TileView> highlightedTiles = new ArrayList<>();
+        
+        for (Point2D p : disconnectedRoads) {
+            int col = (int) p.getX();
+            int row = (int) p.getY();
+            
+            TileView tileView = mapTileViews[row][col];
+            
+            // Store reference to highlighted tiles
+            highlightedTiles.add(tileView);
+            
+            // Add a red pulsing glow effect
+            DropShadow errorEffect = new DropShadow();
+            errorEffect.setColor(Color.RED);
+            tileView.setEffect(errorEffect);
+            
+            // Add subtle animation for better visibility
+            FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
+            fade.setFromValue(0.7);
+            fade.setToValue(1.0);
+            fade.setCycleCount(4); // Pulse 3 times (back and forth)
+            fade.setAutoReverse(true);
+            fade.play();
+        }
+        
+        // Remove highlights after 5 seconds
+        PauseTransition pause = new PauseTransition(Duration.seconds(5));
+        pause.setOnFinished(e -> {
+            for (TileView tile : highlightedTiles) {
+                tile.setEffect(null);
+                tile.setOpacity(1.0);
+            }
+        });
+        pause.play();
+    }
+
+    /**
+ * Highlights tower tiles that are not adjacent to any path tiles
+ * This improved version ensures all sides of the tile are visibly highlighted
+ */
+private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
+    // Add a subtle pulsing animation to the isolated tower tiles for better visibility
+    List<TileView> highlightedTiles = new ArrayList<>();
+    
+    for (Point2D p : isolatedTowerTiles) {
+        int col = (int) p.getX();
+        int row = (int) p.getY();
+        
+        TileView tileView = mapTileViews[row][col];
+        
+        // Store reference to highlighted tiles
+        highlightedTiles.add(tileView);
+        
+        // Get the parent pane of the TileView
+        Pane cell = (Pane) tileView.getParent();
+                
+        // Add a yellow pulsing glow effect to distinguish from road errors
+        DropShadow errorEffect = new DropShadow();
+        errorEffect.setColor(Color.RED);
+        tileView.setEffect(errorEffect);
+        
+        // Add subtle animation for better visibility
+        FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
+        fade.setFromValue(0.7);
+        fade.setToValue(1.0);
+        fade.setCycleCount(4); // Pulse 3 times (back and forth)
+        fade.setAutoReverse(true);
+        fade.play();
+    }
+    
+    // Remove highlights after 5 seconds
+    PauseTransition pause = new PauseTransition(Duration.seconds(5));
+    pause.setOnFinished(e -> {
+        for (TileView tile : highlightedTiles) {
+            // Remove effect from tile
+            tile.setEffect(null);
+            tile.setOpacity(1.0);
+            
+            // Reset the parent cell's border
+            Pane cell = (Pane) tile.getParent();
+            cell.setStyle("-fx-border-color: #666; -fx-border-width: 1;");
+        }
+    });
+    pause.play();
+}
+
     @FXML
     private void saveMap() {
         String mapName = mapSelectionCombo.getEditor().getText().trim();
         if (mapName.isEmpty()) {
-            MapEditorUtils.showErrorAlert(
+            MapEditorUtils.showInfoAlert(
                     "Missing Map Name",
                     "Please enter a map name before saving.",
-                    "You can type a new name or pick an existing one from the dropdown.",
                     this
             );
+            return;
+        }
+
+        // Check for disconnected roads
+        List<Point2D> disconnectedRoads = RoadValidator.findDisconnectedRoads(mapTileViews);
+        if (!disconnectedRoads.isEmpty()) {
+            // Use the wooden-styled info alert instead of the red error alert
+            MapEditorUtils.showInfoAlert(
+                    "Invalid Road Connections",
+                    "Some road tiles are not properly connected. Please fix the highlighted paths before saving.",
+                    this
+            );
+            
+            // Highlight the disconnected roads
+            highlightDisconnectedRoads(disconnectedRoads);
+            return;
+        }
+        
+        // NEW: Check for tower tiles not adjacent to paths
+        List<Point2D> isolatedTowerTiles = RoadValidator.findIsolatedTowerTiles(mapTileViews);
+        if (!isolatedTowerTiles.isEmpty()) {
+            MapEditorUtils.showInfoAlert(
+                    "Invalid Tower Placement",
+                    "Tower positions must be adjacent to a path. Please fix the highlighted tower positions.",
+                    this
+            );
+            
+            // Highlight the isolated tower tiles
+            highlightIsolatedTowerTiles(isolatedTowerTiles);
             return;
         }
 
@@ -360,25 +507,30 @@ public class MapEditorController implements Initializable {
             mapSelectionCombo.setValue(mapName);
             MapEditorUtils.showInfoAlert("Map Saved", "Successfully saved \"" + mapName + "\".", this);
         } catch (Exception e) {
-            MapEditorUtils.showErrorAlert(
+            MapEditorUtils.showInfoAlert(
                     "Save Failed",
-                    "Could not save map \"" + mapName + "\".",
-                    e.getMessage(),
+                    "Could not save map \"" + mapName + "\": " + e.getMessage(),
                     this
             );
         }
     }
 
     private void setupButtonImages() {
-        // Define the button styles
-        String buttonStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
-        String buttonHoverStyle = MapEditorUtils.BUTTON_HOVER_STYLE;
-        String buttonPressedStyle = MapEditorUtils.BUTTON_PRESSED_STYLE;
+    // Define the button styles
+    String buttonStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
+    String buttonHoverStyle = MapEditorUtils.BUTTON_HOVER_STYLE;
+    String buttonPressedStyle = MapEditorUtils.BUTTON_PRESSED_STYLE;
+    
+    // Apply styles to all navigation/action buttons
+    Button[] actionButtons = {homeBtn, editModeBtn, deleteModeBtn, clearMapBtn, saveMapBtn};
+    
+    for (Button button : actionButtons) {
+        // Apply normal style
+        button.setStyle(buttonStyle);
         
-        // Apply styles to all navigation/action buttons
-        Button[] actionButtons = {homeBtn, editModeBtn, deleteModeBtn, clearMapBtn, saveMapBtn};
-        
-        for (Button button : actionButtons) {
+        // Don't apply general handlers to mode buttons - they'll be handled separately
+        if (button != editModeBtn && button != deleteModeBtn) {
+            // Add hover effects for non-mode buttons
             // Apply normal style
             button.setStyle(buttonStyle);
             
@@ -391,7 +543,7 @@ public class MapEditorController implements Initializable {
             button.setOnMouseEntered(e -> button.setStyle(buttonHoverStyle));
             button.setOnMouseExited(e -> button.setStyle(buttonStyle));
             
-            // Add pressed effects
+            // Add pressed effects for non-mode buttons
             button.setOnMousePressed(e -> button.setStyle(buttonPressedStyle));
             button.setOnMouseReleased(e -> {
                 if (button.isHover()) {
@@ -400,15 +552,20 @@ public class MapEditorController implements Initializable {
                     button.setStyle(buttonStyle);
                 }
             });
-            
-            // Set button dimensions
-            button.setPrefHeight(32);
-            button.setPrefWidth(120);
         }
         
-        // Set the current mode button (initially Edit Mode) to be highlighted
-        updateModeButtonStyles();
+        // Set button dimensions
+        button.setPrefHeight(32);
+        button.setPrefWidth(120);
     }
+    
+    // Handle mode buttons separately
+    editModeBtn.setOnMousePressed(e -> editModeBtn.setStyle(buttonPressedStyle));
+    deleteModeBtn.setOnMousePressed(e -> deleteModeBtn.setStyle(buttonPressedStyle));
+    
+    // Set the current mode button (initially Edit Mode) to be highlighted
+    updateModeButtonStyles();
+}
 
     private void createTilePalette() {
         for (int row = 0; row < PALETTE_ROWS; row++) {
@@ -567,13 +724,33 @@ public class MapEditorController implements Initializable {
                 setupDragAndDrop(cell, tileView, r, c);
 
                 cell.setOnMouseClicked(e -> {
-                    if (!e.isConsumed() && e.getButton() == MouseButton.PRIMARY) {
-                        placeTile(r, c);
+                    if (!e.isConsumed()) {
+                        if (e.getButton() == MouseButton.PRIMARY) {
+                            // Left click - normal behavior based on current mode
+                            placeTile(r, c);
+                        } else if (e.getButton() == MouseButton.SECONDARY) {
+                            // Right click - always delete the tile regardless of mode
+                            deleteTile(r, c);
+                        }
                     }
                 });
 
                 mapGrid.add(cell, col, row);
             }
+        }
+    }
+
+    /**
+     * Deletes a tile at the specified position (resets to grass)
+     * Used for right-click deletion feature
+     */
+    private void deleteTile(int row, int col) {
+        // Check if the tile is part of a group
+        String groupKey = getGroupKeyForTile(row, col);
+        if (groupKey != null) {
+            resetGroup(groupKey);
+        } else {
+            resetTileToGrass(row, col);
         }
     }
 
@@ -871,9 +1048,9 @@ public class MapEditorController implements Initializable {
         // Reset styles for both buttons
         String normalStyle = MapEditorUtils.BUTTON_NORMAL_STYLE;
         String activeStyle = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
-                             "-fx-text-fill: #ffcc66; -fx-font-family: 'Segoe UI'; " +
+                             "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                              "-fx-font-size: 14px; -fx-font-weight: bold; " +
-                             "-fx-border-color: #ffcc66; -fx-border-width: 2; " +
+                             "-fx-border-color: rgb(38, 163, 48); -fx-border-width: 2; " +
                              "-fx-border-radius: 5; -fx-background-radius: 5;";
         
         // Update based on current mode
