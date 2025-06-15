@@ -6,7 +6,7 @@
 
 <HBox xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.controllers.CustomTitleBarController"
-      alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="640.0" 
+      alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="800.0" 
       style="-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 0 0 1 0;"
       fx:id="titleBar">
       

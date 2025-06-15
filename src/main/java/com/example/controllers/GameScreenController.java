@@ -1,11 +1,21 @@
 package com.example.controllers;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import com.example.entity.Entity;
-import com.example.game.*;
-import com.example.map.*;
-import com.example.main.Main;
+import com.example.game.GameManager;
+import com.example.game.GameModel;
+import com.example.game.PlayerState;
+import com.example.map.Tile;
+import com.example.map.TileEnum;
+import com.example.map.TileModel;
+import com.example.map.TileView;
 import com.example.storage_manager.MapStorageManager;
 import com.example.utils.TileRenderer;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,11 +33,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Popup;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class GameScreenController extends Controller {
 	@FXML private Pane gameArea;
@@ -101,7 +106,6 @@ public class GameScreenController extends Controller {
 		// adjust window size
 		double w = cols * TILE_SIZE;
 		double h = rows * TILE_SIZE;
-		Main.getViewManager().resizeWindow((int)w, (int)h);
 		gameArea.setPrefSize(w, h);
 
 		Canvas gameCanvas = new Canvas(cols * TILE_SIZE, rows * TILE_SIZE);
@@ -298,7 +302,7 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button’s icon or tooltip
+		// Optional: change the button's icon or tooltip
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}

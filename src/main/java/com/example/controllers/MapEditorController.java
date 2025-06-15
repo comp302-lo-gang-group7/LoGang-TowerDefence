@@ -1,5 +1,16 @@
 package com.example.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import com.example.main.Main;
 import com.example.map.TileEnum;
 import com.example.map.TileView;
@@ -9,35 +20,27 @@ import com.example.utils.TileRenderer;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.cell.ComboBoxListCell;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import java.util.function.Predicate;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -47,8 +50,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 
 public class MapEditorController implements Initializable {
     @FXML private GridPane paletteGrid;
@@ -124,7 +125,7 @@ public class MapEditorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     // 1) Resize and renderer
-    Main.getViewManager().resizeWindow(windowWidth, windowHeight);
+    // Main.getViewManager().resizeWindow(windowWidth, windowHeight);
     tileRenderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
     // 2) Allocate the backing array
@@ -956,7 +957,7 @@ public class MapEditorController implements Initializable {
 
 
         if (canLeave) {
-            Main.getViewManager().resizeWindow(640, 450);
+            // Main.getViewManager().resizeWindow(640, 450);
             Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
         }
     }
