@@ -163,6 +163,17 @@ public class AnimatedEntity extends Entity {
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
     }
 
+    /**
+     * Allows subclasses to modify incoming damage based on the attacking tower
+     * type. By default no modification is made.
+     *
+     * @param source the tower dealing the damage
+     * @param base   the raw damage amount
+     * @return the adjusted damage this entity should take
+     */
+    public int modifyDamage(Tower source, int base) {
+        return base;
+    }
 
 
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {

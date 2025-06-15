@@ -72,7 +72,8 @@ public class Projectile extends Entity
 			} else
 			{
 				this.active = false;
-				target.applyDamage(parent.baseDamage);
+				int dmg = target.modifyDamage(parent, parent.baseDamage);
+				target.applyDamage(dmg);
 				GameManager.getInstance().removeEntity(this);
 				GameManager.getInstance().spawnEffect(parent, x, y);
 			}

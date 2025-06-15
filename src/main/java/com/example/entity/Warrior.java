@@ -22,4 +22,15 @@ public class Warrior extends AnimatedEntity {
     {
         super(SPRITE_SHEET, FRAMES, FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
     }
+
+    @Override
+    public int modifyDamage(Tower source, int base) {
+        if (source instanceof ArcherTower) {
+            return (int) Math.round(base * 0.5);
+        }
+        if (source instanceof MageTower) {
+            return (int) Math.round(base * 1.5);
+        }
+        return base;
+    }
 }
