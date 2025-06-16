@@ -1,5 +1,14 @@
 package com.example.controllers;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.Set;
 import java.awt.Point;
 import java.io.IOException;
 import java.net.URL;
@@ -54,7 +63,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-
 
 public class MapEditorController implements Initializable {
     @FXML private GridPane paletteGrid;
@@ -1146,7 +1154,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
 
 
         if (canLeave) {
-            Main.getViewManager().resizeWindow(640, 450);
+            Main.getViewManager().resizeWindow(800, 600);
             Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");
         }
     }

@@ -8,8 +8,10 @@ import com.example.main.Main;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 
 /**
@@ -18,10 +20,15 @@ import javafx.scene.shape.SVGPath;
 public class MainMenuController extends Controller implements Initializable {
     
     @FXML private Button newGameBtn;
-    @FXML private Button loadGameBtn;
     @FXML private Button mapEditorBtn;
-    @FXML private Button settingsBtn;
     @FXML private Button quitBtn;
+    @FXML private Button settingsIconButton;
+
+    // New Game Sub-Menu elements
+    @FXML private VBox newGameSubMenuVBox;
+    @FXML private Button defaultGameBtn;
+    @FXML private Button customGameBtn;
+
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -30,15 +37,23 @@ public class MainMenuController extends Controller implements Initializable {
         
         // Add styling and animation
         setupButtonAnimations();
+
+        // Initialize sub-menu visibility
+        newGameSubMenuVBox.setVisible(false);
+        newGameSubMenuVBox.setManaged(false);
+
+        // Set actions for new game sub-menu buttons
+        defaultGameBtn.setOnAction(event -> goToDefaultGamePage());
+        customGameBtn.setOnAction(event -> goToCustomGamePage());
+
     }
     
     private void setupButtonIcons() {
         // Create SVG icons (no image files needed)
         addSvgIconToButton(newGameBtn, "M8,5.14V19.14L19,12.14L8,5.14Z", 20); // Play icon
-        addSvgIconToButton(loadGameBtn, "M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z", 20); // File icon
         addSvgIconToButton(mapEditorBtn, "M20.5,3L20.34,3.03L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21L3.66,20.97L9,18.9L15,21L20.64,19.1C20.85,19.03 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3M10,5.47L14,6.87V18.53L10,17.13V5.47M5,6.46L8,5.45V17.15L5,18.31V6.46M16,18.53V6.87L19,5.71V17.53L16,18.53Z", 20); // Map icon
-        addSvgIconToButton(settingsBtn, "M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z", 20); // Gear icon
         addSvgIconToButton(quitBtn, "M19,3H5C3.89,3 3,3.89 3,5V9H5V5H19V19H5V15H3V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10.08,15.58L11.5,17L16.5,12L11.5,7L10.08,8.41L12.67,11H3V13H12.67L10.08,15.58Z", 20); // Exit icon
+        addSvgIconToButton(settingsIconButton, "M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z", 24); // Gear icon
     }
     
     private void addSvgIconToButton(Button button, String svgPathContent, double size) {
@@ -57,9 +72,8 @@ public class MainMenuController extends Controller implements Initializable {
         
         // Add to button with proper spacing
         StackPane iconContainer = new StackPane(iconRegion);
-        iconContainer.setPrefWidth(30);
+        iconContainer.setPrefSize(40, 40);
         button.setGraphic(iconContainer);
-        button.setGraphicTextGap(15);
     }
     
     private void setupButtonAnimations() {
@@ -105,10 +119,21 @@ public class MainMenuController extends Controller implements Initializable {
         
         // Apply to all buttons
         setupButtonStyle(newGameBtn, buttonCss, hoverCss, pressedCss);
-        setupButtonStyle(loadGameBtn, buttonCss, hoverCss, pressedCss);
         setupButtonStyle(mapEditorBtn, buttonCss, hoverCss, pressedCss);
-        setupButtonStyle(settingsBtn, buttonCss, hoverCss, pressedCss);
         setupButtonStyle(quitBtn, buttonCss, hoverCss, pressedCss);
+        
+        // Apply transparent style to settings icon button if it exists
+        if (settingsIconButton != null) {
+            settingsIconButton.setStyle("-fx-background-color: transparent;");
+            settingsIconButton.setOnMouseEntered(e -> settingsIconButton.setScaleX(1.1));
+            settingsIconButton.setOnMouseExited(e -> settingsIconButton.setScaleX(1.0));
+            settingsIconButton.setOnMousePressed(e -> settingsIconButton.setScaleX(1.05));
+            settingsIconButton.setOnMouseReleased(e -> settingsIconButton.setScaleX(1.1));
+        }
+
+        // Apply styling to sub-menu buttons
+        if (defaultGameBtn != null) setupButtonStyle(defaultGameBtn, buttonCss, hoverCss, pressedCss);
+        if (customGameBtn != null) setupButtonStyle(customGameBtn, buttonCss, hoverCss, pressedCss);
     }
 
     private void setupButtonStyle(Button button, String normalStyle, String hoverStyle, String pressedStyle) {
@@ -149,13 +174,25 @@ public class MainMenuController extends Controller implements Initializable {
     }
 
     @FXML
-    public void goToNewGamePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/create_game_page.fxml");
+    public void toggleNewGameSubMenu() {
+        boolean isVisible = newGameSubMenuVBox.isVisible();
+        newGameSubMenuVBox.setVisible(!isVisible);
+        newGameSubMenuVBox.setManaged(!isVisible);
+    }
+
+    // Placeholder methods for new game actions (will be populated with logic from CreateGameController)
+    @FXML
+    public void goToDefaultGamePage() {
+        System.out.println("Default Game Started (Placeholder)");
+        // Logic to start default game
+        Main.getViewManager().switchTo("/com/example/fxml/game_config_page.fxml");
     }
 
     @FXML
-    public void goToLoadGamePage() {
-        Main.getViewManager().switchTo("/com/example/fxml/load_game_page.fxml");
+    public void goToCustomGamePage() {
+        System.out.println("Custom Game Started (Placeholder)");
+        // Logic to start custom game
+        Main.getViewManager().switchTo("/com/example/fxml/custom_game_page.fxml");
     }
 
     @FXML

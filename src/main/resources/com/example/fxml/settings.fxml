@@ -18,11 +18,11 @@
 
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
            fx:controller="com.example.controllers.SettingsController"
-           prefWidth="640.0" prefHeight="450.0">
+           prefWidth="800.0" prefHeight="600.0">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitWidth="640" fitHeight="450" preserveRatio="false">
+      <ImageView fitWidth="800" fitHeight="600" preserveRatio="false">
          <image>
             <Image url="@../assets/home_page_grass.png" />
          </image>
@@ -33,7 +33,7 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <Rectangle width="640" height="60" 
+            <Rectangle width="800" height="60" 
                       style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
@@ -165,7 +165,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="640" height="40" 
+            <Rectangle width="800" height="40" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />

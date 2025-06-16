@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.example.ui.ViewManager;
 
+
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -20,6 +21,10 @@ public class Main extends javafx.application.Application {
         
         // Disable window resizing
         stage.setResizable(false);
+
+        // Set initial window size
+        stage.setWidth(800);
+        stage.setHeight(600);
         
         viewManager = new ViewManager(stage);
         viewManager.switchTo("/com/example/fxml/home_page.fxml");
