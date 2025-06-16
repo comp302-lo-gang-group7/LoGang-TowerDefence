@@ -89,7 +89,7 @@
    <BorderPane pickOnBounds="false">
       <bottom>
          <StackPane>
-            <Rectangle width="800" height="40" 
+            <Rectangle width="800" height="80" 
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
                   <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
@@ -103,14 +103,10 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane alignment="TOP_LEFT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
          </StackPane>
       </top>
       <right>
          <StackPane alignment="TOP_RIGHT">
-            <Rectangle width="40" height="40" 
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
          </StackPane>
       </right>
       <left>
@@ -126,8 +122,8 @@
       </left>
       <bottom>
          <StackPane alignment="BOTTOM_RIGHT">
-            <Rectangle width="40" height="40"
-                     style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
+            <Rectangle width="30" height="30"
+                     style="-fx-fill: #5d7542; -fx-stroke: #5d7542; -fx-stroke-width: 2;" />
          </StackPane>
       </bottom>
    </BorderPane>
