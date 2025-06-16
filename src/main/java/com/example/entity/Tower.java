@@ -27,6 +27,9 @@ public abstract class Tower extends Entity
 		return range;
 	}
 
+	public void setRange(int range) {
+		this.range = range;
+	}
 
 	@Override
 	public void update( double dt )

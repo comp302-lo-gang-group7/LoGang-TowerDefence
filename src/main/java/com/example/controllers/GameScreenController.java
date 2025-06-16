@@ -25,6 +25,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Popup;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -301,6 +303,20 @@ public class GameScreenController extends Controller {
 	}
 
 	private void constructTower(int x, int y, TileEnum towerType) {
+		int cost;
+		switch (towerType) {
+			case ARCHERY_TOWER -> cost = 100;
+			case MAGE_TOWER -> cost = 120;
+			case ARTILLERY_TOWER -> cost = 140;
+			default -> cost = 100;
+		}
+		if (playerState.getGold() < cost) {
+			showInsufficientFunds(x, y);
+			return;
+		}
+
+		playerState.spendGold(cost);
+
 		Tile tile = tiles[y][x];
 		TileView newView = renderer.createTileView(towerType);
 		newView.setLayoutX(x * TILE_SIZE);
@@ -310,11 +326,23 @@ public class GameScreenController extends Controller {
 		towerLayer.getChildren().add(newView);
 
 		tile.view = newView;
-		tile.model.setTower(towerType, 10, 5, 100, 1);
+		tile.model.setTower(towerType, 10, 5, cost, 2, 1);
 
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
 		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
 		newView.setOnMouseExited(e -> hideTowerRadius());
+	}
+
+	/** Show a temporary tooltip around the specified tile */
+	private void showInsufficientFunds(int x, int y) {
+		double localX = x * TILE_SIZE + TILE_SIZE / 2.0;
+		double localY = y * TILE_SIZE + TILE_SIZE / 2.0;
+		Point2D screen = towerLayer.localToScreen(localX, localY);
+		Tooltip tip = new Tooltip("Not enough gold!");
+		tip.show(towerLayer.getScene().getWindow(), screen.getX(), screen.getY());
+		PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+		delay.setOnFinished(e -> tip.hide());
+		delay.play();
 	}
 
 	private void sellTower(int x, int y) {
@@ -322,6 +350,9 @@ public class GameScreenController extends Controller {
 		TileView newView = renderer.createTileView(TileEnum.EMPTY_TOWER_TILE);
 		newView.setLayoutX(x * TILE_SIZE);
 		newView.setLayoutY(y * TILE_SIZE);
+
+		int cost = tile.model.getTower().goldCost;
+		playerState.addGold(cost);
 
 		towerLayer.getChildren().remove(tile.view);
 		towerLayer.getChildren().add(newView);
@@ -336,11 +367,19 @@ public class GameScreenController extends Controller {
 
 	private void upgradeTower(int x, int y) {
 		Tile tile = tiles[y][x];
+		int cost = tile.model.getTower().goldCost;
+		if (playerState.getGold() < cost) {
+			showInsufficientFunds(x, y);
+			return;
+		}
+
+		playerState.spendGold(cost);
+
 		TileEnum type = tile.model.getType();
 		switch (type) {
-			case ARCHERY_TOWER -> tile.model.upgradeTower(12, 8);
-			case MAGE_TOWER -> tile.model.upgradeTower(12, 7);
-			case ARTILLERY_TOWER -> tile.model.upgradeTower(14, 10);
+			case ARCHERY_TOWER -> tile.model.upgradeTower(12, 8, 4);
+			case MAGE_TOWER -> tile.model.upgradeTower(12, 7, 3);
+			case ARTILLERY_TOWER -> tile.model.upgradeTower(14, 15, 2);
 			default -> {}
 		}
 	}
