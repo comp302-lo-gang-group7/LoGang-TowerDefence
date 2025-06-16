@@ -1,42 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane fx:id="victoryRoot"
-           xmlns="http://javafx.com/javafx/23.0.1"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.controllers.VictoryController"
-           prefWidth="640" prefHeight="450"
-           pickOnBounds="true">
-    <Rectangle width="640" height="450" style="-fx-fill: rgba(0,0,0,0.5);" />
-    <BorderPane>
-        <center>
-            <VBox alignment="CENTER" spacing="20">
-                <Text text="VICTORY"
-                      style="-fx-font-family:'Segoe UI'; -fx-font-size:28px; -fx-font-weight:bold;"
-                      fill="#f0e3c8" />
-                <HBox fx:id="starsBox" alignment="CENTER" spacing="10" />
-                <VBox spacing="15">
-                    <Button fx:id="exitBtn" text="Return to Main Menu" prefWidth="200" prefHeight="40"
-                            onAction="#handleExit" styleClass="menu-button"/>
-                </VBox>
-            </VBox>
-        </center>
-        <style>
-            .border-pane {
-            -fx-background-color: linear-gradient(#6b4c2e, #4e331f);
-            -fx-background-radius: 10;
-            -fx-border-color: #8a673c;
-            -fx-border-width: 3;
-            -fx-border-radius: 10;
-            -fx-effect: dropshadow(gaussian, black, 15, 0.3, 0, 0);
-            -fx-padding: 30;
-            }
-        </style>
-    </BorderPane>
+<StackPane fx:id="victoryRoot" prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.VictoryController">
+   <children>
+      <!-- Semi-transparent dark overlay -->
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00000080" height="600.0" stroke="TRANSPARENT" strokeType="INSIDE" width="800.0" />
+      
+      <!-- Victory dialog panel with wooden style matching other dialogs -->
+      <VBox alignment="CENTER" maxHeight="320.0" maxWidth="400.0" prefHeight="320.0" prefWidth="400.0" spacing="15.0" style="-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 3; -fx-border-radius: 10; -fx-background-radius: 10;">
+         <effect>
+            <DropShadow height="20.0" radius="9.5" width="20.0" />
+         </effect>
+         <children>
+            <Text fill="#f5d142" strokeType="OUTSIDE" strokeWidth="0.0" text="VICTORY!" textAlignment="CENTER">
+               <font>
+                  <Font name="Segoe UI Bold" size="32.0" />
+               </font>
+               <effect>
+                  <DropShadow height="4.0" radius="1.5" width="4.0" />
+               </effect>
+            </Text>
+            
+            <Text fill="#e8d9b5" strokeType="OUTSIDE" strokeWidth="0.0" text="Level Complete" textAlignment="CENTER">
+               <font>
+                  <Font name="Segoe UI" size="18.0" />
+               </font>
+            </Text>
+            
+            <!-- Star container with wooden frame style -->
+            <HBox fx:id="starsBox" alignment="CENTER" spacing="15.0" style="-fx-background-color: #6b4c2e; -fx-background-radius: 8; -fx-border-color: #8a673c; -fx-border-radius: 8; -fx-border-width: 2;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets left="20.0" right="20.0" />
+               </VBox.margin>
+            </HBox>
+            
+            <Text fill="#e8d9b5" strokeType="OUTSIDE" strokeWidth="0.0" text="Congratulations!" textAlignment="CENTER">
+               <font>
+                  <Font name="Segoe UI" size="16.0" />
+               </font>
+            </Text>
+            
+            <!-- Exit button with wooden style -->
+            <Button fx:id="exitBtn" mnemonicParsing="false" onAction="#handleExit" prefHeight="40.0" prefWidth="180.0" text="Return to Main Menu">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </VBox>
+   </children>
 </StackPane>
