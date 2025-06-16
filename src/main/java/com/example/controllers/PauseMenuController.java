@@ -40,7 +40,7 @@ public class PauseMenuController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Apply styling to all buttons
         setupButtonEffects(resumeBtn);
-        setupButtonEffects(settingsBtn);
+        // setupButtonEffects(settingsBtn);
         setupButtonEffects(exitBtn);
     }
 

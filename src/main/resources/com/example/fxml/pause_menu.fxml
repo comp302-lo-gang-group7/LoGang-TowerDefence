@@ -33,7 +33,7 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </Button>
-            <Button fx:id="settingsBtn" mnemonicParsing="false" onAction="#handleSettings" prefHeight="40.0" prefWidth="180.0" text="Settings" />
+            <!-- <Button fx:id="settingsBtn" mnemonicParsing="false" onAction="#handleSettings" prefHeight="40.0" prefWidth="180.0" text="Settings" /> -->
             <Button fx:id="exitBtn" mnemonicParsing="false" onAction="#handleExit" prefHeight="40.0" prefWidth="180.0" text="Exit to Main Menu">
                <VBox.margin>
                   <Insets bottom="10.0" />
