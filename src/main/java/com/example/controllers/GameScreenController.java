@@ -67,6 +67,7 @@ public class GameScreenController extends Controller {
 	private Parent gameOverOverlay;
 	private Parent victoryOverlay;
 	private String mapName;
+	private long startTime;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
 		List<Wave> converted = new ArrayList<>();
@@ -91,6 +92,7 @@ public class GameScreenController extends Controller {
 
 		this.mapName = mapName;
 		AudioManager.playBackgroundMusic("/com/example/assets/audio/background-battle-drums.mp3", true);
+		startTime = System.currentTimeMillis();
 
 		playerState = new PlayerState(startingGold, lives);
 		goldLabel.textProperty().bind(playerState.getGoldProperty().asString());
@@ -559,10 +561,26 @@ public class GameScreenController extends Controller {
 			int stars = calculateStars();
 			ctrl.init(stars);
 			gameArea.getChildren().add(victoryOverlay);
-			ProgressStorageManager.recordRating(mapName, stars);
+			long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+			ProgressStorageManager.recordProgress(mapName, stars, elapsed);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Override exit action to properly stop the running game and audio.
+	 */
+	@Override
+	public void goToHomePage() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (hudTimer != null) {
+			hudTimer.stop();
+		}
+		AudioManager.stopBackgroundMusic();
+		super.goToHomePage();
 	}
 
 }

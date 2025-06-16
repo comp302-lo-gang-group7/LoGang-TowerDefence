@@ -203,9 +203,10 @@ public class MainMenuController extends Controller implements Initializable {
     // Placeholder methods for new game actions (will be populated with logic from CreateGameController)
     @FXML
     public void goToDefaultGamePage() {
-        System.out.println("Default Game Started (Placeholder)");
+        System.out.println("Default Game Started");
         // Logic to start default game
-        Main.getViewManager().switchTo("/com/example/fxml/game_config_page.fxml");
+        Main.getViewManager().resizeWindow(1024,576);
+        Main.getViewManager().switchTo("/com/example/fxml/campaign_page.fxml");
     }
 
     @FXML

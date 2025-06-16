@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Forest Training",
+    "description": "The goblins are stirring in the woods.",
+    "levelFile": "test_level",
+    "col": 4,
+    "row": 8
+  },
+  {
+    "name": "Jungle Skirmish",
+    "description": "Defend the jungle trail.",
+    "levelFile": "test_level2",
+    "col": 8,
+    "row": 6
+  },
+  {
+    "name": "Jungle Skirmish",
+    "description": "Defend the jungle trail.",
+    "levelFile": "test_level2",
+    "col": 11,
+    "row": 5
+  },
+  {
+    "name": "Jungle Skirmish",
+    "description": "Defend the jungle trail.",
+    "levelFile": "test_level2",
+    "col": 12,
+    "row": 3
+  },
+  {
+    "name": "Jungle Skirmish",
+    "description": "Defend the jungle trail.",
+    "levelFile": "test_level2",
+    "col": 8,
+    "row": 2
+  }
+]
