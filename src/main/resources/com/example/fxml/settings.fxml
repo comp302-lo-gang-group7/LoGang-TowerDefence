@@ -51,33 +51,33 @@
 
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="20.0">
-      <!-- Settings panel - now with transparent background -->
+      <!-- Settings panel -->
       <VBox alignment="CENTER" spacing="12" maxWidth="480" style="-fx-background-color: transparent; -fx-padding: 15 20;">
          <!-- Volume settings -->
          <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="MUSIC VOLUME:" textFill="#e8f4d9" prefWidth="130"
-                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Label text="MUSIC VOLUME:" textFill="#8a673c" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
             <Slider fx:id="musicVolumeSlider" prefWidth="240" value="75"
                     style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
-            <Label fx:id="musicVolumeLabel" text="75%" textFill="#e8f4d9" prefWidth="40"
-                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);" />
+            <Label fx:id="musicVolumeLabel" text="75%" textFill="#8a673c" prefWidth="40"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
          </HBox>
          
          <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="SOUND EFFECTS:" textFill="#e8f4d9" prefWidth="130"
-                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Label text="SOUND EFFECTS:" textFill="#8a673c" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
             <Slider fx:id="sfxVolumeSlider" prefWidth="240" value="100" 
                     style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
-            <Label fx:id="sfxVolumeLabel" text="100%" textFill="#e8f4d9" prefWidth="40"
-                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);" />
+            <Label fx:id="sfxVolumeLabel" text="100%" textFill="#8a673c" prefWidth="40"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
          </HBox>
          
          <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
 
          <!-- Gameplay settings -->
          <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="DIFFICULTY:" textFill="#e8f4d9" prefWidth="130"
-                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Label text="DIFFICULTY:" textFill="#8a673c" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
             <ComboBox fx:id="difficultyCombo" prefWidth="200" 
                       style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8f4d9; -fx-font-family: 'Segoe UI'; 
                              -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
@@ -85,8 +85,8 @@
          </HBox>
          
          <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="GAME SPEED:" textFill="#e8f4d9" prefWidth="130"
-                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Label text="GAME SPEED:" textFill="#8a673c" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
             <ComboBox fx:id="gameSpeedCombo" prefWidth="200" 
                       style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8f4d9; -fx-font-family: 'Segoe UI'; 
                              -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
