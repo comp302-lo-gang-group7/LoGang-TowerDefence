@@ -13,6 +13,7 @@ import com.example.main.Main;
 import com.example.player.PlayerState;
 import com.example.storage_manager.MapStorageManager;
 import com.example.config.LevelConfig;
+import com.example.ui.AudioManager;
 import com.example.utils.TileRenderer;
 
 import com.example.storage_manager.ProgressStorageManager;
@@ -87,6 +88,9 @@ public class GameScreenController extends Controller {
 	private void initInternal(String mapName, int startingGold, int lives, List<Wave> waves) {
 		contextMenu.setAutoHide(true);
 		setupButtonIcons();
+
+		this.mapName = mapName;
+		AudioManager.playBackgroundMusic("/com/example/assets/audio/background-battle-drums.mp3", true);
 
 		playerState = new PlayerState(startingGold, lives);
 		goldLabel.textProperty().bind(playerState.getGoldProperty().asString());
@@ -346,6 +350,7 @@ public class GameScreenController extends Controller {
 		}
 
 		playerState.spendGold(cost);
+		AudioManager.playSoundEffect("/com/example/assets/audio/tower-construction-sound.mp3");
 
 		Tile tile = tiles[y][x];
 		TileView newView = renderer.createTileView(towerType);
@@ -511,6 +516,9 @@ public class GameScreenController extends Controller {
 		if (hudTimer != null) {
 			hudTimer.stop();
 		}
+		AudioManager.stopBackgroundMusic();
+		AudioManager.playSoundEffect(
+				"/com/example/assets/audio/gameover.mp3");
 		if (gameOverOverlay != null) {
 			return;
 		}
@@ -539,6 +547,8 @@ public class GameScreenController extends Controller {
 		if (hudTimer != null) {
 			hudTimer.stop();
 		}
+		AudioManager.stopBackgroundMusic();
+		AudioManager.playSoundEffect("/com/example/assets/audio/victory.mp3");
 		if (victoryOverlay != null) {
 			return;
 		}

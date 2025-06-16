@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import com.example.main.Main;
 
+import com.example.ui.AudioManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -46,6 +47,7 @@ public class MainMenuController extends Controller implements Initializable {
         defaultGameBtn.setOnAction(event -> goToDefaultGamePage());
         customGameBtn.setOnAction(event -> goToCustomGamePage());
 
+        AudioManager.playBackgroundMusic("/com/example/assets/audio/main-menu-music.mp3", true);
     }
     
     private void setupButtonIcons() {

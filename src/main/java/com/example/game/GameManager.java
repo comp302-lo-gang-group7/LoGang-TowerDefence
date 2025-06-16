@@ -3,6 +3,7 @@ package com.example.game;
 import com.example.controllers.GameScreenController;
 import com.example.entity.*;
 import com.example.player.PlayerState;
+import com.example.ui.AudioManager;
 import com.example.ui.ImageLoader;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
@@ -93,6 +94,7 @@ public class GameManager {
     }
 
     private void spawnGroup(EntityGroup cfg) {
+        AudioManager.playSoundEffect("/com/example/assets/audio/wave-starting.mp3");
         int goblins = cfg.goblins;
         int warriors = cfg.warriors;
         for (int i = 0; i < goblins; i++) spawnGoblin();
@@ -171,7 +173,6 @@ public class GameManager {
                     waveInProgress = false;
                     timeUntilNextWave = 5; // optional inter-wave delay
                 }
-
 
                 // render as before…
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -266,6 +267,19 @@ public class GameManager {
     public void attackEntity( Tower tower, AnimatedEntity e ) {
         if (e != null)
         {
+            if (tower instanceof ArcherTower) {
+                AudioManager.playRandomSoundEffect(
+                        "/com/example/assets/audio/archer-tower1.mp3",
+                        "/com/example/assets/audio/archer-tower2.mp3",
+                        "/com/example/assets/audio/archer-tower3.mp3",
+                        "/com/example/assets/audio/archer-tower4.mp3");
+            } else if (tower instanceof MageTower) {
+                AudioManager.playSoundEffect(
+                        "/com/example/assets/audio/spell-tower.mp3");
+            } else if (tower instanceof ArtilleryTower) {
+                AudioManager.playSoundEffect(
+                        "/com/example/assets/audio/artillery-tower.mp3");
+            }
             Projectile p = new Projectile(
                     tower,
                     tower.getX() * GameScreenController.TILE_SIZE + 32,
