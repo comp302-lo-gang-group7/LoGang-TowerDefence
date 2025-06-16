@@ -565,4 +565,19 @@ public class GameScreenController extends Controller {
 		}
 	}
 
+	/**
+	 * Override exit action to properly stop the running game and audio.
+	 */
+	@Override
+	public void goToHomePage() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (hudTimer != null) {
+			hudTimer.stop();
+		}
+		AudioManager.stopBackgroundMusic();
+		super.goToHomePage();
+	}
+
 }
