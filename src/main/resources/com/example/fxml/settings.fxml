@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -32,7 +31,7 @@
    <!-- Decorative green header bar -->
    <BorderPane pickOnBounds="false">
       <top>
-         <StackPane>
+         <StackPane fx:id="headerBar" onMousePressed="#onHeaderBarPressed" onMouseDragged="#onHeaderBarDragged">
             <Rectangle width="800" height="60" 
                       style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
@@ -40,7 +39,7 @@
                </effect>
             </Rectangle>
 
-                        <Text fill="#e8f4d9" text="Settings" 
+            <Text fill="#e8f4d9" text="Settings" 
                   style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;">
                <effect>
                   <DropShadow color="#00000080" height="5" radius="2" width="5" />
@@ -52,103 +51,62 @@
 
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="20.0">
-      <!-- Title with stylized rectangle backdrop -->
-      <!-- Settings panel -->
-      <StackPane>
-         <!-- Settings panel backdrop -->
-         <Rectangle width="520" height="290" arcWidth="15" arcHeight="15" 
-                    style="-fx-fill: linear-gradient(#5d4228, #422c17); -fx-stroke: #8a673c; -fx-stroke-width: 3;">
-            <effect>
-               <DropShadow color="#00000099" height="12" radius="5.5" width="12" />
-            </effect>
-         </Rectangle>
-            
-         <!-- Settings controls -->
-         <VBox alignment="CENTER" spacing="12" maxWidth="480">
-            <padding>
-               <Insets top="15" right="20" bottom="15" left="20" />
-            </padding>
-            
-            <!-- Volume settings -->
-            <HBox alignment="CENTER_LEFT" spacing="10">
-               <Label text="MUSIC VOLUME:" textFill="#e8d9b5" prefWidth="130"
-                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
-               <Slider fx:id="musicVolumeSlider" prefWidth="240" value="75"
-                       style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
-               <Label fx:id="musicVolumeLabel" text="75%" textFill="#e8d9b5" prefWidth="40"
-                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
-            </HBox>
-            
-            <HBox alignment="CENTER_LEFT" spacing="10">
-               <Label text="SOUND EFFECTS:" textFill="#e8d9b5" prefWidth="130"
-                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
-               <Slider fx:id="sfxVolumeSlider" prefWidth="240" value="100" 
-                       style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
-               <Label fx:id="sfxVolumeLabel" text="100%" textFill="#e8d9b5" prefWidth="40"
-                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
-            </HBox>
-            
-            <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
+      <!-- Settings panel - now with transparent background -->
+      <VBox alignment="CENTER" spacing="12" maxWidth="480" style="-fx-background-color: transparent; -fx-padding: 15 20;">
+         <!-- Volume settings -->
+         <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="MUSIC VOLUME:" textFill="#e8f4d9" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Slider fx:id="musicVolumeSlider" prefWidth="240" value="75"
+                    style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
+            <Label fx:id="musicVolumeLabel" text="75%" textFill="#e8f4d9" prefWidth="40"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);" />
+         </HBox>
+         
+         <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="SOUND EFFECTS:" textFill="#e8f4d9" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <Slider fx:id="sfxVolumeSlider" prefWidth="240" value="100" 
+                    style="-fx-control-inner-background: #7d5a3c; -fx-accent: #a07748;" />
+            <Label fx:id="sfxVolumeLabel" text="100%" textFill="#e8f4d9" prefWidth="40"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);" />
+         </HBox>
+         
+         <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
 
-            <!-- Gameplay settings -->
-            <HBox alignment="CENTER_LEFT" spacing="10">
-               <Label text="DIFFICULTY:" textFill="#e8d9b5" prefWidth="130"
-                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
-               <ComboBox fx:id="difficultyCombo" prefWidth="200" 
-                         style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; 
-                                -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
-                                -fx-border-width: 1; -fx-border-radius: 3;" />
-            </HBox>
-            
-            <HBox alignment="CENTER_LEFT" spacing="10">
-               <Label text="GAME SPEED:" textFill="#e8d9b5" prefWidth="130"
-                      style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI';"/>
-               <ComboBox fx:id="gameSpeedCombo" prefWidth="200" 
-                         style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; 
-                                -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
-                                -fx-border-width: 1; -fx-border-radius: 3;" />
-            </HBox>
-            
-            <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
-
-            <!-- Toggle options (with fixed-width HBoxes for consistent alignment) -->
-            <HBox alignment="CENTER" spacing="30">
-               <HBox alignment="CENTER_LEFT" prefWidth="220">
-                  <CheckBox fx:id="showHintsCb" text="Show Gameplay Hints" textFill="#e8d9b5" 
-                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" selected="true" />
-               </HBox>
-               <HBox alignment="CENTER_LEFT" prefWidth="210">
-                  <CheckBox fx:id="autoSaveCb" text="Auto-Save Game" textFill="#e8d9b5" 
-                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" selected="true" />
-               </HBox>
-            </HBox>
-            
-            <HBox alignment="CENTER" spacing="30">
-               <HBox alignment="CENTER_LEFT" prefWidth="220">
-                  <CheckBox fx:id="fullscreenCb" text="Fullscreen Mode" textFill="#e8d9b5" 
-                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
-               </HBox>
-               <HBox alignment="CENTER_LEFT" prefWidth="210">
-                  <CheckBox fx:id="showFpsCb" text="Show FPS Counter" textFill="#e8d9b5" 
-                            style="-fx-font-size: 13px; -fx-font-family: 'Segoe UI';" />
-               </HBox>
-            </HBox>
-            
-            <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
-            
-            <!-- Action buttons -->
-            <HBox alignment="CENTER" spacing="20">
-               <Button fx:id="saveBtn" text="Save Settings" prefWidth="140" prefHeight="35" 
-                      onAction="#saveSettings" styleClass="menu-button" />
-                      
-               <Button fx:id="resetBtn" text="Reset to Default" prefWidth="140" prefHeight="35" 
-                      onAction="#resetSettings" styleClass="menu-button" />
-                      
-               <Button fx:id="homeBtn" text="Back to Home" prefWidth="140" prefHeight="35" 
-                      onAction="#goToHomePage" styleClass="menu-button" />
-            </HBox>
-         </VBox>
-      </StackPane>
+         <!-- Gameplay settings -->
+         <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="DIFFICULTY:" textFill="#e8f4d9" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <ComboBox fx:id="difficultyCombo" prefWidth="200" 
+                      style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8f4d9; -fx-font-family: 'Segoe UI'; 
+                             -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
+                             -fx-border-width: 1; -fx-border-radius: 3;" />
+         </HBox>
+         
+         <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="GAME SPEED:" textFill="#e8f4d9" prefWidth="130"
+                   style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-font-family: 'Segoe UI'; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 3, 0, 0, 0);"/>
+            <ComboBox fx:id="gameSpeedCombo" prefWidth="200" 
+                      style="-fx-background-color: #7d5a3c; -fx-text-fill: #e8f4d9; -fx-font-family: 'Segoe UI'; 
+                             -fx-font-weight: bold; -fx-font-size: 13px; -fx-border-color: #a07748; 
+                             -fx-border-width: 1; -fx-border-radius: 3;" />
+         </HBox>
+         
+         <Rectangle height="1" width="460" style="-fx-fill: #8a673c;" />
+         
+         <!-- Action buttons -->
+         <HBox alignment="CENTER" spacing="20">
+            <Button fx:id="saveBtn" text="Save Settings" prefWidth="140" prefHeight="35" 
+                   onAction="#saveSettings" styleClass="menu-button" />
+                   
+            <Button fx:id="resetBtn" text="Reset to Default" prefWidth="140" prefHeight="35" 
+                   onAction="#resetSettings" styleClass="menu-button" />
+                   
+            <Button fx:id="homeBtn" text="Back to Home" prefWidth="140" prefHeight="35" 
+                   onAction="#goToHomePage" styleClass="menu-button" />
+         </HBox>
+      </VBox>
    </VBox>
     
    <!-- Decorative green footer bar -->
