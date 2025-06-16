@@ -34,7 +34,7 @@
                   <Image url="@../assets/ui/borderbanner.png" />
                </image>
             </ImageView>
-            <ImageView fitHeight="216.0" fitWidth="548.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="211.0" fitWidth="306.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../assets/ui/banner.png" />
                </image>
@@ -46,24 +46,24 @@
    <!-- Main content -->
    <VBox alignment="CENTER" spacing="25.0" translateY="-50.0">
       <!-- Menu panel with wooden styling -->
-      <StackPane>
+      <StackPane prefHeight="356.0" prefWidth="801.0">
          <!-- Button container -->
-         <VBox alignment="CENTER" maxWidth="380.0" prefHeight="450.0" spacing="15.0">
+         <VBox alignment="CENTER" maxWidth="380.0" prefHeight="414.0" prefWidth="380.0" spacing="15.0">
             <padding>
-               <Insets bottom="20.0" left="10.0" right="10.0" top="200.0" />
+               <Insets bottom="20.0" left="10.0" right="10.0" top="160.0" />
             </padding>
 
-            <Button fx:id="newGameBtn" onAction="#toggleNewGameSubMenu" prefHeight="45.0" prefWidth="260.0" styleClass="menu-button" text="Play" />
+            <Button fx:id="newGameBtn" onAction="#toggleNewGameSubMenu" prefHeight="34.0" prefWidth="185.0" styleClass="menu-button" text="Play" />
 
             <!-- New Game Sub-Menu -->
             <VBox fx:id="newGameSubMenuVBox" alignment="CENTER" managed="false" maxWidth="260.0" prefWidth="1.0" spacing="10.0" visible="false">
-               <Button fx:id="defaultGameBtn" prefHeight="35.0" prefWidth="220.0" styleClass="menu-button" text="Campaign" />
-               <Button fx:id="customGameBtn" prefHeight="35.0" prefWidth="220.0" styleClass="menu-button" text="Custom Game" />
+               <Button fx:id="defaultGameBtn" prefHeight="30.0" prefWidth="150.0" styleClass="menu-button" text="Campaign" />
+               <Button fx:id="customGameBtn" prefHeight="30.0" prefWidth="150.0" styleClass="menu-button" text="Custom Game" />
             </VBox>
 
-            <Button fx:id="mapEditorBtn" onAction="#goToMapEditorPage" prefHeight="45.0" prefWidth="260.0" styleClass="menu-button" text="Map Editor" />
-            <Button fx:id="howToPlayBtn" text="How To Play" onAction="#goToHowToPlayPage" prefWidth="260.0" prefHeight="45.0" styleClass="menu-button" />
-            <Button fx:id="quitBtn" onAction="#terminateApplication" prefHeight="45.0" prefWidth="260.0" styleClass="menu-button" text="Quit" />
+            <Button fx:id="mapEditorBtn" onAction="#goToMapEditorPage" prefHeight="35.0" prefWidth="185.0" styleClass="menu-button" text="Map Editor" />
+            <Button fx:id="howToPlayBtn" onAction="#goToHowToPlayPage" prefHeight="33.0" prefWidth="185.0" styleClass="menu-button" text="How To Play" />
+            <Button fx:id="quitBtn" onAction="#terminateApplication" prefHeight="38.0" prefWidth="185.0" styleClass="menu-button" text="Quit" />
             <StackPane.margin>
                <Insets />
             </StackPane.margin>
@@ -71,7 +71,7 @@
       </StackPane>
 
       <!-- Game version info -->
-      <StackPane>
+      <StackPane prefHeight="10.0" prefWidth="801.0">
          <Rectangle arcHeight="10" arcWidth="10" height="24" style="-fx-fill: rgba(66, 43, 26, 0.7); -fx-stroke: #8a673c; -fx-stroke-width: 1;" width="200" />
          <Text fill="#d9c9a0" text="Version 1.0 - LoGang Tower Defense">
             <font>
@@ -95,7 +95,7 @@
    </BorderPane>
 
    <!-- Corner decorative elements -->
-   <BorderPane pickOnBounds="false">
+   <BorderPane pickOnBounds="false" prefWidth="800.0">
       <top>
          <StackPane alignment="TOP_LEFT">
          </StackPane>
