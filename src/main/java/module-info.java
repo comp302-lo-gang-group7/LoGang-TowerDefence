@@ -37,5 +37,6 @@ module com.example.game {
 
 	exports com.example.player;
 	opens com.example.player to javafx.fxml;
+	exports com.example.animation;
 
 }
