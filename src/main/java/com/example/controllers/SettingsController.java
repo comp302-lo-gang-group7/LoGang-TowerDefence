@@ -1,16 +1,26 @@
 package com.example.controllers;
 
 import com.example.main.Main;
+import com.example.storage_manager.SettingsManager;
+import com.example.storage_manager.SettingsManager.Settings;
+import com.example.ui.DialogUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.net.URL;
@@ -45,6 +55,8 @@ public class SettingsController extends Controller implements Initializable {
         
         // Apply wooden style to checkboxes
         setupCheckboxes();
+
+        loadSavedSettings();
         
         // Add wooden styling to all buttons
         applyButtonStyle(saveBtn);
@@ -205,11 +217,35 @@ public class SettingsController extends Controller implements Initializable {
             }
         });
     }
-    
+
     @FXML
     public void saveSettings() {
-        // This would actually save settings in a real implementation
+        Settings settings = new Settings();
+        settings.musicVolume = (int) musicVolumeSlider.getValue();
+        settings.sfxVolume = (int) sfxVolumeSlider.getValue();
+        settings.difficulty = difficultyCombo.getValue();
+        settings.gameSpeed = gameSpeedCombo.getValue();
+        settings.showHints = showHintsCb.isSelected();
+        settings.autoSave = autoSaveCb.isSelected();
+        settings.fullscreen = fullscreenCb.isSelected();
+        settings.showFps = showFpsCb.isSelected();
+
+        SettingsManager.save(settings);
         showMessage("Settings saved successfully!");
+    }
+
+    private void loadSavedSettings() {
+        Settings settings = SettingsManager.load();
+        musicVolumeSlider.setValue(settings.musicVolume);
+        musicVolumeLabel.setText(settings.musicVolume + "%");
+        sfxVolumeSlider.setValue(settings.sfxVolume);
+        sfxVolumeLabel.setText(settings.sfxVolume + "%");
+        difficultyCombo.setValue(settings.difficulty);
+        gameSpeedCombo.setValue(settings.gameSpeed);
+        showHintsCb.setSelected(settings.showHints);
+        autoSaveCb.setSelected(settings.autoSave);
+        fullscreenCb.setSelected(settings.fullscreen);
+        showFpsCb.setSelected(settings.showFps);
     }
     
     @FXML
@@ -223,12 +259,12 @@ public class SettingsController extends Controller implements Initializable {
         autoSaveCb.setSelected(true);
         fullscreenCb.setSelected(false);
         showFpsCb.setSelected(false);
-        
+
+        SettingsManager.save(new Settings());
         showMessage("Settings reset to defaults.");
     }
-    
+
     private void showMessage(String message) {
-        // In a real implementation, you would show a proper dialog
-        System.out.println(message);
+        DialogUtil.showWoodenAlert("Settings", message);
     }
 }
