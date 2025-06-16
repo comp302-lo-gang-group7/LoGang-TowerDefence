@@ -8,12 +8,13 @@ import com.example.ui.DialogUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -38,13 +39,26 @@ public class SettingsController extends Controller implements Initializable {
     @FXML private Label sfxVolumeLabel;
     @FXML private ComboBox<String> difficultyCombo;
     @FXML private ComboBox<String> gameSpeedCombo;
-    @FXML private CheckBox showHintsCb;
-    @FXML private CheckBox autoSaveCb;
-    @FXML private CheckBox fullscreenCb;
-    @FXML private CheckBox showFpsCb;
     @FXML private Button saveBtn;
     @FXML private Button resetBtn;
     @FXML private Button homeBtn;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
+
+    @FXML
+    private void onHeaderBarPressed(MouseEvent event) {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+    }
+
+    @FXML
+    private void onHeaderBarDragged(MouseEvent event) {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(event.getScreenY() - yOffset);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -54,9 +68,6 @@ public class SettingsController extends Controller implements Initializable {
         // Set up slider listeners to update labels
         setupSliders();
         
-        // Apply wooden style to checkboxes
-        setupCheckboxes();
-
         loadSavedSettings();
         
         // Add wooden styling to all buttons
@@ -128,19 +139,6 @@ public class SettingsController extends Controller implements Initializable {
             int value = newVal.intValue();
             sfxVolumeLabel.setText(value + "%");
         });
-    }
-    
-    private void setupCheckboxes() {
-        // Apply wooden style to all checkboxes
-        String checkboxStyle = "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI';" +
-                           "-fx-font-size: 13px; -fx-background-color: transparent;" +
-                           "-fx-border-color: transparent;" +
-                           "-fx-mark-color: #a07748;";
-                           
-        showHintsCb.setStyle(checkboxStyle);
-        autoSaveCb.setStyle(checkboxStyle);
-        fullscreenCb.setStyle(checkboxStyle);
-        showFpsCb.setStyle(checkboxStyle);
     }
     
     private void applyButtonStyle(Button button) {
@@ -226,10 +224,12 @@ public class SettingsController extends Controller implements Initializable {
         settings.sfxVolume = (int) sfxVolumeSlider.getValue();
         settings.difficulty = difficultyCombo.getValue();
         settings.gameSpeed = gameSpeedCombo.getValue();
-        settings.showHints = showHintsCb.isSelected();
-        settings.autoSave = autoSaveCb.isSelected();
-        settings.fullscreen = fullscreenCb.isSelected();
-        settings.showFps = showFpsCb.isSelected();
+        
+        // Set default values for removed checkboxes
+        settings.showHints = true;
+        settings.autoSave = true;
+        settings.fullscreen = false;
+        settings.showFps = false;
 
         SettingsManager.save(settings);
         AudioManager.reloadSettings();
@@ -244,10 +244,6 @@ public class SettingsController extends Controller implements Initializable {
         sfxVolumeLabel.setText(settings.sfxVolume + "%");
         difficultyCombo.setValue(settings.difficulty);
         gameSpeedCombo.setValue(settings.gameSpeed);
-        showHintsCb.setSelected(settings.showHints);
-        autoSaveCb.setSelected(settings.autoSave);
-        fullscreenCb.setSelected(settings.fullscreen);
-        showFpsCb.setSelected(settings.showFps);
     }
     
     @FXML
@@ -257,12 +253,14 @@ public class SettingsController extends Controller implements Initializable {
         sfxVolumeSlider.setValue(100);
         difficultyCombo.setValue("Normal");
         gameSpeedCombo.setValue("Normal");
-        showHintsCb.setSelected(true);
-        autoSaveCb.setSelected(true);
-        fullscreenCb.setSelected(false);
-        showFpsCb.setSelected(false);
 
-        SettingsManager.save(new Settings());
+        Settings settings = new Settings();
+        settings.showHints = true;
+        settings.autoSave = true;
+        settings.fullscreen = false;
+        settings.showFps = false;
+
+        SettingsManager.save(settings);
         AudioManager.reloadSettings();
         showMessage("Settings reset to defaults.");
     }
