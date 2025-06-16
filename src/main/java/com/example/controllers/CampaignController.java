@@ -11,12 +11,14 @@ import com.example.storage_manager.ProgressStorageManager.LevelProgress;
 import com.example.map.TileView;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.Scene;
@@ -66,22 +68,26 @@ public class CampaignController extends Controller implements Initializable {
         if (!allComplete) {
             topMap.setVisible(false);
             scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        } else {
+            scrollPane.setOnScroll(ev -> {
+                if (ev.getDeltaY() < 0) {
+                    scrollPane.setVvalue(1.0);
+                } else {
+                    scrollPane.setVvalue(0.0);
+                }
+                ev.consume();
+            });
         }
 
         for (int i = 0; i < levels.size(); i++) {
             CampaignLevel lvl = levels.get(i);
-            Button btn = new Button();
-            btn.setStyle("-fx-background-color: transparent;");
-            if (lvl.icon != null) {
-                Image img = new Image(getClass().getResourceAsStream("/com/example/assets/" + lvl.icon));
-                ImageView iv = new ImageView(img);
-                iv.setFitWidth(40);
-                iv.setFitHeight(40);
-                btn.setGraphic(iv);
-            } else {
-                btn.setText(lvl.name);
-            }
+            Button btn = new Button(String.valueOf(i + 1));
+
             int iconSize = 40;
+            btn.setPrefSize(iconSize, iconSize);
+            btn.setStyle("-fx-background-color: #6b4c2e; " +
+                    "-fx-background-radius: 20em; " +
+                    "-fx-text-fill: #ffd700; -fx-font-weight: bold;");
             btn.setPrefSize(iconSize, iconSize);
             btn.setLayoutX(lvl.col * 64 + 32 - iconSize / 2.0);
             btn.setLayoutY(lvl.row * 64 + 32 - iconSize / 2.0);
@@ -89,7 +95,7 @@ public class CampaignController extends Controller implements Initializable {
             boolean unlocked = i == 0 || progress.containsKey(levels.get(i - 1).levelFile);
             btn.setDisable(!unlocked);
 
-            btn.setOnAction(e -> showLevelDialog(lvl));
+            btn.setOnAction(e -> showLevelDialog(lvl, btn));
             mapContainer.getChildren().add(btn);
         }
     }
@@ -99,7 +105,7 @@ public class CampaignController extends Controller implements Initializable {
         goToHomePage();
     }
 
-    private void showLevelDialog(CampaignLevel lvl) {
+    private void showLevelDialog(CampaignLevel lvl, Button sourceBtn) {
         Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initStyle(StageStyle.UNDECORATED);
@@ -115,19 +121,50 @@ public class CampaignController extends Controller implements Initializable {
         desc.setWrappingWidth(260);
         desc.setStyle("-fx-fill: #e8d9b5;");
 
-        LevelProgress lp = progress.get(lvl.levelFile);
-        Text prog = new Text();
-        if (lp != null && (lp.stars > 0 || lp.time > 0)) {
-            prog.setText(String.format("Best: %d star(s), %ds", lp.stars, lp.time));
+        LevelConfig cfg = null;
+        try {
+            cfg = LevelStorageManager.loadLevel(lvl.levelFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        prog.setStyle("-fx-fill: #d9c9a0; -fx-font-size: 12px;");
+
+        LevelProgress lp = progress.get(lvl.levelFile);
+        HBox starBox = new HBox(4);
+        if (lp != null && lp.stars > 0) {
+            Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/buttons/Star_Button.png"));
+            for (int s = 0; s < lp.stars; s++) {
+                ImageView iv = new ImageView(starImg);
+                iv.setFitWidth(20);
+                iv.setFitHeight(20);
+                starBox.getChildren().add(iv);
+            }
+        }
+
+        VBox info = new VBox(2);
+        if (cfg != null) {
+            Text stats = new Text(String.format("Gold: %d  Lives: %d", cfg.getStartingGold(), cfg.getLives()));
+            stats.setStyle("-fx-fill: #d9c9a0;");
+            info.getChildren().add(stats);
+            int waveNum = cfg.getWaves() != null ? cfg.getWaves().size() : 0;
+            Text waveCount = new Text("Waves: " + waveNum);
+            waveCount.setStyle("-fx-fill: #d9c9a0;");
+            info.getChildren().add(waveCount);
+            if (cfg.getWaves() != null) {
+                for (int w = 0; w < cfg.getWaves().size(); w++) {
+                    var g = cfg.getWaves().get(w).group;
+                    Text t = new Text(String.format("Wave %d: goblins %d, warriors %d", w + 1, g.goblins, g.warriors));
+                    t.setStyle("-fx-fill: #d9c9a0; -fx-font-size: 11px;");
+                    info.getChildren().add(t);
+                }
+            }
+        }
 
         Button start = new Button("Start");
         start.setOnAction(ev -> {
             dialog.close();
             try {
-                LevelConfig cfg = LevelStorageManager.loadLevel(lvl.levelFile);
-                Main.getViewManager().switchToGameScreen(cfg);
+                LevelConfig lconfig = LevelStorageManager.loadLevel(lvl.levelFile);
+                Main.getViewManager().switchToGameScreen(lconfig);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -136,10 +173,17 @@ public class CampaignController extends Controller implements Initializable {
         Button close = new Button("Close");
         close.setOnAction(ev -> dialog.close());
 
-        root.getChildren().addAll(name, desc, prog, start, close);
+        root.getChildren().addAll(name, desc, starBox, info, start, close);
 
         Scene scene = new Scene(root);
         dialog.setScene(scene);
+
+        dialog.setOnShown(ev -> {
+            Bounds b = sourceBtn.localToScreen(sourceBtn.getBoundsInLocal());
+            dialog.setX(b.getMinX() + b.getWidth() / 2 - dialog.getWidth() / 2);
+            dialog.setY(b.getMinY() - dialog.getHeight() - 10);
+        });
+
         dialog.showAndWait();
     }
 

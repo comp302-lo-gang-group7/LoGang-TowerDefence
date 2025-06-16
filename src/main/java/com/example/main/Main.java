@@ -24,7 +24,7 @@ public class Main extends javafx.application.Application {
 
         // Set initial window size
         stage.setWidth(800);
-        stage.setHeight(600);
+        stage.setHeight(620);
         
         viewManager = new ViewManager(stage);
         viewManager.switchTo("/com/example/fxml/home_page.fxml");
