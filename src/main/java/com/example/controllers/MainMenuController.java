@@ -4,12 +4,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import com.example.main.Main;
-
+import com.example.animation.MainMenuBackgroundAnimator;
 import com.example.ui.AudioManager;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -30,7 +31,9 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML private Button defaultGameBtn;
     @FXML private Button customGameBtn;
 
-    
+    @FXML private Canvas backgroundCanvas;
+    private MainMenuBackgroundAnimator backgroundAnimator;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Add SVG icons to buttons
@@ -48,6 +51,11 @@ public class MainMenuController extends Controller implements Initializable {
         customGameBtn.setOnAction(event -> goToCustomGamePage());
 
         AudioManager.playBackgroundMusic("/com/example/assets/audio/main-menu-music.mp3", true);
+
+        if (backgroundCanvas != null) {
+            backgroundAnimator = new MainMenuBackgroundAnimator(backgroundCanvas);
+            backgroundAnimator.start();
+        }
     }
     
     private void setupButtonIcons() {
