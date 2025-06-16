@@ -13,7 +13,11 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
             xmlns="http://javafx.com/javafx/23.0.1"
             fx:controller="com.example.controllers.MapEditorController"
-            style="-fx-background-color: #2b2b2b;">
+            style="-fx-background-color: #2b2b2b;"
+            prefHeight="720" 
+            prefWidth="1280"
+            maxHeight="Infinity"
+            maxWidth="Infinity">
 
     <!-- Top toolbar with action buttons -->
     <top>
@@ -68,13 +72,17 @@
     </top>
 
     <!-- This is a center grid where the map is actually created -->
-    <center>
-        <GridPane fx:id="mapGrid" gridLinesVisible="true"
-                style="-fx-background-color: #9dc183;">
-            <!-- This is populated in the controller -->
-        </GridPane>
-    </center>
-
+       <center>
+    <GridPane fx:id="mapGrid" gridLinesVisible="true" 
+              style="-fx-background-color: #9dc183;" 
+              BorderPane.alignment="CENTER" 
+              VBox.vgrow="ALWAYS" 
+              HBox.hgrow="ALWAYS"
+              maxHeight="Infinity" 
+              maxWidth="Infinity">
+        <!-- This is populated in the controller -->
+    </GridPane>
+</center>
     <!-- This is the side grid where the tiles are selected, in addition to tools etc.. -->
     <right>
         <VBox alignment="CENTER" style="-fx-background-color: #333333; -fx-border-color: #1e1e1e; -fx-border-width: 2;">

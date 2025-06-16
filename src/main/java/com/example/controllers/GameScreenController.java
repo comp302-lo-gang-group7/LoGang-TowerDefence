@@ -6,15 +6,18 @@ import java.util.List;
 import java.util.Objects;
 
 import com.example.entity.Entity;
-import com.example.game.GameManager;
-import com.example.game.GameModel;
-import com.example.game.PlayerState;
-import com.example.map.Tile;
-import com.example.map.TileEnum;
-import com.example.map.TileModel;
-import com.example.map.TileView;
+import com.example.entity.EntityGroup;
+import com.example.game.*;
+import com.example.map.*;
+import com.example.main.Main;
+import com.example.player.PlayerState;
 import com.example.storage_manager.MapStorageManager;
+import com.example.config.LevelConfig;
 import com.example.utils.TileRenderer;
+
+import com.example.storage_manager.ProgressStorageManager;
+import com.example.controllers.VictoryController;
+
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,10 +32,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Popup;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
 
 public class GameScreenController extends Controller {
 	@FXML private Pane gameArea;
@@ -47,6 +53,9 @@ public class GameScreenController extends Controller {
 	private javafx.animation.AnimationTimer hudTimer;
 	private boolean isPaused = false;
 
+	// This is for the tower attack radius highlight
+	private Parent pauseOverlay;
+	private Circle hoverRadius;
 
 	public static final int TILE_SIZE = 64;
 
@@ -54,19 +63,45 @@ public class GameScreenController extends Controller {
     private TileRenderer renderer;
 	private final Popup contextMenu = new Popup();
 	private boolean isFast;
-	private Parent pauseOverlay;
+	private Parent gameOverOverlay;
+	private Parent victoryOverlay;
+	private String mapName;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
+		List<Wave> converted = new ArrayList<>();
+		if (waves != null) {
+			for (int[] cfg : waves) {
+				int g = cfg.length > 0 ? cfg[0] : 0;
+				int w = cfg.length > 1 ? cfg[1] : 0;
+				converted.add(new Wave(new EntityGroup(g, w, 0)));
+			}
+		}
+		initInternal(mapName, startingGold, 10, converted);
+	}
+
+	public void init(LevelConfig config) {
+		if (config == null) return;
+		initInternal(config.getMapName(), config.getStartingGold(), config.getLives(), config.getWaves());
+	}
+
+	private void initInternal(String mapName, int startingGold, int lives, List<Wave> waves) {
 		contextMenu.setAutoHide(true);
 		setupButtonIcons();
 
-		playerState = new PlayerState(startingGold, 10);
+		playerState = new PlayerState(startingGold, lives);
 		goldLabel.textProperty().bind(playerState.getGoldProperty().asString());
 		healthLabel.textProperty().bind(
 				playerState.getLivesProperty()
 						.asString()
 						.concat(String.format("/%d", playerState.getMaxLives()))
 		);
+
+		// show game over overlay when lives reach zero
+		playerState.getLivesProperty().addListener((obs, oldVal, newVal) -> {
+			if (newVal.intValue() <= 0) {
+				showGameOverOverlay();
+			}
+		});
 
 		// load map data
         TileView[][] mapTiles;
@@ -111,6 +146,12 @@ public class GameScreenController extends Controller {
 		Canvas gameCanvas = new Canvas(cols * TILE_SIZE, rows * TILE_SIZE);
 		entityLayer.getChildren().add(gameCanvas);
 
+		gameArea.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+			if (GameManager.getInstance().handleClick(e.getX(), e.getY())) {
+				e.consume();
+			}
+		});
+
 		// 2) Grab all of your Entities out of the model
 		List<Entity> allEntities = gameModel.getEntities();
 
@@ -125,16 +166,28 @@ public class GameScreenController extends Controller {
 						.concat(String.format("/%d", waves.size()))
 		);
 
-		gameManager.setWaves(waves);
+		gameManager.setWavesFromGroups(waves);
+
+		hudTimer = new javafx.animation.AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				if (gameManager.isLevelCompleted()) {
+					showVictoryOverlay();
+				}
+			}
+		};
+		hudTimer.start();
+
 		gameManager.start();
         }
 
 
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
+		hideTowerRadius();
 		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
 			showBuildMenu(x, y, e.getScreenX(), e.getScreenY());
 		} else {
-			showSellMenu(x, y, e.getScreenX(), e.getScreenY());
+			showTowerMenu(x, y, e.getScreenX(), e.getScreenY());
 		}
 	}
 
@@ -146,8 +199,12 @@ public class GameScreenController extends Controller {
 		showRadialMenu(tileX, tileY, opts);
 	}
 
-	private void showSellMenu(int tileX, int tileY, double sx, double sy) {
+	private void showTowerMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
+		Tile tile = tiles[tileY][tileX];
+		if (tile.model.getTower().upgradeLevel < 2) {
+			opts.add(new Option("Upgrade", () -> upgradeTower(tileX, tileY), "/com/example/assets/buttons/Star_Button.png"));
+		}
 		opts.add(new Option("Sell", () -> sellTower(tileX, tileY), "/com/example/assets/buttons/Bin_Button.png"));
 		showRadialMenu(tileX, tileY, opts);
 	}
@@ -233,8 +290,63 @@ public class GameScreenController extends Controller {
 		);
 	}
 
+	/** Display a translucent circle around a tower indicating its attack range */
+	private void showTowerRadius(int x, int y) {
+		TileModel model = tiles[y][x].model;
+		if (!model.hasTower()) return;
+
+		double radius = model.getTower().getRange() * TILE_SIZE;
+		double cx = x * TILE_SIZE + TILE_SIZE / 2.0;
+		double cy = y * TILE_SIZE + TILE_SIZE / 2.0;
+
+		if (hoverRadius == null) {
+			hoverRadius = new Circle();
+			hoverRadius.setFill(Color.color(0, 0.5, 1.0, 0.15));
+			hoverRadius.setStroke(Color.web("#87bfbe"));
+			hoverRadius.setStrokeWidth(2);
+			towerLayer.getChildren().add(hoverRadius);
+		}
+
+		hoverRadius.setCenterX(cx);
+		hoverRadius.setCenterY(cy);
+		hoverRadius.setRadius(radius);
+		hoverRadius.toBack();
+		hoverRadius.setVisible(true);
+	}
+
+	/** Hide the tower radius circle, if present */
+	private void hideTowerRadius() {
+		if (hoverRadius != null) {
+			hoverRadius.setVisible(false);
+		}
+	}
+
+	private Label createLevelLabel(int level, int x, int y) {
+		Label lbl = new Label(Integer.toString(level));
+		lbl.setPrefSize(16, 16);
+		lbl.setAlignment(Pos.CENTER);
+		lbl.setStyle("-fx-background-color: gold; -fx-text-fill: black; -fx-font-size: 10; -fx-font-weight: bold; -fx-background-radius: 8;");
+		lbl.setMouseTransparent(true);
+		lbl.setLayoutX(x * TILE_SIZE + TILE_SIZE - 16);
+		lbl.setLayoutY(y * TILE_SIZE);
+		return lbl;
+	}
 
 	private void constructTower(int x, int y, TileEnum towerType) {
+		int cost;
+		switch (towerType) {
+			case ARCHERY_TOWER -> cost = 100;
+			case MAGE_TOWER -> cost = 120;
+			case ARTILLERY_TOWER -> cost = 140;
+			default -> cost = 100;
+		}
+		if (playerState.getGold() < cost) {
+			showInsufficientFunds(x, y);
+			return;
+		}
+
+		playerState.spendGold(cost);
+
 		Tile tile = tiles[y][x];
 		TileView newView = renderer.createTileView(towerType);
 		newView.setLayoutX(x * TILE_SIZE);
@@ -244,10 +356,30 @@ public class GameScreenController extends Controller {
 		towerLayer.getChildren().add(newView);
 
 		tile.view = newView;
-		tile.model.setTower(towerType, 10, 5, 100);
+		tile.model.setTower(towerType, 10, 5, cost, 2, 1);
+
+		if (tile.levelLabel != null) {
+			towerLayer.getChildren().remove(tile.levelLabel);
+		}
+		tile.levelLabel = createLevelLabel(1, x, y);
+		towerLayer.getChildren().add(tile.levelLabel);
+
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
+	/** Show a temporary tooltip around the specified tile */
+	private void showInsufficientFunds(int x, int y) {
+		double localX = x * TILE_SIZE + TILE_SIZE / 2.0;
+		double localY = y * TILE_SIZE + TILE_SIZE / 2.0;
+		Point2D screen = towerLayer.localToScreen(localX, localY);
+		Tooltip tip = new Tooltip("Not enough gold!");
+		tip.show(towerLayer.getScene().getWindow(), screen.getX(), screen.getY());
+		PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
+		delay.setOnFinished(e -> tip.hide());
+		delay.play();
+	}
 
 	private void sellTower(int x, int y) {
 		Tile tile = tiles[y][x];
@@ -255,14 +387,45 @@ public class GameScreenController extends Controller {
 		newView.setLayoutX(x * TILE_SIZE);
 		newView.setLayoutY(y * TILE_SIZE);
 
+		int cost = tile.model.getTower().goldCost;
+		playerState.addGold(cost);
+
 		towerLayer.getChildren().remove(tile.view);
 		towerLayer.getChildren().add(newView);
 
 		tile.view = newView;
 		tile.model.removeTower();
+		if (tile.levelLabel != null) {
+			towerLayer.getChildren().remove(tile.levelLabel);
+			tile.levelLabel = null;
+		}
+		hideTowerRadius();
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
+	private void upgradeTower(int x, int y) {
+		Tile tile = tiles[y][x];
+		int cost = tile.model.getTower().goldCost;
+		if (playerState.getGold() < cost) {
+			showInsufficientFunds(x, y);
+			return;
+		}
+
+		playerState.spendGold(cost);
+
+		TileEnum type = tile.model.getType();
+		switch (type) {
+			case ARCHERY_TOWER -> tile.model.upgradeTower(12, 8, 4);
+			case MAGE_TOWER -> tile.model.upgradeTower(12, 7, 3);
+			case ARTILLERY_TOWER -> tile.model.upgradeTower(14, 15, 2);
+			default -> {}
+		}
+		if (tile.levelLabel != null) {
+			tile.levelLabel.setText(Integer.toString(tile.model.getTower().upgradeLevel));
+		}
+	}
 
 	@FXML
 	public void pauseGame() {
@@ -339,6 +502,57 @@ public class GameScreenController extends Controller {
 		speedUp.setGraphic(speedView);
 		pauseButton.setGraphic(optionsView);
 		exitButton.setGraphic(exitView);
+	}
+
+	private void showGameOverOverlay() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (hudTimer != null) {
+			hudTimer.stop();
+		}
+		if (gameOverOverlay != null) {
+			return;
+		}
+		try {
+			gameOverOverlay = FXMLLoader.load(getClass().getResource("/com/example/fxml/game_over.fxml"));
+			gameArea.getChildren().add(gameOverOverlay);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int calculateStars() {
+		int lives = gameManager.getLives();
+		int maxLives = gameManager.getMaxLives();
+		int goldSpent = playerState.getGoldSpent();
+		int stars = 1;
+		if (lives > maxLives / 2) stars = 2;
+		if (lives == maxLives && goldSpent <= playerState.getInitialGold() / 2) stars = 3;
+		return stars;
+	}
+
+	private void showVictoryOverlay() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (hudTimer != null) {
+			hudTimer.stop();
+		}
+		if (victoryOverlay != null) {
+			return;
+		}
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/fxml/victory.fxml"));
+			victoryOverlay = loader.load();
+			VictoryController ctrl = loader.getController();
+			int stars = calculateStars();
+			ctrl.init(stars);
+			gameArea.getChildren().add(victoryOverlay);
+			ProgressStorageManager.recordRating(mapName, stars);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

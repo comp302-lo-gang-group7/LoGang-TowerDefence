@@ -1,4 +1,4 @@
-package com.example.game;
+package com.example.player;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -9,8 +9,12 @@ import javafx.beans.property.SimpleIntegerProperty;
 public class PlayerState {
     private final IntegerProperty goldProperty = new SimpleIntegerProperty(), livesProperty = new SimpleIntegerProperty();
     private final int maxLives;
+    private final int initialGold;
+    private int goldEarned = 0;
+    private int goldSpent = 0;
 
     public PlayerState(int startingGold, int startingLives) {
+        this.initialGold = startingGold;
         this.goldProperty.set(startingGold);
         this.livesProperty.set(startingLives);
         this.maxLives = startingLives;
@@ -28,12 +32,26 @@ public class PlayerState {
         return maxLives;
     }
 
+    public int getInitialGold() {
+        return initialGold;
+    }
+
+    public int getGoldEarned() {
+        return goldEarned;
+    }
+
+    public int getGoldSpent() {
+        return goldSpent;
+    }
+
     public void addGold(int amount) {
         goldProperty.set(getGold() + amount);
+        goldEarned += amount;
     }
 
     public void spendGold(int amount) {
         goldProperty.set(getGold() - amount);
+        goldSpent += amount;
     }
 
     public void loseLife() {

@@ -27,9 +27,9 @@
 
     <!-- 2) Top-right menu buttons -->
     <HBox alignment="TOP_RIGHT" pickOnBounds="false" spacing="3">
-        <Button fx:id="speedUp" onAction="#speedUp" style="-fx-background-color: transparent;                    -fx-background-size: contain;                    -fx-border-color: transparent;" />
-        <Button fx:id="pauseButton" onAction="#pauseGame" style="-fx-background-color: transparent;                    -fx-background-size: contain;                    -fx-border-color: transparent;" />
-        <Button fx:id="exitButton" onAction="#goToHomePage" style="-fx-background-color: transparent;                    -fx-background-size: contain;                    -fx-border-color: transparent;" />
+        <Button fx:id="speedUp" onAction="#speedUp" style="-fx-background-color: transparent; -fx-background-size: contain; -fx-border-color: transparent;" />
+        <Button fx:id="pauseButton" onAction="#pauseGame" style="-fx-background-color: transparent; -fx-background-size: contain; -fx-border-color: transparent;" />
+        <Button fx:id="exitButton" onAction="#goToHomePage" style="-fx-background-color: transparent; -fx-background-size: contain; -fx-border-color: transparent;" />
     </HBox>
    <AnchorPane StackPane.alignment="TOP_LEFT" mouseTransparent="true">
       <children>

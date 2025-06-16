@@ -2,6 +2,8 @@ package com.example.game;
 
 import com.example.controllers.GameScreenController;
 import com.example.entity.*;
+import com.example.player.PlayerState;
+import com.example.ui.ImageLoader;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
 import javafx.animation.AnimationTimer;
@@ -9,17 +11,21 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class GameManager {
     private final Canvas canvas;
     private final GraphicsContext gc;
-    private final List<Entity> entities, delayedAdd = new LinkedList<>(), delayedRemove = new LinkedList<>();
+    private final List<Entity> entities;
+    private final List<Entity> delayedAdd = new LinkedList<>();
+    private final List<Entity> delayedRemove = new LinkedList<>();
     private final List<AnimatedEntity> enemies = new LinkedList<>();
-    private List<int[]> waves = new LinkedList<>();
     private final IntegerProperty currentWaveProperty = new SimpleIntegerProperty(0);
     private long lastTime = 0;
     private GameModel gameModel;
@@ -28,6 +34,12 @@ public class GameManager {
     private double gameSpeedMultiplier = 1.0; // default speed
     private AnimationTimer gameLoop;
     private static GameManager instance;
+    private final List<Wave> waves = new ArrayList<>();
+    private int currentWaveIndex = 0;
+    private double timeUntilNextWave = 0;
+    private boolean waveInProgress = false;
+    private final Random rng = new Random();
+    private static final int LEVEL1_ARCHER_COST = 100;
 
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
@@ -39,9 +51,30 @@ public class GameManager {
         instance = new GameManager(canvas, entities, model, state);
     }
 
-    public void setWaves(List<int[]> waves) {
-        this.waves = waves != null ? waves : new LinkedList<>();
+    /**
+     * Configure waves using the legacy simple format from the custom game page.
+     * Each int[] represents one wave with [goblins, warriors].
+     */
+    public void setWaves(List<int[]> waveConfigs) {
+        List<Wave> converted = new ArrayList<>();
+        if (waveConfigs != null) {
+            for (int[] cfg : waveConfigs) {
+                int goblins = cfg.length > 0 ? cfg[0] : 0;
+                int warriors = cfg.length > 1 ? cfg[1] : 0;
+                converted.add(new Wave(new EntityGroup(goblins, warriors, 0)));
+            }
+        }
+        setWavesFromGroups(converted);
+    }
+
+    /** Configure waves using the new grouped format. */
+    public void setWavesFromGroups(List<Wave> newWaves) {
+        this.waves.clear();
+        if (newWaves != null) this.waves.addAll(newWaves);
         this.currentWaveProperty.set(0);
+        this.currentWaveIndex = 0;
+        this.waveInProgress = false;
+        this.timeUntilNextWave = 4; // initial grace before first group
     }
 
     public static GameManager getInstance() {
@@ -57,6 +90,27 @@ public class GameManager {
         this.entities = entities;
         this.gameModel = model;
         this.playerState = state;
+    }
+
+    private void spawnGroup(EntityGroup cfg) {
+        int goblins = cfg.goblins;
+        int warriors = cfg.warriors;
+        for (int i = 0; i < goblins; i++) spawnGoblin();
+        for (int i = 0; i < warriors; i++) spawnWarrior();
+    }
+
+    /**
+     * Returns the closest {@link Goblin} to the provided entity or {@code null}
+     * if no goblins are present.
+     */
+    public Goblin nearestGoblin( AnimatedEntity entity )
+    {
+        return enemies.stream()
+                .filter(e -> e instanceof Goblin)
+                .map(e -> (Goblin) e)
+                .min(Comparator.comparing(g ->
+                        Math.pow(g.getX() - entity.getX(), 2) + Math.pow(g.getY() - entity.getY(), 2)))
+                .orElse(null);
     }
 
     public void start() {
@@ -88,7 +142,7 @@ public class GameManager {
                     if (enemy.getHP() <= 0) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
-                        playerState.addGold(10);
+                        spawnGoldBag(enemy.getX(), enemy.getY());
                     } else if (enemy.hasReachedGoal()) {
                         delayedRemove.add(enemy);
                         enemies.remove(enemy);
@@ -99,11 +153,25 @@ public class GameManager {
                 entities.addAll(delayedAdd);
                 entities.removeAll(delayedRemove);
 
-                // if wave cleared, spawn next
-                if (enemies.isEmpty() && currentWaveProperty.get() < waves.size()) {
-                    spawnWave(waves.get(currentWaveProperty.get()));
-                    currentWaveProperty.set(currentWaveProperty.get() + 1);
+                timeUntilNextWave -= dt;
+                if (timeUntilNextWave <= 0 && currentWaveIndex < waves.size()) {
+                    Wave wave = waves.get(currentWaveIndex);
+                    if (!waveInProgress) {
+                        currentWaveProperty.set(currentWaveIndex + 1);
+                        waveInProgress = true;
+
+                        EntityGroup grp = wave.group;
+                        spawnGroup(grp);
+                        timeUntilNextWave = grp.delayAfter;
+                    }
                 }
+
+                if (waveInProgress && enemies.isEmpty()) {
+                    currentWaveIndex++;
+                    waveInProgress = false;
+                    timeUntilNextWave = 5; // optional inter-wave delay
+                }
+
 
                 // render as before…
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -114,6 +182,9 @@ public class GameManager {
         gameLoop.start();
     }
 
+    public boolean isLevelCompleted() {
+        return currentWaveIndex >= waves.size() && enemies.isEmpty() && !waveInProgress;
+    }
 
     public void pause() {
         paused = true;
@@ -195,7 +266,6 @@ public class GameManager {
     public void attackEntity( Tower tower, AnimatedEntity e ) {
         if (e != null)
         {
-            Point pos = e.getFuturePosition();
             Projectile p = new Projectile(
                     tower,
                     tower.getX() * GameScreenController.TILE_SIZE + 32,
@@ -205,15 +275,78 @@ public class GameManager {
         }
     }
 
-    public AnimatedEntity nearestEnemy( Tower tower )
-    {
+    private void spawnGoldBag(double x, double y) {
+        int amount = 2 + rng.nextInt(LEVEL1_ARCHER_COST / 2 - 1);
+        GoldBag bag = new GoldBag(x, y, amount);
+        this.delayedAdd.add(bag);
+    }
+
+    public boolean handleClick(double x, double y) {
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            Entity e = entities.get(i);
+            if (e instanceof GoldBag bag && bag.contains(x, y)) {
+                bag.onClick();
+                return true;
+            }
+        }
+        return false;
+    }
+
+	public void spawnEffect( Tower parent, double x, double y )
+	{
+		if ( parent != null )
+		{
+			Image spriteSheet;
+            double scaleFactor = 0.75, frameDuration;
+            int frameSize, frameCount;
+			switch ( parent )
+			{
+				case ArcherTower _:
+					spriteSheet = ImageLoader.getImage("/com/example/assets/effects/Explosions2.png");
+                    scaleFactor = 0.25;
+                    frameDuration = 0.05;
+                    frameSize = 192;
+                    frameCount = 6;
+					break;
+				case MageTower _:
+					spriteSheet = ImageLoader.getImage("/com/example/assets/effects/Fire.png");
+                    frameSize = 128;
+                    scaleFactor = 0.5;
+                    frameDuration = 0.2;
+                    frameCount = 7;
+					break;
+				case ArtilleryTower _:
+					spriteSheet = ImageLoader.getImage("/com/example/assets/effects/Explosions2.png");
+                    frameSize = 192;
+                    frameCount = 6;
+                    frameDuration = 0.4;
+					break;
+				default:
+					throw new IllegalArgumentException();
+			}
+			Effect e = new Effect(spriteSheet, frameCount, frameSize, frameDuration, scaleFactor, x, y);
+			this.delayedAdd.add(e);
+		}
+	}
+
+    public AnimatedEntity nearestEnemy(Tower tower) {
+        double range = tower.getRange() * GameScreenController.TILE_SIZE;
+        double towerCenterX = (tower.getX() + 0.5) * GameScreenController.TILE_SIZE;
+        double towerCenterY = (tower.getY() + 0.5) * GameScreenController.TILE_SIZE;
+
         return enemies.stream()
-                .min(Comparator.comparing(e ->
-                        Math.pow(e.getX() - tower.getX(), 2) + Math.pow(e.getY() - tower.getY(), 2)))
+                .filter(e -> {
+                    double dx = towerCenterX - e.getX();
+                    double dy = towerCenterY - e.getY();
+                    double distance = Math.sqrt(dx * dx + dy * dy);
+                    return distance <= range;
+                })
+                .max(Comparator.comparingDouble(AnimatedEntity::getPathProgress))
                 .orElse(null);
     }
 
-    public void removeProjectile( Projectile p )
+
+    public void removeEntity( Entity p )
     {
         this.delayedRemove.add(p);
     }
