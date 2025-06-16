@@ -3,6 +3,7 @@ package com.example.controllers;
 import com.example.main.Main;
 import com.example.storage_manager.SettingsManager;
 import com.example.storage_manager.SettingsManager.Settings;
+import com.example.ui.AudioManager;
 import com.example.ui.DialogUtil;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -231,6 +232,7 @@ public class SettingsController extends Controller implements Initializable {
         settings.showFps = showFpsCb.isSelected();
 
         SettingsManager.save(settings);
+        AudioManager.reloadSettings();
         showMessage("Settings saved successfully!");
     }
 
@@ -261,6 +263,7 @@ public class SettingsController extends Controller implements Initializable {
         showFpsCb.setSelected(false);
 
         SettingsManager.save(new Settings());
+        AudioManager.reloadSettings();
         showMessage("Settings reset to defaults.");
     }
 

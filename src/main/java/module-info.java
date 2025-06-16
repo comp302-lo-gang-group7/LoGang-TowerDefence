@@ -1,14 +1,15 @@
 module com.example.game {
 	requires javafx.controls;
 	requires javafx.fxml;
-	requires javafx.graphics;
-	requires javafx.base;
-	requires jdk.jdi;
+    requires jdk.jdi;
 	requires com.fasterxml.jackson.databind;
 	requires org.junit.jupiter.api;
 	requires java.desktop;
+    requires javafx.media;
 
-	exports com.example.entity;
+	exports com.example.ui;
+
+    exports com.example.entity;
 
 	exports com.example.map;
 	opens com.example.map to javafx.fxml, com.fasterxml.jackson.databind;
