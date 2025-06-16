@@ -34,22 +34,25 @@ public class TileModel {
 		return tower != null;
 	}
 
-	public void setTower(TileEnum towerType, int hpValue, int damage, int cost, int upgradeLevel) {
+	public void setTower(TileEnum towerType, int hpValue, int damage, int cost, int range, int upgradeLevel) {
 		this.type = towerType;
 		switch ( towerType ) {
 			case ARCHERY_TOWER:
 			{
 				tower = new ArcherTower(x, y, hpValue, damage, cost, upgradeLevel);
+				tower.setRange(range);
 				break;
 			}
 			case MAGE_TOWER:
 			{
 				tower = new MageTower(x, y, hpValue, damage, cost, upgradeLevel);
+				tower.setRange(range);
 				break;
 			}
 			case ARTILLERY_TOWER:
 			{
 				tower = new ArtilleryTower(x, y, hpValue, damage, cost, upgradeLevel);
+				tower.setRange(range);
 				break;
 			}
 			default:
@@ -58,11 +61,11 @@ public class TileModel {
 		GameManager.getInstance().placeTower(tower);
 	}
 
-	public void upgradeTower(int hpValue, int damage) {
+	public void upgradeTower(int hpValue, int damage, int range) {
 		if (tower == null) return;
 		GameManager.getInstance().removeTower(tower);
 		int level = tower.upgradeLevel + 1;
-		setTower(this.type, hpValue, damage, tower.goldCost, level);
+		setTower(this.type, hpValue, damage, tower.goldCost, range, level);
 	}
 
 	public void removeTower() {

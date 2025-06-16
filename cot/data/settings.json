@@ -1,0 +1,10 @@
+{
+  "musicVolume" : 66,
+  "sfxVolume" : 100,
+  "difficulty" : "Expert",
+  "gameSpeed" : "Slow",
+  "showHints" : true,
+  "autoSave" : false,
+  "fullscreen" : false,
+  "showFps" : true
+}

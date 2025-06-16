@@ -1,6 +1,8 @@
 package com.example.game;
 
 import com.example.entity.EntityGroup;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -9,7 +11,8 @@ public class Wave {
     // public final List<EntityGroup> groups;
     public final EntityGroup group;
 
-    public Wave(EntityGroup group) {
+    @JsonCreator
+    public Wave(@JsonProperty("group") EntityGroup group) {
         this.group = group != null ? group : new EntityGroup(0, 0, 0);
     }
 }

@@ -2,6 +2,7 @@ package com.example.game;
 
 import com.example.controllers.GameScreenController;
 import com.example.entity.*;
+import com.example.player.PlayerState;
 import com.example.ui.ImageLoader;
 import com.example.utils.PathFinder;
 import com.example.utils.Point;
@@ -181,6 +182,9 @@ public class GameManager {
         gameLoop.start();
     }
 
+    public boolean isLevelCompleted() {
+        return currentWaveIndex >= waves.size() && enemies.isEmpty() && !waveInProgress;
+    }
 
     public void pause() {
         paused = true;

@@ -2,9 +2,11 @@ package com.example.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.io.IOException;
 
 import com.example.main.Main;
-import com.example.storage_manager.MapStorageManager;
+import com.example.config.LevelConfig;
+import com.example.storage_manager.LevelStorageManager;
 
 import javafx.animation.ScaleTransition;
 import javafx.collections.FXCollections;
@@ -91,7 +93,7 @@ public class GameConfigController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		goldInput.setText("1000");
-		savedMaps.setAll(MapStorageManager.listAvailableMaps());
+		savedMaps.setAll(LevelStorageManager.listAvailableLevels());
 		savedMapsListView.setItems(savedMaps);
 
 		// Select first item by default
@@ -191,8 +193,18 @@ public class GameConfigController implements Initializable {
 					startingGold = Integer.parseInt(goldInput.getText().trim());
 				} catch (NumberFormatException ignored) { }
 
-				Main.getViewManager().switchToGameScreen(selectedMapName, startingGold);
+				LevelConfig config;
+				try {
+					config = LevelStorageManager.loadLevel(selectedMapName);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+				// override starting gold from text field if user modified
+				config = new LevelConfig(config.getMapName(), startingGold, config.getLives(), config.getWaves());
+				Main.getViewManager().switchToGameScreen(config);
 			}
+
 		}
 	}
 
