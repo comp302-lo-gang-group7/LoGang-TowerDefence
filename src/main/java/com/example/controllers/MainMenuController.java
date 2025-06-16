@@ -11,10 +11,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.Stage;
+import javafx.scene.Node;
 
 /**
  * Controller for the main menu page. Uses ViewManager to handle navigation.
@@ -25,6 +28,7 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML private Button mapEditorBtn;
     @FXML private Button quitBtn;
     @FXML private Button settingsIconButton;
+    @FXML private Button howToPlayBtn;
 
     // New Game Sub-Menu elements
     @FXML private VBox newGameSubMenuVBox;
@@ -33,6 +37,9 @@ public class MainMenuController extends Controller implements Initializable {
 
     @FXML private Canvas backgroundCanvas;
     private MainMenuBackgroundAnimator backgroundAnimator;
+
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -62,6 +69,8 @@ public class MainMenuController extends Controller implements Initializable {
         // Create SVG icons (no image files needed)
         addSvgIconToButton(newGameBtn, "M8,5.14V19.14L19,12.14L8,5.14Z", 20); // Play icon
         addSvgIconToButton(mapEditorBtn, "M20.5,3L20.34,3.03L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21L3.66,20.97L9,18.9L15,21L20.64,19.1C20.85,19.03 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3M10,5.47L14,6.87V18.53L10,17.13V5.47M5,6.46L8,5.45V17.15L5,18.31V6.46M16,18.53V6.87L19,5.71V17.53L16,18.53Z", 20); // Map icon
+        addSvgIconToButton(howToPlayBtn, "M500 0C224 0 0 224 0 500C0 776 224 1000 500 1000C776 1000 1000 776 1000 500C1000 224 776 0 500 0M501 191C626 191 690 275 690 375C690 475 639 483 595 513C573 525 558 553 559 575C559 591 554 602 541 601C541 601 460 601 460 601C446 601 436 581 436 570C436 503 441 488 476 454C512 421 566 408 567 373C566 344 549 308 495 306C463 303 445 314 411 361C400 373 384 382 372 373C372 373 318 333 318 333C309 323 303 307 312 293C362 218 401 191 501 191M500 625C541 625 575 659 575 700C576 742 540 776 500 775C457 775 426 739 425 700C425 659 459 625 500 625", 20); // Updated question mark icon
+
         addSvgIconToButton(quitBtn, "M19,3H5C3.89,3 3,3.89 3,5V9H5V5H19V19H5V15H3V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10.08,15.58L11.5,17L16.5,12L11.5,7L10.08,8.41L12.67,11H3V13H12.67L10.08,15.58Z", 20); // Exit icon
         addSvgIconToButton(settingsIconButton, "M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z", 24); // Gear icon
     }
@@ -131,6 +140,7 @@ public class MainMenuController extends Controller implements Initializable {
         setupButtonStyle(newGameBtn, buttonCss, hoverCss, pressedCss);
         setupButtonStyle(mapEditorBtn, buttonCss, hoverCss, pressedCss);
         setupButtonStyle(quitBtn, buttonCss, hoverCss, pressedCss);
+        setupButtonStyle(howToPlayBtn, buttonCss, hoverCss, pressedCss);
         
         // Apply transparent style to settings icon button if it exists
         if (settingsIconButton != null) {
@@ -218,6 +228,25 @@ public class MainMenuController extends Controller implements Initializable {
     @FXML
     public void terminateApplication() { 
         Main.getViewManager().terminateApplication();
+    }
+
+    @FXML
+    public void goToHowToPlayPage() {
+        Main.getViewManager().switchTo("/com/example/fxml/how_to_play_page.fxml");
+    }
+
+    @FXML
+    private void onHeaderBarPressed(MouseEvent event) {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+    }
+
+    @FXML
+    private void onHeaderBarDragged(MouseEvent event) {
+        Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(event.getScreenY() - yOffset);
     }
 }
 

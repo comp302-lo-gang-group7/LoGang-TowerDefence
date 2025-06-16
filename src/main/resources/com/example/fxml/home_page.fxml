@@ -32,7 +32,7 @@
    <!-- Decorative green header bar -->
    <BorderPane pickOnBounds="false">
       <top>
-         <StackPane>
+         <StackPane fx:id="headerBar" onMousePressed="#onHeaderBarPressed" onMouseDragged="#onHeaderBarDragged">
             <Rectangle width="800" height="60"
                        style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
                <effect>
@@ -69,6 +69,9 @@
                 <Button fx:id="customGameBtn" text="Custom Game" prefWidth="220.0" prefHeight="35.0" styleClass="menu-button" />
             </VBox>
             <Button fx:id="mapEditorBtn" text="Map Editor" onAction="#goToMapEditorPage"
+                    prefWidth="260.0" prefHeight="45.0" styleClass="menu-button" />
+            <!-- How To Play Button -->
+            <Button fx:id="howToPlayBtn" text="How To Play" onAction="#goToHowToPlayPage"
                     prefWidth="260.0" prefHeight="45.0" styleClass="menu-button" />
             <Button fx:id="quitBtn" text="Quit" onAction="#terminateApplication"
                     prefWidth="260.0" prefHeight="45.0" styleClass="menu-button" />
