@@ -2,6 +2,7 @@ package com.example.storage_manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,9 +14,13 @@ import java.util.Map;
 /** Utility to persist star ratings for completed maps. */
 public class ProgressStorageManager {
     private static final Path PROGRESS_FILE = Paths.get("cot", "data", "progress.json");
+    public static class LevelProgress {
+        public int stars;
+        public long time;
+    }
 
     /** Load progress file into a map of mapName -> stars. */
-    public static Map<String, Integer> loadProgress() {
+    public static Map<String, LevelProgress> loadProgress() {
         ObjectMapper mapper = new ObjectMapper();
         if (Files.exists(PROGRESS_FILE)) {
             try {
@@ -23,7 +28,24 @@ public class ProgressStorageManager {
                 if (content.isEmpty()) {
                     return new HashMap<>();
                 }
-                return mapper.readValue(content, new TypeReference<Map<String, Integer>>() {});
+                // Support legacy format of Map<String,Integer>
+                JsonNode node = mapper.readTree(content);
+                Map<String, LevelProgress> result = new HashMap<>();
+                if (node.isObject()) {
+                    node.fields().forEachRemaining(entry -> {
+                        LevelProgress lp = new LevelProgress();
+                        JsonNode val = entry.getValue();
+                        if (val.isInt()) {
+                            lp.stars = val.asInt();
+                            lp.time = 0;
+                        } else {
+                            lp.stars = val.has("stars") ? val.get("stars").asInt() : 0;
+                            lp.time = val.has("time") ? val.get("time").asLong() : 0;
+                        }
+                        result.put(entry.getKey(), lp);
+                    });
+                }
+                return result;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -34,19 +56,11 @@ public class ProgressStorageManager {
 
 
     /** Write the provided progress map to disk. */
-    public static void saveProgress(Map<String, Integer> progress) {
+    public static void saveProgress(Map<String, LevelProgress> progress) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            // Remove null keys (Jackson can't serialize them)
-            Map<String, Integer> cleaned = new HashMap<>();
-            for (Map.Entry<String, Integer> entry : progress.entrySet()) {
-                if (entry.getKey() != null) {
-                    cleaned.put(entry.getKey(), entry.getValue());
-                }
-            }
-
             Files.createDirectories(PROGRESS_FILE.getParent());
-            mapper.writerWithDefaultPrettyPrinter().writeValue(PROGRESS_FILE.toFile(), cleaned);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(PROGRESS_FILE.toFile(), progress);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,17 +68,21 @@ public class ProgressStorageManager {
 
 
     /**
-     * Update the rating for a map if the new stars exceed the existing value.
+     * Update the rating/time for a map if new values improve the existing ones.
      */
-    public static void recordRating(String mapName, int stars) {
-        if (mapName == null) return;  // Defensive null check
+    public static void recordProgress(String mapName, int stars, long time) {
+        if (mapName == null) return;
 
-        Map<String, Integer> data = loadProgress();
-        int current = data.getOrDefault(mapName, 0);
-        if (stars > current) {
-            data.put(mapName, stars);
-            saveProgress(data);
+        Map<String, LevelProgress> data = loadProgress();
+        LevelProgress existing = data.getOrDefault(mapName, new LevelProgress());
+        if (stars > existing.stars) {
+            existing.stars = stars;
         }
+        if (existing.time == 0 || (time > 0 && time < existing.time)) {
+            existing.time = time;
+        }
+        data.put(mapName, existing);
+        saveProgress(data);
     }
 
 }
