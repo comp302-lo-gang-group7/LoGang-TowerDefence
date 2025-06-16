@@ -21,6 +21,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -302,6 +303,17 @@ public class GameScreenController extends Controller {
 		}
 	}
 
+	private Label createLevelLabel(int level, int x, int y) {
+		Label lbl = new Label(Integer.toString(level));
+		lbl.setPrefSize(16, 16);
+		lbl.setAlignment(Pos.CENTER);
+		lbl.setStyle("-fx-background-color: gold; -fx-text-fill: black; -fx-font-size: 10; -fx-font-weight: bold; -fx-background-radius: 8;");
+		lbl.setMouseTransparent(true);
+		lbl.setLayoutX(x * TILE_SIZE + TILE_SIZE - 16);
+		lbl.setLayoutY(y * TILE_SIZE);
+		return lbl;
+	}
+
 	private void constructTower(int x, int y, TileEnum towerType) {
 		int cost;
 		switch (towerType) {
@@ -327,6 +339,12 @@ public class GameScreenController extends Controller {
 
 		tile.view = newView;
 		tile.model.setTower(towerType, 10, 5, cost, 2, 1);
+
+		if (tile.levelLabel != null) {
+			towerLayer.getChildren().remove(tile.levelLabel);
+		}
+		tile.levelLabel = createLevelLabel(1, x, y);
+		towerLayer.getChildren().add(tile.levelLabel);
 
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
 		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
@@ -359,6 +377,10 @@ public class GameScreenController extends Controller {
 
 		tile.view = newView;
 		tile.model.removeTower();
+		if (tile.levelLabel != null) {
+			towerLayer.getChildren().remove(tile.levelLabel);
+			tile.levelLabel = null;
+		}
 		hideTowerRadius();
 		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
 		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
@@ -381,6 +403,9 @@ public class GameScreenController extends Controller {
 			case MAGE_TOWER -> tile.model.upgradeTower(12, 7, 3);
 			case ARTILLERY_TOWER -> tile.model.upgradeTower(14, 15, 2);
 			default -> {}
+		}
+		if (tile.levelLabel != null) {
+			tile.levelLabel.setText(Integer.toString(tile.model.getTower().upgradeLevel));
 		}
 	}
 
