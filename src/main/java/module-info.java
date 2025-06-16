@@ -21,10 +21,12 @@ module com.example.game {
 	exports com.example.utils;
 	opens com.example.utils to javafx.fxml;
 
+	exports com.example.config;
+	opens com.example.config to com.fasterxml.jackson.databind;
+
 	exports com.example.controllers;
 	opens com.example.controllers to javafx.fxml;
 	opens com.example.entity to com.fasterxml.jackson.databind, javafx.fxml;
-
 	opens com.example.test to org.junit.platform.commons;
 
 }

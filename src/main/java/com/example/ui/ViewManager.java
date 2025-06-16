@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.example.controllers.GameScreenController;
+import com.example.config.LevelConfig;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.ImageCursor;
@@ -102,6 +103,26 @@ public class ViewManager {
             // Reapply custom cursor after switching content
             if (scene.getCursor() instanceof ImageCursor) {
                 scene.setCursor(scene.getCursor()); // Reapply the existing ImageCursor
+            }
+
+        } catch (IOException e) {
+            System.out.printf("An IOException occurred during switch to FXML path com/example/fxml/game_screen_page.fxml, error: %s%n", e);
+            e.printStackTrace();
+        }
+    }
+
+    public void switchToGameScreen(LevelConfig config) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/example/fxml/game_screen_page.fxml"));
+            Parent content = fxmlLoader.load();
+
+            ((GameScreenController) fxmlLoader.getController()).init(config);
+
+            VBox root = (VBox) scene.getRoot();
+            root.getChildren().set(1, content);
+
+            if (scene.getCursor() instanceof ImageCursor) {
+                scene.setCursor(scene.getCursor());
             }
 
         } catch (IOException e) {

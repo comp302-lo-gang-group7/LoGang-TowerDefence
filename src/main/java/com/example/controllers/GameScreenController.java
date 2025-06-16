@@ -1,10 +1,12 @@
 package com.example.controllers;
 
 import com.example.entity.Entity;
+import com.example.entity.EntityGroup;
 import com.example.game.*;
 import com.example.map.*;
 import com.example.main.Main;
 import com.example.storage_manager.MapStorageManager;
+import com.example.config.LevelConfig;
 import com.example.utils.TileRenderer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -55,10 +57,27 @@ public class GameScreenController extends Controller {
 	private Parent gameOverOverlay;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
+		List<Wave> converted = new ArrayList<>();
+		if (waves != null) {
+			for (int[] cfg : waves) {
+				int g = cfg.length > 0 ? cfg[0] : 0;
+				int w = cfg.length > 1 ? cfg[1] : 0;
+				converted.add(new Wave(new EntityGroup(g, w, 0)));
+			}
+		}
+		initInternal(mapName, startingGold, 10, converted);
+	}
+
+	public void init(LevelConfig config) {
+		if (config == null) return;
+		initInternal(config.getMapName(), config.getStartingGold(), config.getLives(), config.getWaves());
+	}
+
+	private void initInternal(String mapName, int startingGold, int lives, List<Wave> waves) {
 		contextMenu.setAutoHide(true);
 		setupButtonIcons();
 
-		playerState = new PlayerState(startingGold, 10);
+		playerState = new PlayerState(startingGold, lives);
 		goldLabel.textProperty().bind(playerState.getGoldProperty().asString());
 		healthLabel.textProperty().bind(
 				playerState.getLivesProperty()
@@ -137,7 +156,7 @@ public class GameScreenController extends Controller {
 						.concat(String.format("/%d", waves.size()))
 		);
 
-		gameManager.setWaves(waves);
+		gameManager.setWavesFromGroups(waves);
 		gameManager.start();
         }
 
