@@ -5,9 +5,13 @@ import com.example.entity.EntityGroup;
 import com.example.game.*;
 import com.example.map.*;
 import com.example.main.Main;
+import com.example.player.PlayerState;
 import com.example.storage_manager.MapStorageManager;
 import com.example.config.LevelConfig;
 import com.example.utils.TileRenderer;
+import com.example.storage_manager.ProgressStorageManager;
+import com.example.controllers.VictoryController;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,6 +62,8 @@ public class GameScreenController extends Controller {
 	private final Popup contextMenu = new Popup();
 	private boolean isFast;
 	private Parent gameOverOverlay;
+	private Parent victoryOverlay;
+	private String mapName;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
 		List<Wave> converted = new ArrayList<>();
@@ -160,6 +166,17 @@ public class GameScreenController extends Controller {
 		);
 
 		gameManager.setWavesFromGroups(waves);
+
+		hudTimer = new javafx.animation.AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				if (gameManager.isLevelCompleted()) {
+					showVictoryOverlay();
+				}
+			}
+		};
+		hudTimer.start();
+
 		gameManager.start();
         }
 
@@ -490,12 +507,48 @@ public class GameScreenController extends Controller {
 		if (gameManager != null) {
 			gameManager.stop();
 		}
+		if (hudTimer != null) {
+			hudTimer.stop();
+		}
 		if (gameOverOverlay != null) {
 			return;
 		}
 		try {
 			gameOverOverlay = FXMLLoader.load(getClass().getResource("/com/example/fxml/game_over.fxml"));
 			gameArea.getChildren().add(gameOverOverlay);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int calculateStars() {
+		int lives = gameManager.getLives();
+		int maxLives = gameManager.getMaxLives();
+		int goldSpent = playerState.getGoldSpent();
+		int stars = 1;
+		if (lives > maxLives / 2) stars = 2;
+		if (lives == maxLives && goldSpent <= playerState.getInitialGold() / 2) stars = 3;
+		return stars;
+	}
+
+	private void showVictoryOverlay() {
+		if (gameManager != null) {
+			gameManager.stop();
+		}
+		if (hudTimer != null) {
+			hudTimer.stop();
+		}
+		if (victoryOverlay != null) {
+			return;
+		}
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/fxml/victory.fxml"));
+			victoryOverlay = loader.load();
+			VictoryController ctrl = loader.getController();
+			int stars = calculateStars();
+			ctrl.init(stars);
+			gameArea.getChildren().add(victoryOverlay);
+			ProgressStorageManager.recordRating(mapName, stars);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

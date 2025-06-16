@@ -28,5 +28,7 @@ module com.example.game {
 	opens com.example.controllers to javafx.fxml;
 	opens com.example.entity to com.fasterxml.jackson.databind, javafx.fxml;
 	opens com.example.test to org.junit.platform.commons;
+	exports com.example.player;
+	opens com.example.player to javafx.fxml;
 
 }
