@@ -10,6 +10,7 @@ import com.example.utils.MapEditorUtils;
 import com.example.storage_manager.ProgressStorageManager;
 import com.example.storage_manager.ProgressStorageManager.LevelProgress;
 import com.example.map.TileView;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -92,6 +93,7 @@ public class CampaignController extends Controller implements Initializable {
                 stars.setLayoutX(btn.getLayoutX() + iconSize / 2.0 - lp.stars * 6);
                 stars.setLayoutY(btn.getLayoutY() - 14);
                 mapContainer.getChildren().add(stars);
+                Platform.runLater(() -> scrollPane.setVvalue(1.0));
             }
         }
     }
