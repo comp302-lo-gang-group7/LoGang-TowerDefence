@@ -1,6 +1,6 @@
 {
-  "musicVolume" : 0,
-  "sfxVolume" : 96,
+  "musicVolume" : 47,
+  "sfxVolume" : 56,
   "difficulty" : "Normal",
   "gameSpeed" : "Normal",
   "showHints" : true,

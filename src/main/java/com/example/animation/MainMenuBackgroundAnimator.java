@@ -112,6 +112,9 @@ public class MainMenuBackgroundAnimator {
         private double x, y;
         private final double speed = 150;
         private final double scale = 0.25;
+        private final boolean isBomb;
+        private double spin = 0;
+        private final double spinSpeed;
 
         ProjectileSprite(Image img, double x1, double y1, double x2, double y2) {
             this.image = img;
@@ -123,25 +126,29 @@ public class MainMenuBackgroundAnimator {
             this.dirX = dx / mag;
             this.dirY = dy / mag;
             this.angle = Math.toDegrees(Math.atan2(dy, dx));
+            this.isBomb = image.getUrl() != null && image.getUrl().contains("bomb");
+            this.spinSpeed = isBomb ? 360 : 0;
         }
 
         void update(double dt) {
             x += dirX * speed * dt;
             y += dirY * speed * dt;
+            if (isBomb) {
+                spin += spinSpeed * dt;
+            }
         }
 
         void render(GraphicsContext gc) {
             gc.save();
             gc.translate(x, y);
 
-            boolean isBomb = image.getUrl() != null && image.getUrl().contains("bomb");
             boolean movingLeft = dirX < 0;
 
             if (isBomb && movingLeft) {
                 gc.scale(-1, 1);       // flip horizontally before rotation
             }
 
-            gc.rotate(angle);
+            gc.rotate(angle + spin);
             gc.scale(scale, scale);
             gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
 

@@ -67,6 +67,7 @@ public class GameScreenController extends Controller {
 	private Parent gameOverOverlay;
 	private Parent victoryOverlay;
 	private String mapName;
+	private String levelId;
 	private long startTime;
 
 	public void init( String mapName, int startingGold, List<int[]> waves) {
@@ -83,6 +84,12 @@ public class GameScreenController extends Controller {
 
 	public void init(LevelConfig config) {
 		if (config == null) return;
+		init(config, config.getMapName());
+	}
+
+	public void init(LevelConfig config, String levelId) {
+		if (config == null) return;
+		this.levelId = levelId;
 		initInternal(config.getMapName(), config.getStartingGold(), config.getLives(), config.getWaves());
 	}
 
@@ -562,7 +569,8 @@ public class GameScreenController extends Controller {
 			ctrl.init(stars);
 			gameArea.getChildren().add(victoryOverlay);
 			long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-			ProgressStorageManager.recordProgress(mapName, stars, elapsed);
+			String key = levelId != null ? levelId : mapName;
+			ProgressStorageManager.recordProgress(key, stars, elapsed);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

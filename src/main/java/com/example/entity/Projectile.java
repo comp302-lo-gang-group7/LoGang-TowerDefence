@@ -15,6 +15,8 @@ public class Projectile extends Entity
 	private double dirx, diry, magnitude;
 	private double speed = 10;
 	private double angle;
+	private double spin;
+	private double spinSpeed;
 	private boolean active;
 	private AnimatedEntity target;
 	private Tower parent;
@@ -59,6 +61,13 @@ public class Projectile extends Entity
 		diry = dy / magnitude;
 
 		angle = Math.toDegrees(Math.atan2(dy, dx));
+
+		if (parent instanceof ArtilleryTower) {
+			spinSpeed = 360;
+		} else {
+			spinSpeed = 0;
+		}
+		spin = 0;
 	}
 
 	@Override
@@ -69,6 +78,9 @@ public class Projectile extends Entity
 			{
 				x += dirx * speed * dt;
 				y += diry * speed * dt;
+				if (spinSpeed != 0) {
+					spin += spinSpeed * dt;
+				}
 			} else
 			{
 				this.active = false;
@@ -95,7 +107,7 @@ public class Projectile extends Entity
 	{
 		gc.save();
 		gc.translate(x, y);
-		gc.rotate(angle);
+		gc.rotate(angle + spin);
 		gc.scale(scaleFactor, scaleFactor);
 		gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
 		gc.restore();
