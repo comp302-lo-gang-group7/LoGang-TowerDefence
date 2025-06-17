@@ -1,7 +1,7 @@
 {
-  "mapName": "Forest Path",
+  "mapName": "level-1",
   "startingGold": 1000,
-  "lives": 10,
+  "lives": 20,
   "waves": [
     { "group": { "goblins": 5, "warriors": 0, "delayAfter": 5 } },
     { "group": { "goblins": 0, "warriors": 3, "delayAfter": 6 } }
