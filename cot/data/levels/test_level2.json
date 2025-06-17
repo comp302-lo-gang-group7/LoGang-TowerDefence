@@ -1,9 +1,0 @@
-{
-  "mapName": "Jungle Trail",
-  "startingGold": 676,
-  "lives": 3,
-  "waves": [
-    { "group": { "goblins": 2, "warriors": 1, "delayAfter": 4 } },
-    { "group": { "goblins": 1, "warriors": 5, "delayAfter": 1 } }
-  ]
-}
