@@ -41,7 +41,7 @@ public class TileModel {
 			{
 				tower = new ArcherTower(x, y, hpValue, damage, cost, upgradeLevel);
 				tower.setRange(range);
-				tower.setAttackCooldown(upgradeLevel >= 2 ? 0.25 : 0.5);
+				tower.setAttackCooldown(upgradeLevel >= 2 ? 0.4 : 0.5);
 				break;
 			}
 			case MAGE_TOWER:

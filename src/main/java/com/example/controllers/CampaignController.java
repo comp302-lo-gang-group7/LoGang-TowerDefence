@@ -54,32 +54,11 @@ public class CampaignController extends Controller implements Initializable {
 
         // load background maps
         int tileSize = 64;
-        int bottomHeight = renderMap("campaign/campaign-bottom", bottomMap, tileSize);
         int topHeight = renderMap("campaign/campaign-top", topMap, tileSize);
-        topMap.setLayoutY(bottomHeight);
-        mapContainer.setPrefWidth(bottomMap.getPrefWidth());
-        mapContainer.setPrefHeight(bottomHeight + topHeight);
-
-        boolean allComplete = true;
-        for (CampaignLevel l : levels) {
-            if (!progress.containsKey(l.levelFile)) {
-                allComplete = false;
-                break;
-            }
-        }
-        if (!allComplete) {
-            topMap.setVisible(false);
-            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        } else {
-            scrollPane.setOnScroll(ev -> {
-                if (ev.getDeltaY() < 0) {
-                    scrollPane.setVvalue(1.0);
-                } else {
-                    scrollPane.setVvalue(0.0);
-                }
-                ev.consume();
-            });
-        }
+        int bottomHeight = renderMap("campaign/campaign-bottom", bottomMap, tileSize);
+        bottomMap.setLayoutY(topHeight);
+        mapContainer.setPrefWidth(topMap.getPrefWidth());
+        mapContainer.setPrefHeight(topHeight + bottomHeight);
 
         for (int i = 0; i < levels.size(); i++) {
             CampaignLevel lvl = levels.get(i);

@@ -9,8 +9,8 @@
            prefWidth="800.0" prefHeight="600.0">
     <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER">
         <Pane fx:id="mapContainer">
-            <Pane fx:id="topMap" />
             <Pane fx:id="bottomMap" />
+            <Pane fx:id="topMap" />
         </Pane>
     </ScrollPane>
     <Button fx:id="backBtn" text="Back" StackPane.alignment="BOTTOM_RIGHT" translateX="-20" translateY="-20" onAction="#handleBack" />
