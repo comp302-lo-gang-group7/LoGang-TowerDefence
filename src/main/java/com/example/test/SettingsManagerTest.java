@@ -10,7 +10,13 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Class SettingsManagerTest
+ */
 class SettingsManagerTest {
+    /**
+     * TODO
+     */
     private static final Path SETTINGS_FILE = Paths.get("cot", "data", "settings.json");
     private String originalContent;
 

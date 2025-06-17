@@ -2,31 +2,25 @@ package com.example.utils;
 
 import java.util.*;
 
+/**
+ * Class PathFinder
+ */
 public class PathFinder {
     private static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1 };
     private static final int[] DY = { -1, -1, 0, 1, 1, 1, 0, -1 };
 
     private static final int TILE_SIZE    = 64;
-    private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
-    private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;     // 64
-    private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
+    private static final int PEAK_WEIGHT  = TILE_SIZE / 2;
+    private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;
+    private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;
 
-    private static final Random random = new Random();
     /**
-     * requires:
-     *   – grid is non-null, rectangular (all rows same length), and contains only integer weights;
-     *   – start and goal are non-null and lie within the bounds of grid;
-     *   – positive weights denote traversable tiles, zero or negative weights denote obstacles.
-     *
-     * modifies:
-     *   – internal priority queue, distance and predecessor arrays, and the static Random seed;
-     *
-     * effects:
-     *   – Runs a Dijkstra/A*‐style search (with small random noise) from start to goal over 4-connected neighbors.
-     *   – Returns a (possibly empty) List<Point> “trimmed” to at most 20–100 visits of GOAL_WEIGHT tiles:
-     *       • if goal is reachable, the returned list begins at start, follows a valid 4-connected path through
-     *         only positive-weight tiles, and ends at the goal or earlier if too many GOAL_WEIGHT tiles appear;
-     *       • if goal is unreachable, returns an empty list (prev[goal] == null).
+     * TODO
+     */
+    private static final Random random = new Random();
+
+    /**
+     * TODO
      */
     public static List<Point> findPath(int[][] grid, Point start, Point goal) {
         int h = grid.length, w = grid[0].length;
@@ -49,7 +43,7 @@ public class PathFinder {
             int cx = (int) cur.x(), cy = (int) cur.y();
             double baseCost = dist[cy][cx];
 
-            // Randomize neighbor directions
+
             int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
             shuffleArray(dirs);
 
@@ -60,11 +54,11 @@ public class PathFinder {
                 int weight = grid[ny][nx];
                 if (weight <= 0) continue;
 
-                // Add slight noise to encourage variation in paths
-                double noise = random.nextDouble() * 5; // tweak range as needed
+
+                double noise = random.nextDouble() * 5;
                 double stepCost = (GOAL_WEIGHT - weight) + noise;
                 if (Math.abs(DX[dir]) + Math.abs(DY[dir]) == 2) {
-                    stepCost *= 1.4; // approx sqrt(2) for diagonals
+                    stepCost *= 1.4;
                 }
                 double nd = baseCost + stepCost;
 
@@ -76,7 +70,7 @@ public class PathFinder {
             }
         }
 
-        // Reconstruct path
+
         List<Point> fullPath = new ArrayList<>();
         if (prev[(int)goal.y()][(int)goal.x()] != null || start.equals(goal)) {
             for (Point at = goal; at != null; at = prev[(int)at.y()][(int)at.x()]) {
@@ -85,8 +79,8 @@ public class PathFinder {
             Collections.reverse(fullPath);
         }
 
-        // Trim after a certain number of goal-weight steps
-        int maxGoalSteps = 20 + random.nextInt(81); // 20–100
+
+        int maxGoalSteps = 20 + random.nextInt(81);
         List<Point> trimmed = new ArrayList<>();
         int goalCount = 0;
         for (Point p : fullPath) {
@@ -100,7 +94,10 @@ public class PathFinder {
         return trimmed;
     }
 
-    // Shuffles an int array (Fisher-Yates)
+
+    /**
+     * TODO
+     */
     private static void shuffleArray(int[] arr) {
         for (int i = arr.length - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
@@ -110,6 +107,9 @@ public class PathFinder {
         }
     }
 
+    /**
+     * TODO
+     */
     public static Point findRandomSpawnPoint(int[][] grid) {
         List<Point> candidates = new ArrayList<>();
         int h = grid.length, w = grid[0].length;
@@ -127,6 +127,9 @@ public class PathFinder {
         return candidates.get(random.nextInt(candidates.size()));
     }
 
+    /**
+     * TODO
+     */
     public static Point findCastlePoint(int[][] grid) {
         int h = grid.length, w = grid[0].length;
         for (int y = 0; y < h; y++) {

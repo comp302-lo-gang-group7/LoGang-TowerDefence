@@ -11,6 +11,9 @@ import javafx.scene.image.WritableImage;
 
 import java.util.List;
 
+/**
+ * Class AnimatedEntity
+ */
 public class AnimatedEntity extends Entity {
     private final Image[] frames;
     private final double frameDuration;
@@ -18,19 +21,20 @@ public class AnimatedEntity extends Entity {
     private int currentFrame = 0;
     private double speedModifier = 1.0;
     private double slowTimer = 0;
-    private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
-    protected final Deque<Image> effectStack = new ArrayDeque<>();
-    
-    // path + movement
-    private final List<Point> path;
     /**
-     * Movement speed in pixels per second. The value itself remains constant
-     * for an entity but the actual distance covered each frame is scaled by the
-     * {@code dt} provided from {@link com.example.game.GameManager} which
-     * already applies any global game speed multiplier.
+     * TODO
      */
+    private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
+    /**
+     * TODO
+     */
+    protected final Deque<Image> effectStack = new ArrayDeque<>();
+
+
+    private final List<Point> path;
+
     private final double speed;
-    private int waypointIndex = 0;  // Start at first waypoint
+    private int waypointIndex = 0;
 
     public AnimatedEntity(Image spriteSheet,
                           int frameCount,
@@ -41,14 +45,14 @@ public class AnimatedEntity extends Entity {
                           int hp,
                           double scaleFactor)
     {
-        // Start at the first path point
+
         super(path.getFirst().x(), path.getFirst().y(), hp);
         this.path = path;
         this.speed = speed;
         this.frameDuration = frameDuration;
         this.frames = new Image[frameCount];
 
-        // slice sprite‐sheet + scaling
+
         for (int i = 0; i < frameCount; i++) {
             Image raw = new WritableImage(
                     spriteSheet.getPixelReader(),
@@ -60,15 +64,18 @@ public class AnimatedEntity extends Entity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void update(double dt) {
-        // 1) animation
+
         frameTimer += dt;
         if (frameTimer >= frameDuration) {
             frameTimer -= frameDuration;
             currentFrame = (currentFrame + 1) % frames.length;
         }
 
-        // 2) movement
+
         if (waypointIndex < path.size()) {
             if (slowTimer > 0) {
                 slowTimer -= dt;
@@ -86,7 +93,7 @@ public class AnimatedEntity extends Entity {
                 double dist = Math.hypot(dx, dy);
 
                 if (dist < 1e-3) {
-                    // Snap to the waypoint and advance to the next
+
                     x = target.x();
                     y = target.y();
                     waypointIndex++;
@@ -94,13 +101,13 @@ public class AnimatedEntity extends Entity {
                 }
 
                 if (remaining >= dist) {
-                    // Consume the entire segment and keep going with leftover distance
+
                     x = target.x();
                     y = target.y();
                     remaining -= dist;
                     waypointIndex++;
                 } else {
-                    // Move partially along the segment and finish the update
+
                     x += dx / dist * remaining;
                     y += dy / dist * remaining;
                     remaining = 0;
@@ -109,18 +116,15 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+
     /**
-     * Returns true if this entity has traversed its entire path and reached the final
-     * goal tile.
+     * TODO
      */
     public boolean hasReachedGoal() {
         return waypointIndex >= path.size();
     }
 
-    /**
-     * Returns a numeric progress value representing how far this entity has
-     * advanced along its path. Higher values mean further progression.
-     */
+
     public double getPathProgress()
     {
         if (waypointIndex <= 0)
@@ -151,6 +155,9 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+    /**
+     * TODO
+     */
     public void applySlow(double factor, double duration) {
         if (slowTimer <= 0) {
             speedModifier = factor;
@@ -162,8 +169,11 @@ public class AnimatedEntity extends Entity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void render(GraphicsContext gc) {
-        // 1. Draw the sprite centered on entity position
+
         double spriteWidth = frames[currentFrame].getWidth();
         double spriteHeight = frames[currentFrame].getHeight();
         double drawX = x - spriteWidth / 2;
@@ -171,20 +181,20 @@ public class AnimatedEntity extends Entity {
 
         gc.drawImage(frames[currentFrame], drawX, drawY);
 
-        // 2. Draw smaller health bar just above the bottom of the sprite
-        double barWidth = spriteWidth * 0.3;     // narrower
-        double barHeight = 3;                    // thinner
+
+        double barWidth = spriteWidth * 0.3;
+        double barHeight = 3;
         double barX = drawX + (spriteWidth - barWidth) / 2;
-        double barY = drawY + (spriteHeight * 0.7);  // closer to sprite bottom
+        double barY = drawY + (spriteHeight * 0.7);
 
         double healthRatio = Math.max(0, Math.min(1, hp / 100.0));
         double filledWidth = barWidth * healthRatio;
 
-        // Background (dark red)
+
         gc.setFill(javafx.scene.paint.Color.web("#330000"));
         gc.fillRoundRect(barX, barY, barWidth, barHeight, barHeight, barHeight);
 
-        // Foreground (green)
+
         gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
 
@@ -198,40 +208,48 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+    /**
+     * TODO
+     */
     public double getSpeedModifier() {
         return speedModifier;
     }
 
+
     /**
-     * Allows subclasses to modify incoming damage based on the attacking tower
-     * type. By default no modification is made.
-     *
-     * @param source the tower dealing the damage
-     * @param base   the raw damage amount
-     * @return the adjusted damage this entity should take
+     * TODO
      */
     public int modifyDamage(Tower source, int base) {
         return base;
     }
 
-    /** Accessor for subclasses that need the base movement speed. */
+
+    /**
+     * TODO
+     */
     public double getSpeed() {
         return speed;
     }
 
-    /** Width of the currently displayed sprite frame. */
+
+    /**
+     * TODO
+     */
     protected double getSpriteWidth() {
         return frames[currentFrame].getWidth();
     }
 
-    /** Height of the currently displayed sprite frame. */
+
+    /**
+     * TODO
+     */
     protected double getSpriteHeight() {
         return frames[currentFrame].getHeight();
     }
 
+
     /**
-     * Resets this entity back to the first point of its path without
-     * altering hit points or any other state.
+     * TODO
      */
     public void resetToStart() {
         Point start = path.getFirst();
@@ -241,10 +259,13 @@ public class AnimatedEntity extends Entity {
     }
 
 
+    /**
+     * TODO
+     */
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
         GraphicsContext gc = tempCanvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, targetWidth, targetHeight); // ensure it's transparent
+        gc.clearRect(0, 0, targetWidth, targetHeight);
         gc.drawImage(src, 0, 0, targetWidth, targetHeight);
 
         javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();

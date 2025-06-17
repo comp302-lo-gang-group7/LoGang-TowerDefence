@@ -36,7 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-/** Controller for the campaign map screen. */
+
+/**
+ * Class CampaignController
+ */
 public class CampaignController extends Controller implements Initializable {
     @FXML private ScrollPane scrollPane;
     @FXML private Pane mapContainer;
@@ -48,12 +51,15 @@ public class CampaignController extends Controller implements Initializable {
     private Map<String, LevelProgress> progress;
 
     @Override
+    /**
+     * TODO
+     */
     public void initialize(URL url, ResourceBundle rb) {
         setupButtonEffects(backBtn);
         levels = CampaignStorageManager.loadCampaign();
         progress = ProgressStorageManager.loadProgress();
 
-        // load background maps
+
         int tileSize = 64;
         int topHeight = renderMap("campaign/campaign-top", topMap, tileSize);
         int bottomHeight = renderMap("campaign/campaign-bottom", bottomMap, tileSize);
@@ -99,11 +105,17 @@ public class CampaignController extends Controller implements Initializable {
     }
 
     @FXML
+    /**
+     * TODO
+     */
     private void handleBack() {
         goToHomePage();
     }
 
 
+    /**
+     * TODO
+     */
     private void setupButtonEffects(Button button) {
         button.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
         button.setOnMouseEntered(e -> {
@@ -128,6 +140,9 @@ public class CampaignController extends Controller implements Initializable {
         });
     }
 
+    /**
+     * TODO
+     */
     private void showLevelDialog(CampaignLevel lvl, Button sourceBtn) {
         Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -212,6 +227,9 @@ public class CampaignController extends Controller implements Initializable {
         dialog.showAndWait();
     }
 
+    /**
+     * TODO
+     */
     private int renderMap(String mapName, Pane target, int tileSize) {
         try {
             TileView[][] tiles = MapStorageManager.loadMap(mapName);

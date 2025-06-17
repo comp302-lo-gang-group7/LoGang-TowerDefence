@@ -41,6 +41,9 @@ import javafx.stage.Popup;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
+/**
+ * Class GameScreenController
+ */
 public class GameScreenController extends Controller {
 	@FXML private Pane gameArea;
 	@FXML private Pane mapLayer, entityLayer, towerLayer;
@@ -54,7 +57,7 @@ public class GameScreenController extends Controller {
 	private javafx.animation.AnimationTimer hudTimer;
 	private boolean isPaused = false;
 
-	// This is for the tower attack radius highlight
+
 	private Parent pauseOverlay;
 	private Circle hoverRadius;
 
@@ -62,6 +65,9 @@ public class GameScreenController extends Controller {
 
     private Tile[][] tiles;
     private TileRenderer renderer;
+	/**
+	 * TODO
+	 */
 	private final Popup contextMenu = new Popup();
 	private boolean isFast;
 	private Parent gameOverOverlay;
@@ -70,6 +76,9 @@ public class GameScreenController extends Controller {
 	private String levelId;
 	private long startTime;
 
+	/**
+	 * TODO
+	 */
 	public void init( String mapName, int startingGold, List<int[]> waves) {
 		List<Wave> converted = new ArrayList<>();
 		if (waves != null) {
@@ -82,17 +91,26 @@ public class GameScreenController extends Controller {
 		initInternal(mapName, startingGold, 10, converted);
 	}
 
+	/**
+	 * TODO
+	 */
 	public void init(LevelConfig config) {
 		if (config == null) return;
 		init(config, config.getMapName());
 	}
 
+	/**
+	 * TODO
+	 */
 	public void init(LevelConfig config, String levelId) {
 		if (config == null) return;
 		this.levelId = levelId;
 		initInternal(config.getMapName(), config.getStartingGold(), config.getLives(), config.getWaves());
 	}
 
+	/**
+	 * TODO
+	 */
 	private void initInternal(String mapName, int startingGold, int lives, List<Wave> waves) {
 		contextMenu.setAutoHide(true);
 		setupButtonIcons();
@@ -109,14 +127,14 @@ public class GameScreenController extends Controller {
 						.concat(String.format("/%d", playerState.getMaxLives()))
 		);
 
-		// show game over overlay when lives reach zero
+
 		playerState.getLivesProperty().addListener((obs, oldVal, newVal) -> {
 			if (newVal.intValue() <= 0) {
 				showGameOverOverlay();
 			}
 		});
 
-		// load map data
+
         TileView[][] mapTiles;
         try {
 			mapTiles = MapStorageManager.loadMap(mapName);
@@ -128,11 +146,11 @@ public class GameScreenController extends Controller {
 		int cols = mapTiles[0].length;
 		tiles = new Tile[rows][cols];
 
-		// init renderer & model
+
 		renderer = new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
         GameModel gameModel = new GameModel(mapTiles);
 
-		// render map tiles
+
 		for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < cols; x++) {
 				TileEnum type = mapTiles[y][x].getType();
@@ -151,7 +169,7 @@ public class GameScreenController extends Controller {
 			}
 		}
 
-		// adjust window size
+
 		double w = cols * TILE_SIZE;
 		double h = rows * TILE_SIZE;
 		gameArea.setPrefSize(w, h);
@@ -165,10 +183,10 @@ public class GameScreenController extends Controller {
 			}
 		});
 
-		// 2) Grab all of your Entities out of the model
+
 		List<Entity> allEntities = gameModel.getEntities();
 
-		// 3) Hook up & start the GameManager loop
+
 		GameManager.initialize(gameCanvas, allEntities, gameModel, playerState);
 
 		this.gameManager = GameManager.getInstance();
@@ -183,6 +201,9 @@ public class GameScreenController extends Controller {
 
 		hudTimer = new javafx.animation.AnimationTimer() {
 			@Override
+			/**
+			 * TODO
+			 */
 			public void handle(long now) {
 				if (gameManager.isLevelCompleted()) {
 					showVictoryOverlay();
@@ -195,6 +216,9 @@ public class GameScreenController extends Controller {
         }
 
 
+	/**
+	 * TODO
+	 */
 	private void onTowerTileClicked(TileView tv, int x, int y, MouseEvent e) {
 		hideTowerRadius();
 		if (tv.getType() == TileEnum.EMPTY_TOWER_TILE) {
@@ -204,6 +228,9 @@ public class GameScreenController extends Controller {
 		}
 	}
 
+	/**
+	 * TODO
+	 */
 	private void showBuildMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
 		opts.add(new Option("Archer", () -> constructTower(tileX, tileY, TileEnum.ARCHERY_TOWER), "/com/example/assets/buttons/Archer_Tower_Button.png"));
@@ -212,6 +239,9 @@ public class GameScreenController extends Controller {
 		showRadialMenu(tileX, tileY, opts);
 	}
 
+	/**
+	 * TODO
+	 */
 	private void showTowerMenu(int tileX, int tileY, double sx, double sy) {
 		List<Option> opts = new ArrayList<>();
 		Tile tile = tiles[tileY][tileX];
@@ -222,6 +252,9 @@ public class GameScreenController extends Controller {
 		showRadialMenu(tileX, tileY, opts);
 	}
 
+	/**
+	 * TODO
+	 */
 	private void showRadialMenu(int tileX, int tileY, List<Option> options) {
 		contextMenu.getContent().clear();
 
@@ -303,7 +336,10 @@ public class GameScreenController extends Controller {
 		);
 	}
 
-	/** Display a translucent circle around a tower indicating its attack range */
+
+	/**
+	 * TODO
+	 */
 	private void showTowerRadius(int x, int y) {
 		TileModel model = tiles[y][x].model;
 		if (!model.hasTower()) return;
@@ -327,13 +363,19 @@ public class GameScreenController extends Controller {
 		hoverRadius.setVisible(true);
 	}
 
-	/** Hide the tower radius circle, if present */
+
+	/**
+	 * TODO
+	 */
 	private void hideTowerRadius() {
 		if (hoverRadius != null) {
 			hoverRadius.setVisible(false);
 		}
 	}
 
+	/**
+	 * TODO
+	 */
 	private Label createLevelLabel(int level, int x, int y) {
 		Label lbl = new Label(Integer.toString(level));
 		lbl.setPrefSize(16, 16);
@@ -345,6 +387,9 @@ public class GameScreenController extends Controller {
 		return lbl;
 	}
 
+	/**
+	 * TODO
+	 */
 	private void constructTower(int x, int y, TileEnum towerType) {
 		int cost;
 		switch (towerType) {
@@ -383,7 +428,10 @@ public class GameScreenController extends Controller {
 		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
-	/** Show a temporary tooltip around the specified tile */
+
+	/**
+	 * TODO
+	 */
 	private void showInsufficientFunds(int x, int y) {
 		double localX = x * TILE_SIZE + TILE_SIZE / 2.0;
 		double localY = y * TILE_SIZE + TILE_SIZE / 2.0;
@@ -395,6 +443,9 @@ public class GameScreenController extends Controller {
 		delay.play();
 	}
 
+	/**
+	 * TODO
+	 */
 	private void sellTower(int x, int y) {
 		Tile tile = tiles[y][x];
 		TileView newView = renderer.createTileView(TileEnum.EMPTY_TOWER_TILE);
@@ -419,6 +470,9 @@ public class GameScreenController extends Controller {
 		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
+	/**
+	 * TODO
+	 */
 	private void upgradeTower(int x, int y) {
 		Tile tile = tiles[y][x];
 		int cost = tile.model.getTower().goldCost;
@@ -442,6 +496,9 @@ public class GameScreenController extends Controller {
 	}
 
 	@FXML
+	/**
+	 * TODO
+	 */
 	public void pauseGame() {
 		if (gameManager == null) return;
 
@@ -459,7 +516,7 @@ public class GameScreenController extends Controller {
 			}
 
 		} else {
-			// resume
+
 			gameManager.resume();
 			isPaused = false;
 
@@ -472,6 +529,9 @@ public class GameScreenController extends Controller {
 
 
 	@FXML
+	/**
+	 * TODO
+	 */
 	public void speedUp(ActionEvent event) {
 		if (gameManager == null) return;
 
@@ -479,12 +539,12 @@ public class GameScreenController extends Controller {
 		double speed = isFast ? 2.0 : 1.0;
 		gameManager.setGameSpeed(speed);
 
-		// Optional: change the button's icon or tooltip
+
 		speedUp.setTooltip(new Tooltip((int)speed + "× Speed"));
 		System.out.println("Game speed set to " + speed + "×");
 	}
-	
-	// helper for radial menu
+
+
 	private static class Option {
 		final String label;
 		final Runnable action;
@@ -497,6 +557,9 @@ public class GameScreenController extends Controller {
 		}
 	}
 
+	/**
+	 * TODO
+	 */
 	private void setupButtonIcons() {
 		Image speedUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Skip_Button.png")));
 		Image optionsIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Settings_Button.png")));
@@ -518,6 +581,9 @@ public class GameScreenController extends Controller {
 		exitButton.setGraphic(exitView);
 	}
 
+	/**
+	 * TODO
+	 */
 	private void showGameOverOverlay() {
 		if (gameManager != null) {
 			gameManager.stop();
@@ -539,6 +605,9 @@ public class GameScreenController extends Controller {
 		}
 	}
 
+	/**
+	 * TODO
+	 */
 	private int calculateStars() {
 		int lives = gameManager.getLives();
 		int maxLives = gameManager.getMaxLives();
@@ -549,6 +618,9 @@ public class GameScreenController extends Controller {
 		return stars;
 	}
 
+	/**
+	 * TODO
+	 */
 	private void showVictoryOverlay() {
 		if (gameManager != null) {
 			gameManager.stop();
@@ -576,10 +648,11 @@ public class GameScreenController extends Controller {
 		}
 	}
 
-	/**
-	 * Override exit action to properly stop the running game and audio.
-	 */
+
 	@Override
+	/**
+	 * TODO
+	 */
 	public void goToHomePage() {
 		if (gameManager != null) {
 			gameManager.stop();

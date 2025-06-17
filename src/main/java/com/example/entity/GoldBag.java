@@ -7,6 +7,9 @@ import javafx.scene.image.WritableImage;
 
 import java.util.Objects;
 
+/**
+ * Class GoldBag
+ */
 public class GoldBag extends Entity {
     private static final Image SPRITE_SHEET = new Image(Objects.requireNonNull(
             GoldBag.class.getResourceAsStream("/com/example/assets/items/gold_bag.png")));
@@ -20,16 +23,22 @@ public class GoldBag extends Entity {
 
     private static final WritableImage STATIC_FRAME = new WritableImage(
             SPRITE_SHEET.getPixelReader(),
-            0, 0, // Only use frame 0
+            0, 0,
             FRAME_WIDTH, FRAME_HEIGHT
     );
 
+    /**
+     * TODO
+     */
     public GoldBag(double x, double y, int amount) {
         super(x, y, 1);
         this.amount = amount;
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void update(double dt) {
         timer -= dt;
         if (timer <= 0) {
@@ -38,6 +47,9 @@ public class GoldBag extends Entity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void render(GraphicsContext gc) {
         double drawWidth = FRAME_WIDTH * SCALE;
         double drawHeight = FRAME_HEIGHT * SCALE;
@@ -48,11 +60,17 @@ public class GoldBag extends Entity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void onClick() {
         GameManager.getInstance().getPlayerState().addGold(amount);
         GameManager.getInstance().removeEntity(this);
     }
 
+    /**
+     * TODO
+     */
     public boolean contains(double px, double py) {
         double drawWidth = FRAME_WIDTH * SCALE;
         double drawHeight = FRAME_HEIGHT * SCALE;

@@ -11,6 +11,9 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Class MapStorageManagerTest
+ */
 public class MapStorageManagerTest
 {
 	@TempDir

@@ -16,17 +16,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class MapStorageManager
+ */
 public class MapStorageManager {
 
     private static final int TILE_SIZE = 64;
+    /**
+     * TODO
+     */
     private static final Path MAP_DIRECTORY = Paths.get("cot", "data", "maps");
 
-    // reuse a single renderer so grass-stitching logic lives in one place
+
     private static final TileRenderer RENDERER =
             new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
+
     /**
-     * Saves the given map as a JSON file to cot/data/maps.
+     * TODO
      */
     public static void saveMap(TileView[][] mapTiles, int rows, int cols, String mapName) {
         ObjectMapper mapper = new ObjectMapper();
@@ -56,12 +63,9 @@ public class MapStorageManager {
         }
     }
 
+
     /**
-     * Loads a map JSON file from cot/data/maps, returning a TileView[][]
-     * where each TileView is produced by your TileRenderer (so you get
-     * grass-underlay, seams-fixing, etc.).
-     * @requires: mapName.json exists in the cot/data/maps folder
-     * @effects: returns a TileVew[][] map, with each tile as specified in the .json
+     * TODO
      */
     public static TileView[][] loadMap(String mapName) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -84,7 +88,7 @@ public class MapStorageManager {
                 int flatIndex = rowNode.get(c).asInt();
                 TileEnum type = TileEnum.fromFlatIndex(flatIndex);
 
-                // **use the renderer** instead of manual slicing
+
                 TileView tv = RENDERER.createTileView(type);
                 tv.setFitWidth(TILE_SIZE);
                 tv.setFitHeight(TILE_SIZE);
@@ -97,6 +101,9 @@ public class MapStorageManager {
         return map;
     }
 
+    /**
+     * TODO
+     */
     public static boolean deleteMap(String mapName) {
         Path file = MAP_DIRECTORY.resolve(mapName + ".json");
         try {
@@ -106,9 +113,9 @@ public class MapStorageManager {
         }
     }
 
+
     /**
-     * Returns a list of all available map names (without the .json extension)
-     * found in the maps directory.
+     * TODO
      */
     public static List<String> listAvailableMaps() {
         try {

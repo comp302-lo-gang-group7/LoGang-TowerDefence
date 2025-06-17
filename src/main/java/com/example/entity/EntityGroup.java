@@ -3,6 +3,9 @@ package com.example.entity;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Class EntityGroup
+ */
 public class EntityGroup {
     public final int goblins;
     public final int warriors;

@@ -3,9 +3,9 @@ package com.example.config;
 import com.example.game.Wave;
 import java.util.List;
 
+
 /**
- * Represents the configuration for a campaign level. This includes the map
- * used for the level, starting resources and the waves that will be spawned.
+ * Class LevelConfig
  */
 public class LevelConfig {
     private String mapName;
@@ -13,8 +13,14 @@ public class LevelConfig {
     private int lives;
     private List<Wave> waves;
 
+    /**
+     * TODO
+     */
     public LevelConfig() {}
 
+    /**
+     * TODO
+     */
     public LevelConfig(String mapName, int startingGold, int lives, List<Wave> waves) {
         this.mapName = mapName;
         this.startingGold = startingGold;
@@ -22,18 +28,30 @@ public class LevelConfig {
         this.waves = waves;
     }
 
+    /**
+     * TODO
+     */
     public String getMapName() {
         return mapName;
     }
 
+    /**
+     * TODO
+     */
     public int getStartingGold() {
         return startingGold;
     }
 
+    /**
+     * TODO
+     */
     public int getLives() {
         return lives;
     }
 
+    /**
+     * TODO
+     */
     public List<Wave> getWaves() {
         return waves;
     }

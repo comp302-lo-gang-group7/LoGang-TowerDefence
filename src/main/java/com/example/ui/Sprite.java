@@ -3,10 +3,22 @@ package com.example.ui;
 import javafx.beans.property.*;
 import javafx.scene.image.Image;
 
+/**
+ * Class Sprite
+ */
 public class Sprite
 {
+	/**
+	 * TODO
+	 */
 	private final DoubleProperty x = new SimpleDoubleProperty();
+	/**
+	 * TODO
+	 */
 	private final DoubleProperty y = new SimpleDoubleProperty();
+	/**
+	 * TODO
+	 */
 	private final ObjectProperty<Image> image = new SimpleObjectProperty<>();
 
 	public Sprite()
@@ -43,7 +55,7 @@ public class Sprite
 		return y;
 	}
 
-	/// This method must be called by the SpriteProvider when it should no longer exist!!!
+
 	public void unbind()
 	{
 		image.unbind();

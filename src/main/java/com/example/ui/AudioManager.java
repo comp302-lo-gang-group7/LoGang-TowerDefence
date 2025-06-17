@@ -11,11 +11,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+
 /**
- * Simple utility for playing background music and sound effects.
+ * Class AudioManager
  */
 public class AudioManager {
     private static MediaPlayer backgroundPlayer;
+    /**
+     * TODO
+     */
     private static final Map<String, AudioClip> clipCache = new HashMap<>();
     private static int musicVolume;
     private static int sfxVolume;
@@ -24,7 +28,10 @@ public class AudioManager {
         reloadSettings();
     }
 
-    /** Reload volume settings from {@link SettingsManager}. */
+
+    /**
+     * TODO
+     */
     public static void reloadSettings() {
         Settings s = SettingsManager.load();
         musicVolume = s.musicVolume;
@@ -34,6 +41,9 @@ public class AudioManager {
         }
     }
 
+    /**
+     * TODO
+     */
     private static AudioClip getClip(String path) {
         return clipCache.computeIfAbsent(path, p -> {
             URL url = AudioManager.class.getResource(p);
@@ -41,7 +51,10 @@ public class AudioManager {
         });
     }
 
-    /** Play a sound effect once respecting SFX volume. */
+
+    /**
+     * TODO
+     */
     public static void playSoundEffect(String path) {
         AudioClip clip = getClip(path);
         if (clip != null) {
@@ -50,8 +63,9 @@ public class AudioManager {
         }
     }
 
+
     /**
-     * Play one clip chosen randomly from the supplied paths.
+     * TODO
      */
     public static void playRandomSoundEffect(String... paths) {
         if (paths == null || paths.length == 0) return;
@@ -59,9 +73,9 @@ public class AudioManager {
         playSoundEffect(paths[idx]);
     }
 
+
     /**
-     * Start playing background music, replacing any currently playing track.
-     * If {@code loop} is true, the track will repeat indefinitely.
+     * TODO
      */
     public static void playBackgroundMusic(String path, boolean loop) {
         stopBackgroundMusic();
@@ -74,7 +88,10 @@ public class AudioManager {
         backgroundPlayer.play();
     }
 
-    /** Stop and dispose the currently playing background music, if any. */
+
+    /**
+     * TODO
+     */
     public static void stopBackgroundMusic() {
         if (backgroundPlayer != null) {
             backgroundPlayer.stop();

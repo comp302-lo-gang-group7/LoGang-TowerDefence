@@ -3,12 +3,9 @@ package com.example.map;
 
 import java.util.Set;
 
+
 /**
- * Enum used to create tiles.
- * Each enum constant holds:
- * - row index from tileset
- * - column index from tileset
- * - flattened array position (e.g., index in a 1D tile array)
+ * Class TileEnum
  */
 public enum TileEnum {
     TOP_LEFT_PATH_CORNER(0, 0, 0),
@@ -56,7 +53,7 @@ public enum TileEnum {
     private final int col;
     private final int flatIndex;
 
-    // Walkable path enums
+
     public static final Set<TileEnum> PATH_TILES = Set.of(
             TileEnum.TOP_LEFT_PATH_CORNER,
             TileEnum.DOWN_CURVING_PATH,
@@ -74,7 +71,7 @@ public enum TileEnum {
             TileEnum.HORIZONTAL_RIGHT_PATH_END
     );
 
-    // Castle tile enums
+
     public static final Set<TileEnum> CASTLE_TILES = Set.of(
             TileEnum.CASTLE_TOP_LEFT,
             TileEnum.CASTLE_TOP_RIGHT,
@@ -88,10 +85,22 @@ public enum TileEnum {
         this.flatIndex = flatIndex;
     }
 
+    /**
+     * TODO
+     */
     public int getRow() { return row; }
+    /**
+     * TODO
+     */
     public int getCol() { return col; }
+    /**
+     * TODO
+     */
     public int getFlatIndex() { return flatIndex; }
 
+    /**
+     * TODO
+     */
     public static TileEnum fromFlatIndex(int index) {
         for (TileEnum tile : values()) {
             if (tile.flatIndex == index) return tile;
@@ -99,6 +108,9 @@ public enum TileEnum {
         throw new IllegalArgumentException("Invalid flat index: " + index);
     }
 
+    /**
+     * TODO
+     */
     public static TileEnum fromRowCol(int row, int col) {
         for (TileEnum tile : values()) {
             if (tile.row == row && tile.col == col) return tile;
@@ -106,4 +118,3 @@ public enum TileEnum {
         throw new IllegalArgumentException("No tile found for row: " + row + ", col: " + col);
     }
 }
-

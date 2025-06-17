@@ -5,6 +5,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
+/**
+ * Class Effect
+ */
 public class Effect extends Entity {
 	private final Image[] frames;
 	private final double frameDuration;
@@ -24,7 +27,7 @@ public class Effect extends Entity {
 		this.scaleFactor = scaleFactor;
 		this.frames = new Image[frameCount];
 
-		// slice sprite‐sheet + scaling
+
 		for (int i = 0; i < frameCount; i++) {
 			frames[i] = new WritableImage(
 					spriteSheet.getPixelReader(),
@@ -35,6 +38,9 @@ public class Effect extends Entity {
 	}
 
 	@Override
+	/**
+	 * TODO
+	 */
 	public void update(double dt) {
 		if ( currentFrame >= frames.length ) {
 			GameManager.getInstance().removeEntity(this);
@@ -51,6 +57,9 @@ public class Effect extends Entity {
 	}
 
 	@Override
+	/**
+	 * TODO
+	 */
 	public void render(GraphicsContext gc) {
 		if ( currentFrame < frames.length )
 		{

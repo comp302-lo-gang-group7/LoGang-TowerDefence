@@ -10,6 +10,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Class LevelStorageManagerTest
+ */
 class LevelStorageManagerTest {
     @Test
     void loadKnownLevel() throws Exception {

@@ -5,11 +5,15 @@ import com.example.main.Main;
 import javafx.fxml.FXML;
 
 
+
 /**
- * This is a controller with some methods that are generally used app-wide.
+ * Class Controller
  */
 public class Controller {
     @FXML
+    /**
+     * TODO
+     */
     public void goToHomePage() {
         Main.getViewManager().resizeWindowDefault();
         Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");

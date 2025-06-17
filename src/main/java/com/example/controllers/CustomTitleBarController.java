@@ -7,44 +7,53 @@ import com.example.main.Main;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button; // Added this import for Button
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/**
+ * Class CustomTitleBarController
+ */
 public class CustomTitleBarController implements Initializable {
-    
+
     @FXML
     private HBox titleBar;
-    
+
     @FXML
     private Button minimizeBtn;
-    
+
     @FXML
     private Button closeBtn;
-    
+
     @Override
+    /**
+     * TODO
+     */
     public void initialize(URL location, ResourceBundle resources) {
-        // Make the window draggable by the title bar
+
         setupDraggableWindow();
     }
-    
+
+    /**
+     * TODO
+     */
     private void setupDraggableWindow() {
         titleBar.setOnMousePressed(event -> {
-            // Store initial mouse position
+
             Main.setXOffset(event.getSceneX());
             Main.setYOffset(event.getSceneY());
         });
-        
+
         titleBar.setOnMouseDragged(event -> {
-            // Get the stage from the title bar
+
             Stage stage = (Stage) titleBar.getScene().getWindow();
-            
-            // Move the window by the difference between current mouse position and initial position
+
+
             stage.setX(event.getScreenX() - Main.getXOffset());
             stage.setY(event.getScreenY() - Main.getYOffset());
         });
-        
-        // Add hover effects for buttons
+
+
         titleBar.getChildren().filtered(node -> node instanceof Button).forEach(button -> {
             button.setOnMouseEntered(e -> {
                 if (button == minimizeBtn) {
@@ -55,7 +64,7 @@ public class CustomTitleBarController implements Initializable {
                                    "-fx-font-size: 16px; -fx-padding: 0 8 0 8; -fx-background-radius: 0;");
                 }
             });
-            
+
             button.setOnMouseExited(e -> {
                 if (button == minimizeBtn) {
                     button.setStyle("-fx-background-color: transparent; -fx-text-fill: #e8d9b5; -fx-font-weight: bold; " +
@@ -67,14 +76,20 @@ public class CustomTitleBarController implements Initializable {
             });
         });
     }
-    
+
     @FXML
+    /**
+     * TODO
+     */
     private void minimizeWindow() {
         Stage stage = (Stage) titleBar.getScene().getWindow();
         stage.setIconified(true);
     }
-    
+
     @FXML
+    /**
+     * TODO
+     */
     private void closeWindow() {
         Stage stage = (Stage) titleBar.getScene().getWindow();
         stage.close();

@@ -11,15 +11,24 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Utility to persist star ratings for completed maps. */
+
+/**
+ * Class ProgressStorageManager
+ */
 public class ProgressStorageManager {
+    /**
+     * TODO
+     */
     private static final Path PROGRESS_FILE = Paths.get("cot", "data", "progress.json");
     public static class LevelProgress {
         public int stars;
         public long time;
     }
 
-    /** Load progress file into a map of mapName -> stars. */
+
+    /**
+     * TODO
+     */
     public static Map<String, LevelProgress> loadProgress() {
         ObjectMapper mapper = new ObjectMapper();
         if (Files.exists(PROGRESS_FILE)) {
@@ -28,7 +37,7 @@ public class ProgressStorageManager {
                 if (content.isEmpty()) {
                     return new HashMap<>();
                 }
-                // Support legacy format of Map<String,Integer>
+
                 JsonNode node = mapper.readTree(content);
                 Map<String, LevelProgress> result = new HashMap<>();
                 if (node.isObject()) {
@@ -55,7 +64,10 @@ public class ProgressStorageManager {
 
 
 
-    /** Write the provided progress map to disk. */
+
+    /**
+     * TODO
+     */
     public static void saveProgress(Map<String, LevelProgress> progress) {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -67,8 +79,9 @@ public class ProgressStorageManager {
     }
 
 
+
     /**
-     * Update the rating/time for a map if new values improve the existing ones.
+     * TODO
      */
     public static void recordProgress(String mapName, int stars, long time) {
         if (mapName == null) return;

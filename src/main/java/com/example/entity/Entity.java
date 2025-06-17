@@ -23,22 +23,40 @@ public abstract class Entity {
         return x;
     }
 
+    /**
+     * TODO
+     */
     public Entity( double x, double y, int hp) {
         this.x = x;
         this.y = y;
         this.hp = hp;
     }
 
+    /**
+     * TODO
+     */
     public abstract void update(double dt);
 
+    /**
+     * TODO
+     */
     public abstract void render(GraphicsContext gc);
 
+    /**
+     * TODO
+     */
     public void onClick() {}
 
+    /**
+     * TODO
+     */
     public int getHP() {
         return hp;
     }
 
+    /**
+     * TODO
+     */
     public void applyDamage(int amount) {
         hp -= amount;
     }

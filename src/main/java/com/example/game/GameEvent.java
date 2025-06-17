@@ -1,7 +1,13 @@
 package com.example.game;
 
+/**
+ * Class GameEvent
+ */
 public class GameEvent
 {
+	/**
+	 * Class GameEventType
+	 */
 	public enum GameEventType
 	{
 		START,

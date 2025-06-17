@@ -6,8 +6,9 @@ import javafx.scene.image.Image;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
- * A goblin enemy that animates from a horizontal sprite sheet.
+ * Class Goblin
  */
 public class Goblin extends AnimatedEntity {
     private static final Image SPRITE_SHEET = new Image(
@@ -27,6 +28,9 @@ public class Goblin extends AnimatedEntity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public int modifyDamage(Tower source, int base) {
         if (source instanceof ArcherTower) {
             return (int) Math.round(base * 1.5);

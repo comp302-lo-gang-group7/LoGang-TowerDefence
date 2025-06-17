@@ -9,6 +9,9 @@ import javafx.scene.image.Image;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Class Warrior
+ */
 public class Warrior extends AnimatedEntity {
     private static final Image SPRITE_SHEET = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/enemies/Warrior_Blue.png"))
@@ -37,6 +40,9 @@ public class Warrior extends AnimatedEntity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void update(double dt) {
         GameManager gm = GameManager.getInstance();
         Goblin nearest = gm.nearestGoblin(this);
@@ -63,12 +69,18 @@ public class Warrior extends AnimatedEntity {
     }
 
     @Override
+    /**
+     * TODO
+     */
     public void render(GraphicsContext gc) {
         super.render(gc);
     }
 
 
     @Override
+    /**
+     * TODO
+     */
     public int modifyDamage(Tower source, int base) {
         if (source instanceof ArcherTower) {
             return (int) Math.round(base * 0.5);

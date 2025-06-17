@@ -13,23 +13,35 @@ import javafx.scene.layout.StackPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Class PauseMenuController
+ */
 public class PauseMenuController implements Initializable {
     @FXML private StackPane pauseRoot;
     @FXML private Button resumeBtn, settingsBtn, exitBtn;
-    
-    // Button styling constants
+
+
+    /**
+     * TODO
+     */
     private static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
                                                      "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                                                      "-fx-font-size: 14px; -fx-font-weight: bold; " +
                                                      "-fx-border-color: #8a673c; -fx-border-width: 2; " +
                                                      "-fx-border-radius: 5; -fx-background-radius: 5;";
-    
+
+    /**
+     * TODO
+     */
     private static final String BUTTON_HOVER_STYLE = "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
                                                     "-fx-text-fill: #f5ead9; -fx-font-family: 'Segoe UI'; " +
-                                                    "-fx-font-size: 14px; -fx-font-weight: bold; " + 
+                                                    "-fx-font-size: 14px; -fx-font-weight: bold; " +
                                                     "-fx-border-color: #a07748; -fx-border-width: 2; " +
                                                     "-fx-border-radius: 5; -fx-background-radius: 5;";
-    
+
+    /**
+     * TODO
+     */
     private static final String BUTTON_PRESSED_STYLE = "-fx-background-color: linear-gradient(#422c17, #6b4c2e); " +
                                                       "-fx-text-fill: #d9c9a0; -fx-font-family: 'Segoe UI'; " +
                                                       "-fx-font-size: 14px; -fx-font-weight: bold; " +
@@ -37,36 +49,42 @@ public class PauseMenuController implements Initializable {
                                                       "-fx-border-radius: 5; -fx-background-radius: 5;";
 
     @Override
+    /**
+     * TODO
+     */
     public void initialize(URL location, ResourceBundle resources) {
-        // Apply styling to all buttons
+
         setupButtonEffects(resumeBtn);
-        // setupButtonEffects(settingsBtn);
+
         setupButtonEffects(exitBtn);
     }
 
+    /**
+     * TODO
+     */
     private void setupButtonEffects(Button button) {
-        // Apply initial style
+
         button.setStyle(BUTTON_NORMAL_STYLE);
-        
-        // Hover effect
+
+
         button.setOnMouseEntered(e -> {
             button.setStyle(BUTTON_HOVER_STYLE);
             button.setScaleX(1.05);
             button.setScaleY(1.05);
         });
-        
+
         button.setOnMouseExited(e -> {
             button.setStyle(BUTTON_NORMAL_STYLE);
             button.setScaleX(1.0);
             button.setScaleY(1.0);
         });
-        
-        // Click effect
+
+
         button.setOnMousePressed(e -> {
             button.setStyle(BUTTON_PRESSED_STYLE);
             animateButtonClick(button);
         });
-        
+
         button.setOnMouseReleased(e -> {
             if (button.isHover()) {
                 button.setStyle(BUTTON_HOVER_STYLE);
@@ -80,23 +98,35 @@ public class PauseMenuController implements Initializable {
         });
     }
 
+    /**
+     * TODO
+     */
     private void animateButtonClick(Button button) {
         button.setScaleX(0.95);
         button.setScaleY(0.95);
     }
 
     @FXML
+    /**
+     * TODO
+     */
     public void handleResume(ActionEvent e) {
         GameManager.getInstance().resume();
         ((Pane)pauseRoot.getParent()).getChildren().remove(pauseRoot);
     }
 
     @FXML
+    /**
+     * TODO
+     */
     public void handleSettings(ActionEvent e) {
         Main.getViewManager().switchTo("/com/example/fxml/settings.fxml");
     }
 
     @FXML
+    /**
+     * TODO
+     */
     public void handleExit(ActionEvent e) {
         GameManager.getInstance().stop();
         Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");

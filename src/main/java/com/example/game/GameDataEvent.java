@@ -1,5 +1,8 @@
 package com.example.game;
 
+/**
+ * Class GameDataEvent
+ */
 public class GameDataEvent<T> extends GameEvent
 {
 	public T data;

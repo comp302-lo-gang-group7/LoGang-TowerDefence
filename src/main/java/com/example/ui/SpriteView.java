@@ -7,12 +7,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 
-// Deprecated
+
+/**
+ * Class SpriteView
+ */
 public class SpriteView
 {
+	/**
+	 * TODO
+	 */
 	private final ImageView imageView = new ImageView();
 
-	// Processes Sprite changing the Image.
+
 	private final ChangeListener<Image> imageChangeListener =
 			( _, _, newImage ) -> imageView.setImage(newImage);
 

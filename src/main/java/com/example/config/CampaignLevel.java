@@ -1,6 +1,9 @@
 package com.example.config;
 
-/** Represents a level entry in the campaign map. */
+
+/**
+ * Class CampaignLevel
+ */
 public class CampaignLevel {
     public String name;
     public String description;

@@ -27,10 +27,16 @@ public abstract class Tower extends Entity
 		return range;
 	}
 
+	/**
+	 * TODO
+	 */
 	public void setRange(int range) {
 		this.range = range;
 	}
 
+	/**
+	 * TODO
+	 */
 	public void setAttackCooldown(double cooldown) {
 		this.attackCooldown = cooldown;
 	}
@@ -56,5 +62,8 @@ public abstract class Tower extends Entity
 	}
 
 	@Override
+	/**
+	 * TODO
+	 */
 	public void render( GraphicsContext gc ) {}
 }

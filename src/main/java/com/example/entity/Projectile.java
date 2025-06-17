@@ -10,6 +10,9 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+/**
+ * Class Projectile
+ */
 public class Projectile extends Entity
 {
 
@@ -81,6 +84,9 @@ public class Projectile extends Entity
 	}
 
 	@Override
+	/**
+	 * TODO
+	 */
 	public void update(double dt) {
 		if ( active )
 		{
@@ -100,7 +106,7 @@ public class Projectile extends Entity
 
 					for (AnimatedEntity enemy : GameManager.getInstance().enemiesWithinRadius(x, y, radius)) {
 						if (enemy == target) {
-							// Full damage to primary target
+
 							int dmg = enemy.modifyDamage(parent, baseDmg);
 							enemy.applyDamage(dmg);
 						} else {
@@ -138,6 +144,9 @@ public class Projectile extends Entity
 		gc.restore();
 	}
 
+	/**
+	 * TODO
+	 */
 	private static Image tintImage(Image src, Color tint) {
 		int w = (int) src.getWidth();
 		int h = (int) src.getHeight();

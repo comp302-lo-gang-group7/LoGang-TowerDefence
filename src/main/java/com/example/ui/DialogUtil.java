@@ -20,13 +20,22 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+/**
+ * Class DialogUtil
+ */
 public class DialogUtil {
 
     private static final String TITLE_BAR_STYLE = "-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 0 0 1 0;";
+    /**
+     * TODO
+     */
     private static final String BUTTON_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
             "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-font-weight: bold; " +
             "-fx-border-color: #8a673c; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;";
 
+    /**
+     * TODO
+     */
     public static void showWoodenAlert(String title, String content) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -63,7 +72,7 @@ public class DialogUtil {
         Scene dialogScene = new Scene(root, 400, 200);
         dialogScene.setFill(Color.web("#5d4228"));
 
-        // Custom cursor if desired
+
         try {
             Image cursorImage = new Image(DialogUtil.class.getResourceAsStream("/com/example/assets/ui/01.png"));
             ImageCursor customCursor = new ImageCursor(cursorImage, cursorImage.getWidth() / 2, cursorImage.getHeight() / 2);
@@ -77,6 +86,9 @@ public class DialogUtil {
         dialogStage.showAndWait();
     }
 
+    /**
+     * TODO
+     */
     private static HBox createTitleBar(Stage stage, String title) {
         HBox titleBar = new HBox();
         titleBar.setAlignment(Pos.CENTER_RIGHT);
@@ -99,6 +111,9 @@ public class DialogUtil {
         return titleBar;
     }
 
+    /**
+     * TODO
+     */
     private static void setupDraggableStage(HBox titleBar, Stage stage) {
         final double[] offset = new double[2];
         titleBar.setOnMousePressed(e -> {

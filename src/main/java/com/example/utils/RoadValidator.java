@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.geometry.Point2D;
 
+
 /**
- * Utility class for validating road connections in a tile-based map.
- * This class provides methods to identify disconnected road tiles and validate
- * connections between tiles based on their types and orientations.
+ * Class RoadValidator
  */
 public class RoadValidator {
     private static final int UP = 0;
@@ -17,13 +16,9 @@ public class RoadValidator {
     private static final int DOWN = 2;
     private static final int LEFT = 3;
 
+
     /**
-     * Identifies and returns a list of road tiles that are disconnected from
-     * their adjacent tiles in the given map.
-     *
-     * @param mapTileViews A 2D array of {@link TileView} representing the map.
-     * @return A list of {@link Point2D} objects representing the coordinates of
-     *         disconnected road tiles.
+     * TODO
      */
     public static List<Point2D> findDisconnectedRoads(TileView[][] mapTileViews) {
         List<Point2D> disconnectedRoads = new ArrayList<>();
@@ -74,13 +69,9 @@ public class RoadValidator {
         return disconnectedRoads;
     }
 
+
     /**
-     * Identifies and returns a list of tower tiles that are not adjacent to any path tiles.
-     * Tower tiles must be placed next to a path for gameplay purposes.
-     *
-     * @param mapTileViews A 2D array of {@link TileView} representing the map.
-     * @return A list of {@link Point2D} objects representing the coordinates of
-     *         isolated tower tiles.
+     * TODO
      */
     public static List<Point2D> findIsolatedTowerTiles(TileView[][] mapTileViews) {
         List<Point2D> isolatedTowerTiles = new ArrayList<>();
@@ -90,11 +81,11 @@ public class RoadValidator {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 TileEnum tileType = mapTileViews[row][col].getType();
-                
+
                 if (tileType == TileEnum.EMPTY_TOWER_TILE) {
                     boolean hasAdjacentPath = false;
-                    
-                    // Check all four directions
+
+
                     if (row > 0 && isRoadTile(mapTileViews[row-1][col].getType())) {
                         hasAdjacentPath = true;
                     } else if (col < cols-1 && isRoadTile(mapTileViews[row][col+1].getType())) {
@@ -104,24 +95,20 @@ public class RoadValidator {
                     } else if (col > 0 && isRoadTile(mapTileViews[row][col-1].getType())) {
                         hasAdjacentPath = true;
                     }
-                    
+
                     if (!hasAdjacentPath) {
                         isolatedTowerTiles.add(new Point2D(col, row));
                     }
                 }
             }
         }
-        
+
         return isolatedTowerTiles;
     }
 
+
     /**
-     * Determines if a tile can connect in the specified direction.
-     *
-     * @param tileType  The type of the tile.
-     * @param direction The direction to check (UP, RIGHT, DOWN, LEFT).
-     * @return {@code true} if the tile can connect in the specified direction,
-     *         {@code false} otherwise.
+     * TODO
      */
     private static boolean hasConnectionIn(TileEnum tileType, int direction) {
         String tileName = tileType.name();
@@ -159,14 +146,9 @@ public class RoadValidator {
         return false;
     }
 
+
     /**
-     * Validates if a connection between two tiles is valid in the specified
-     * direction.
-     *
-     * @param sourceTile The type of the source tile.
-     * @param direction  The direction of the connection (UP, RIGHT, DOWN, LEFT).
-     * @param targetTile The type of the target tile.
-     * @return {@code true} if the connection is valid, {@code false} otherwise.
+     * TODO
      */
     private static boolean isValidConnection(TileEnum sourceTile, int direction, TileEnum targetTile) {
         if (TileEnum.CASTLE_TILES.contains(targetTile)) {
@@ -195,11 +177,9 @@ public class RoadValidator {
         }
     }
 
+
     /**
-     * Checks if the given tile is a road tile.
-     *
-     * @param tileType The type of the tile.
-     * @return {@code true} if the tile is a road tile, {@code false} otherwise.
+     * TODO
      */
     public static boolean isRoadTile(TileEnum tileType) {
         String name = tileType.name();

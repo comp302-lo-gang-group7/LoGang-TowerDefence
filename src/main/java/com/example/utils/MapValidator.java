@@ -5,17 +5,15 @@ import com.example.map.TileView;
 import javafx.geometry.Point2D;
 import java.util.*;
 
+
 /**
- * Utility class for validating a game map to ensure it meets all requirements for gameplay.
+ * Class MapValidator
  */
 public class MapValidator {
 
+
     /**
-     * Validates the game map by checking for disconnected roads, start and end points, path connectivity,
-     * and sufficient buildable tower tiles.
-     *
-     * @param mapTileViews The map grid represented as a 2D array of TileView objects.
-     * @return A ValidationResult object containing the validation status and error messages.
+     * TODO
      */
     public static ValidationResult validateMap(TileView[][] mapTileViews) {
         ValidationResult result = new ValidationResult();
@@ -49,11 +47,9 @@ public class MapValidator {
         return result;
     }
 
+
     /**
-     * Finds all potential start points located at the edges of the map.
-     *
-     * @param mapTileViews The map grid represented as a 2D array of TileView objects.
-     * @return A list of Point2D objects representing the start points.
+     * TODO
      */
     private static List<Point2D> findStartPoints(TileView[][] mapTileViews) {
         List<Point2D> startPoints = new ArrayList<>();
@@ -91,11 +87,9 @@ public class MapValidator {
         return startPoints;
     }
 
+
     /**
-     * Finds all potential end points located at the edges of the map.
-     *
-     * @param mapTileViews The map grid represented as a 2D array of TileView objects.
-     * @return A list of Point2D objects representing the end points.
+     * TODO
      */
     private static List<Point2D> findEndPoints(TileView[][] mapTileViews) {
         List<Point2D> endPoints = new ArrayList<>();
@@ -143,13 +137,9 @@ public class MapValidator {
         return endPoints;
     }
 
+
     /**
-     * Checks if a valid path exists between any start point and end point.
-     *
-     * @param mapTileViews The map grid represented as a 2D array of TileView objects.
-     * @param startPoints  A list of start points.
-     * @param endPoints    A list of end points.
-     * @return True if a valid path exists, false otherwise.
+     * TODO
      */
     private static boolean isPathConnected(TileView[][] mapTileViews, List<Point2D> startPoints, List<Point2D> endPoints) {
         int rows = mapTileViews.length;
@@ -174,13 +164,9 @@ public class MapValidator {
         return false;
     }
 
+
     /**
-     * Performs a breadth-first search (BFS) to check if a path exists between start and end points.
-     *
-     * @param grid  The grid representation of the map.
-     * @param start The starting point.
-     * @param end   The ending point.
-     * @return True if a path exists, false otherwise.
+     * TODO
      */
     private static boolean hasPath(int[][] grid, Point2D start, Point2D end) {
         int rows = grid.length;
@@ -224,11 +210,9 @@ public class MapValidator {
         return false;
     }
 
+
     /**
-     * Counts the number of empty lots available for tower building.
-     *
-     * @param mapTileViews The map grid represented as a 2D array of TileView objects.
-     * @return The number of empty lots.
+     * TODO
      */
     private static int countEmptyLots(TileView[][] mapTileViews) {
         int count = 0;
@@ -244,22 +228,18 @@ public class MapValidator {
         return count;
     }
 
+
     /**
-     * Determines if a tile is a road tile.
-     *
-     * @param tileType The type of the tile.
-     * @return True if the tile is a road tile, false otherwise.
+     * TODO
      */
     private static boolean isRoadTile(TileEnum tileType) {
         String name = tileType.name();
         return name.contains("PATH") || name.contains("CORNER");
     }
 
+
     /**
-     * Determines if a tile is a path endpoint (end tiles at the map edge).
-     *
-     * @param tileType The type of the tile.
-     * @return True if the tile is a path endpoint, false otherwise.
+     * TODO
      */
     private static boolean isPathEndpoint(TileEnum tileType) {
         return tileType == TileEnum.HORIZONTAL_LEFT_PATH_END ||
@@ -268,12 +248,9 @@ public class MapValidator {
                tileType == TileEnum.VERTICAL_LOWER_PATH_END;
     }
 
+
     /**
-     * Checks if a tile has a connection in the specified direction.
-     *
-     * @param tileType  The type of the tile.
-     * @param direction The direction to check (0: UP, 1: RIGHT, 2: DOWN, 3: LEFT).
-     * @return True if the tile has a connection in the specified direction, false otherwise.
+     * TODO
      */
     private static boolean hasPathConnection(TileEnum tileType, int direction) {
         switch (tileType) {
@@ -290,64 +267,62 @@ public class MapValidator {
         }
     }
 
-    /**
-     * Represents the result of a map validation, including validation status and error messages.
-     */
+
     public static class ValidationResult {
         private boolean valid = true;
+        /**
+         * TODO
+         */
         private final List<String> errors = new ArrayList<>();
+        /**
+         * TODO
+         */
         private List<Point2D> disconnectedTiles = new ArrayList<>();
 
+
         /**
-         * Adds an error message to the validation result.
-         *
-         * @param error The error message to add.
+         * TODO
          */
         public void addError(String error) {
             valid = false;
             errors.add(error);
         }
 
+
         /**
-         * Checks if the map is valid.
-         *
-         * @return True if the map is valid, false otherwise.
+         * TODO
          */
         public boolean isValid() {
             return valid;
         }
 
+
         /**
-         * Retrieves the list of error messages.
-         *
-         * @return A list of error messages.
+         * TODO
          */
         public List<String> getErrors() {
             return errors;
         }
 
+
         /**
-         * Retrieves the list of disconnected tiles.
-         *
-         * @return A list of disconnected tiles as Point2D objects.
+         * TODO
          */
         public List<Point2D> getDisconnectedTiles() {
             return disconnectedTiles;
         }
 
+
         /**
-         * Sets the list of disconnected tiles.
-         *
-         * @param disconnectedTiles A list of disconnected tiles as Point2D objects.
+         * TODO
          */
         public void setDisconnectedTiles(List<Point2D> disconnectedTiles) {
             this.disconnectedTiles = disconnectedTiles;
         }
 
+
         /**
-         * Retrieves the error messages as a single concatenated string.
-         *
-         * @return A string containing all error messages separated by newlines.
+         * TODO
          */
         public String getErrorMessage() {
             return String.join("\n", errors);

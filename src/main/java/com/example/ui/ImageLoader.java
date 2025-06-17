@@ -3,6 +3,9 @@ package com.example.ui;
 import javafx.scene.image.Image;
 import java.util.HashMap;
 
+/**
+ * Class ImageLoader
+ */
 public class ImageLoader
 {
 	private static HashMap< String, Image > cache;

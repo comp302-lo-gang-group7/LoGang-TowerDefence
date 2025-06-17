@@ -11,29 +11,49 @@ import javafx.scene.image.Image;
 
 import java.util.*;
 
+
 /**
- * Simple animator used on the main menu background. It spawns random
- * enemy sprites and various projectiles that move across the screen
- * purely for visual flair.
+ * Class MainMenuBackgroundAnimator
  */
 public class MainMenuBackgroundAnimator {
     private final Canvas canvas;
     private final GraphicsContext gc;
+    /**
+     * TODO
+     */
     private final List<MenuGoblin> goblins = new ArrayList<>();
+    /**
+     * TODO
+     */
     private final List<MenuWarrior> warriors = new ArrayList<>();
+    /**
+     * TODO
+     */
     private final List<ProjectileSprite> projectiles = new ArrayList<>();
+    /**
+     * TODO
+     */
     private final Random rng = new Random();
     private AnimationTimer timer;
 
+    /**
+     * TODO
+     */
     public MainMenuBackgroundAnimator(Canvas canvas) {
         this.canvas = canvas;
         this.gc = canvas.getGraphicsContext2D();
     }
 
+    /**
+     * TODO
+     */
     public void start() {
         timer = new AnimationTimer() {
             long last = 0;
             @Override
+            /**
+             * TODO
+             */
             public void handle(long now) {
                 if (last == 0) { last = now; return; }
                 double dt = (now - last) / 1e9;
@@ -45,6 +65,9 @@ public class MainMenuBackgroundAnimator {
         timer.start();
     }
 
+    /**
+     * TODO
+     */
     private void update(double dt) {
         if (rng.nextDouble() < dt * 0.5) spawnUnit();
         if (rng.nextDouble() < dt * 0.8) spawnProjectile();
@@ -58,6 +81,9 @@ public class MainMenuBackgroundAnimator {
         projectiles.removeIf(p -> p.isOffscreen(canvas.getWidth(), canvas.getHeight()));
     }
 
+    /**
+     * TODO
+     */
     private void render() {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         goblins.forEach(g -> g.render(gc));
@@ -65,6 +91,9 @@ public class MainMenuBackgroundAnimator {
         projectiles.forEach(p -> p.render(gc));
     }
 
+    /**
+     * TODO
+     */
     private void spawnUnit() {
         double y = 300 + rng.nextDouble() * 250;
         boolean left = rng.nextBoolean();
@@ -83,6 +112,9 @@ public class MainMenuBackgroundAnimator {
         }
     }
 
+    /**
+     * TODO
+     */
     private void spawnProjectile() {
         double startX, startY, endX, endY;
         boolean fromLeft = rng.nextBoolean();
@@ -145,7 +177,7 @@ public class MainMenuBackgroundAnimator {
             boolean movingLeft = dirX < 0;
 
             if (isBomb && movingLeft) {
-                gc.scale(-1, 1);       // flip horizontally before rotation
+                gc.scale(-1, 1);
             }
 
             gc.rotate(angle + spin);

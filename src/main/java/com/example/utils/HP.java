@@ -1,5 +1,8 @@
 package com.example.utils;
 
+/**
+ * Class HP
+ */
 public class HP
 {
 	private int hp;

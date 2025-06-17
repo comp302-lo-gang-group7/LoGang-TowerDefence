@@ -8,17 +8,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
 /**
- * Utility class to persist user settings as JSON. Settings are stored under
- * {@code cot/data/settings.json} within the project.
+ * Class SettingsManager
  */
 public class SettingsManager {
 
+    /**
+     * TODO
+     */
     private static final Path SETTINGS_FILE = Paths.get("cot", "data", "settings.json");
 
-    /**
-     * Data object representing user settings.
-     */
+
     public static class Settings {
         public int musicVolume = 75;
         public int sfxVolume = 100;
@@ -30,9 +31,9 @@ public class SettingsManager {
         public boolean showFps = false;
     }
 
+
     /**
-     * Loads settings from disk. If no settings file exists, defaults are
-     * returned.
+     * TODO
      */
     public static Settings load() {
         ObjectMapper mapper = new ObjectMapper();
@@ -46,8 +47,9 @@ public class SettingsManager {
         return new Settings();
     }
 
+
     /**
-     * Saves the provided settings to disk.
+     * TODO
      */
     public static void save(Settings settings) {
         ObjectMapper mapper = new ObjectMapper();
@@ -59,6 +61,9 @@ public class SettingsManager {
         }
     }
 
-    // prevent instantiation
+
+    /**
+     * TODO
+     */
     private SettingsManager() {}
 }

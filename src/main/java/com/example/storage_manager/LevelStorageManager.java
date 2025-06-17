@@ -9,15 +9,19 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Utility methods for reading level configuration files. */
+
+/**
+ * Class LevelStorageManager
+ */
 public class LevelStorageManager {
+    /**
+     * TODO
+     */
     private static final Path LEVEL_DIRECTORY = Paths.get("cot","data","levels");
 
+
     /**
-     * Loads a level configuration from cot/data/levels.
-     * @param levelName name of the level file without extension
-     * @return parsed LevelConfig
-     * @throws IOException if the file cannot be read
+     * TODO
      */
     public static LevelConfig loadLevel(String levelName) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -28,7 +32,10 @@ public class LevelStorageManager {
         return mapper.readValue(filePath.toFile(), LevelConfig.class);
     }
 
-    /** Lists all available level configuration files without extension. */
+
+    /**
+     * TODO
+     */
     public static List<String> listAvailableLevels() {
         try {
             Files.createDirectories(LEVEL_DIRECTORY);
