@@ -195,6 +195,24 @@ public class GameManager {
         paused = false;
     }
 
+    /**
+     * Returns a list of all enemies within a given radius of the specified
+     * location. The returned list is a snapshot and modifications will not
+     * affect the underlying enemy collection.
+     */
+    public List<AnimatedEntity> enemiesWithinRadius(double x, double y, double radius) {
+        List<AnimatedEntity> hits = new LinkedList<>();
+        for (AnimatedEntity e : enemies) {
+            double dx = e.getX() - x;
+            double dy = e.getY() - y;
+            if (Math.hypot(dx, dy) <= radius) {
+                hits.add(e);
+            }
+        }
+        return hits;
+    }
+
+
     public void setGameSpeed(double multiplier) {
         if (multiplier > 0) {
             this.gameSpeedMultiplier = multiplier;

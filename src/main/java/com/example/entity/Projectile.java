@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.controllers.GameScreenController;
 import com.example.game.GameManager;
 import com.example.ui.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
@@ -93,16 +94,32 @@ public class Projectile extends Entity
 			} else
 			{
 				this.active = false;
-				int dmg = target.modifyDamage(parent, parent.baseDamage);
-				target.applyDamage(dmg);
+				if (parent instanceof ArtilleryTower) {
+					double radius = GameScreenController.TILE_SIZE;
+					int baseDmg = parent.baseDamage;
 
-				if (parent instanceof MageTower m && m.upgradeLevel >= 2 && target instanceof AnimatedEntity a) {
-					a.applySlow(0.8, 4.0);
-				}
-				GameManager.getInstance().removeEntity(this);
+					for (AnimatedEntity enemy : GameManager.getInstance().enemiesWithinRadius(x, y, radius)) {
+						if (enemy == target) {
+							// Full damage to primary target
+							int dmg = enemy.modifyDamage(parent, baseDmg);
+							enemy.applyDamage(dmg);
+						} else {
+							int aoeDmg = (int) (baseDmg / 3.0);
+							int dmg = enemy.modifyDamage(parent, aoeDmg);
+							enemy.applyDamage(dmg);
+						}
+					}
+				} else {
+					int dmg = target.modifyDamage(parent, parent.baseDamage);
+					target.applyDamage(dmg);
 
-				if (parent instanceof MageTower && Math.random() < 0.03 && target.getHP() > 0) {
-					target.resetToStart();
+					if (parent instanceof MageTower m && m.upgradeLevel >= 2 && target instanceof AnimatedEntity a) {
+						a.applySlow(0.8, 4.0);
+					}
+
+					if (parent instanceof MageTower && Math.random() < 0.03 && target.getHP() > 0) {
+						target.resetToStart();
+					}
 				}
 
 				GameManager.getInstance().removeEntity(this);

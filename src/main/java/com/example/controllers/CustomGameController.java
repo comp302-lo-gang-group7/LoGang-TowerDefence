@@ -230,6 +230,7 @@ public class CustomGameController extends Controller implements Initializable {
             try { w = Integer.parseInt(row.warriorsField.getText().trim()); } catch (NumberFormatException ignored) {}
             waves.add(new int[]{g,w});
         }
+        Main.getViewManager().resizeWindow(1024,576);
         Main.getViewManager().switchToGameScreen(mapName, gold, waves);
     }
     
