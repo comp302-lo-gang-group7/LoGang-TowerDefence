@@ -92,7 +92,7 @@ public class VictoryController implements Initializable {
     public void init(int stars) {
         starsBox.getChildren().clear();
         Image starImg = new Image(Objects.requireNonNull(getClass().getResourceAsStream(
-                "/com/example/assets/buttons/Star_Button.png")));
+                "/com/example/assets/ui/star.png")));
         
         // Create star display with animation
         for (int i = 0; i < stars; i++) {

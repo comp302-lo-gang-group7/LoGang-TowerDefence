@@ -18,11 +18,11 @@
         <!-- a) Map layer: base terrain and tiles -->
         <Pane fx:id="mapLayer" />
 
-        <!-- b) Entity layer: moving goblins, warriors -->
-        <Pane fx:id="entityLayer" />
-
-        <!-- ✅ c) Tower layer: this goes LAST to render on top -->
+        <!-- b) Tower layer: this goes LAST to render on top -->
         <Pane fx:id="towerLayer" />
+
+        <!-- c) Entity layer: moving goblins, warriors -->
+        <Pane fx:id="entityLayer" mouseTransparent="true"/>
     </StackPane>
 
     <!-- 2) Top-right menu buttons -->

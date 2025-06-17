@@ -102,7 +102,7 @@ public class CampaignController extends Controller implements Initializable {
 
             LevelProgress lp = progress.get(lvl.levelFile);
             if (lp != null && lp.stars > 0) {
-                Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/buttons/Star_Button.png"));
+                Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/ui/star.png"));
                 HBox stars = new HBox(2);
                 for (int s = 0; s < lp.stars; s++) {
                     ImageView iv = new ImageView(starImg);
@@ -173,7 +173,7 @@ public class CampaignController extends Controller implements Initializable {
         LevelProgress lp = progress.get(lvl.levelFile);
         HBox starBox = new HBox(4);
         if (lp != null && lp.stars > 0) {
-            Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/buttons/Star_Button.png"));
+            Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/ui/star.png"));
             for (int s = 0; s < lp.stars; s++) {
                 ImageView iv = new ImageView(starImg);
                 iv.setFitWidth(20);

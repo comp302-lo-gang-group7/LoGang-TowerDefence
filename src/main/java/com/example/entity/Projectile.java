@@ -63,7 +63,7 @@ public class Projectile extends Entity
 		angle = Math.toDegrees(Math.atan2(dy, dx));
 
 		if (parent instanceof ArtilleryTower) {
-			spinSpeed = 360;
+			spinSpeed = 50;
 		} else {
 			spinSpeed = 0;
 		}

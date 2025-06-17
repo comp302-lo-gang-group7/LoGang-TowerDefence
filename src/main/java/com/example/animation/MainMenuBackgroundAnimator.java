@@ -127,14 +127,14 @@ public class MainMenuBackgroundAnimator {
             this.dirY = dy / mag;
             this.angle = Math.toDegrees(Math.atan2(dy, dx));
             this.isBomb = image.getUrl() != null && image.getUrl().contains("bomb");
-            this.spinSpeed = isBomb ? 360 : 0;
+            this.spinSpeed = isBomb ? 50 : 0;
         }
 
         void update(double dt) {
             x += dirX * speed * dt;
             y += dirY * speed * dt;
             if (isBomb) {
-                spin += spinSpeed * dt;
+                spin += spinSpeed * dt * 0.1;
             }
         }
 
