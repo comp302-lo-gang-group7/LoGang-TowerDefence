@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -11,7 +12,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
 <StackPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.CustomGameController">
@@ -23,12 +23,12 @@
     <BorderPane pickOnBounds="false">
         <top>
             <StackPane>
-                <Rectangle width="800" height="60" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
-                    <effect>
-                        <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
-                    </effect>
-                </Rectangle>
-                <Text fill="#e8f4d9" text="Custom Game Setup" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;">
+            <ImageView fitHeight="62.0" fitWidth="800.0" pickOnBounds="true">
+               <image>
+                  <Image url="@../assets/ui/borderbanner.png" />
+               </image>
+            </ImageView>
+                <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 26px; -fx-font-weight: bold;" text="Custom Game Setup">
                     <effect>
                         <DropShadow color="#00000080" height="3" radius="1" width="3" />
                     </effect>
@@ -40,26 +40,22 @@
         <StackPane>
             <VBox alignment="CENTER" maxWidth="520" spacing="15">
                 <padding>
-                    <Insets top="25" right="25" bottom="25" left="25" />
+                    <Insets bottom="25" left="25" right="25" top="25" />
                 </padding>
                 <ListView fx:id="savedMapsListView" prefHeight="180" prefWidth="480" style="-fx-background-color: #7d5a3c; -fx-border-color: #a07748; -fx-border-width: 2; -fx-control-inner-background: #6b4c2e;" />
                 <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Text text="Starting Gold:" fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;">
+                    <Text fill="#f0e3c8" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 16px; -fx-font-weight: bold;" text="Starting Gold:">
                         <effect>
                             <DropShadow color="#00000080" height="2" radius="1" width="2" />
                         </effect>
                     </Text>
-                    <TextField fx:id="goldInput" promptText="1000" prefWidth="120" style="-fx-background-color: #e8d9b5; -fx-text-fill: #4e331f; -fx-font-size: 14px; -fx-font-family: 'Segoe UI';" />
+                    <TextField fx:id="goldInput" prefWidth="120" promptText="1000" style="-fx-background-color: #e8d9b5; -fx-text-fill: #4e331f; -fx-font-size: 14px; -fx-font-family: 'Segoe UI';" />
                 </HBox>
-                <ScrollPane fx:id="wavesScrollPane" prefHeight="120.0" fitToWidth="true" 
-                    style="-fx-background: #6b4c2e; 
-                           -fx-background-color: #6b4c2e; 
-                           -fx-border-color: #a07748; 
-                           -fx-border-width: 2;">
+                <ScrollPane fx:id="wavesScrollPane" fitToWidth="true" prefHeight="120.0" style="-fx-background: #6b4c2e;                             -fx-background-color: #6b4c2e;                             -fx-border-color: #a07748;                             -fx-border-width: 2;">
                     <content>
                         <VBox fx:id="wavesBox" spacing="10" style="-fx-background-color: #6b4c2e; -fx-padding: 10;">
                             <padding>
-                                <Insets top="5" right="5" bottom="5" left="5" />
+                                <Insets bottom="5" left="5" right="5" top="5" />
                             </padding>
                         </VBox>
                     </content>
@@ -91,8 +87,8 @@
                     </style>
                 </ScrollPane>
                 <HBox alignment="CENTER" spacing="10">
-                    <Button fx:id="addWaveBtn" text="Add Wave" onAction="#addWave" prefWidth="120" prefHeight="30" />
-                    <Button fx:id="removeWaveBtn" text="Remove Wave" onAction="#removeWave" prefWidth="120" prefHeight="30" />
+                    <Button fx:id="addWaveBtn" onAction="#addWave" prefHeight="30" prefWidth="120" text="Add Wave" />
+                    <Button fx:id="removeWaveBtn" onAction="#removeWave" prefHeight="30" prefWidth="120" text="Remove Wave" />
                 </HBox>
                 <HBox alignment="CENTER" spacing="30">
                     <Button fx:id="homeBtn" onAction="#goToHomePage" prefHeight="40" prefWidth="160" text="Back to Home" />
@@ -104,34 +100,26 @@
     <BorderPane pickOnBounds="false">
         <bottom>
             <StackPane>
-                <Rectangle width="800" height="40" style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
-                    <effect>
-                        <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
-                    </effect>
-                </Rectangle>
+            <ImageView fitHeight="291.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../assets/ui/borderbanner.png" />
+               </image>
+            </ImageView>
             </StackPane>
         </bottom>
     </BorderPane>
     <BorderPane pickOnBounds="false">
         <top>
-            <StackPane alignment="TOP_LEFT">
-                <Rectangle width="40" height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            </StackPane>
+            <StackPane alignment="TOP_LEFT" />
         </top>
         <right>
-            <StackPane alignment="TOP_RIGHT">
-                <Rectangle width="40" height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            </StackPane>
+            <StackPane alignment="TOP_RIGHT" />
         </right>
         <left>
-            <StackPane alignment="BOTTOM_LEFT">
-                <Rectangle width="40" height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            </StackPane>
+            <StackPane alignment="BOTTOM_LEFT" />
         </left>
         <bottom>
-            <StackPane alignment="BOTTOM_RIGHT">
-                <Rectangle width="40" height="40" style="-fx-fill: #6b4c2e; -fx-stroke: #8a673c; -fx-stroke-width: 2;" />
-            </StackPane>
+            <StackPane alignment="BOTTOM_RIGHT" />
         </bottom>
     </BorderPane>
 </StackPane>

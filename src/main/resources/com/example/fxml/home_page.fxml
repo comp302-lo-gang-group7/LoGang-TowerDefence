@@ -29,7 +29,7 @@
    <BorderPane pickOnBounds="false">
       <top>
          <StackPane>
-            <ImageView fitHeight="84.0" fitWidth="801.0" pickOnBounds="true" StackPane.alignment="TOP_CENTER">
+            <ImageView fitHeight="62.0" fitWidth="800.0" pickOnBounds="true" StackPane.alignment="TOP_CENTER">
                <image>
                   <Image url="@../assets/ui/borderbanner.png" />
                </image>
