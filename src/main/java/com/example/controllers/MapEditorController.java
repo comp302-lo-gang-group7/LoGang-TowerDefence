@@ -1340,10 +1340,10 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
                         "A map called \"" + name + "\" already exists.", null, this);
             } else {
                 // Save an empty grid
+                clearGrid();
                 MapStorageManager.saveMap(mapTileViews, MAP_ROWS, MAP_COLS, name);
                 refreshMapList();
                 mapSelectionCombo.setValue(name);
-                clearGrid();  // Reset all tiles to grass
                 dialogStage.close();
             }
         });

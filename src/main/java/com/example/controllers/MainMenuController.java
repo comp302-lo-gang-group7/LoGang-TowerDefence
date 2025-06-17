@@ -211,8 +211,7 @@ public class MainMenuController extends Controller implements Initializable {
 
     @FXML
     public void goToCustomGamePage() {
-        System.out.println("Custom Game Started (Placeholder)");
-        // Logic to start custom game
+        System.out.println("Custom Game Started");
         Main.getViewManager().switchTo("/com/example/fxml/custom_game_page.fxml");
     }
 

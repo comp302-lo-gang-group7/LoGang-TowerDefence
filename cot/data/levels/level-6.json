@@ -1,0 +1,11 @@
+{
+  "mapName": "levels/level-6",
+  "startingGold": 550,
+  "lives": 10,
+  "waves": [
+    { "group": { "goblins": 3, "warriors": 4, "delayAfter": 3 } },
+    { "group": { "goblins": 6, "warriors": 3, "delayAfter": 3 } },
+    { "group": { "goblins": 2, "warriors": 6, "delayAfter": 2 } },
+    { "group": { "goblins": 0, "warriors": 8, "delayAfter": 2 } }
+  ]
+}

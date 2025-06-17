@@ -1,6 +1,26 @@
 {
-  "Campaign Training" : {
+  "level-1" : {
     "stars" : 2,
-    "time" : 29
+    "time" : 21
+  },
+  "Forest Path" : {
+    "stars" : 3,
+    "time" : 7
+  },
+  "level-2" : {
+    "stars" : 2,
+    "time" : 45
+  },
+  "level-3" : {
+    "stars" : 2,
+    "time" : 51
+  },
+  "level-4" : {
+    "stars" : 2,
+    "time" : 90
+  },
+  "campaign-bottom" : {
+    "stars" : 3,
+    "time" : 4
   }
 }

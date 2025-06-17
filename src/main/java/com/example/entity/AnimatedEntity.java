@@ -4,6 +4,9 @@ import com.example.ui.ImageLoader;
 import com.example.utils.Point;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import javafx.scene.image.WritableImage;
 
 import java.util.List;
@@ -16,6 +19,7 @@ public class AnimatedEntity extends Entity {
     private double speedModifier = 1.0;
     private double slowTimer = 0;
     private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
+    protected final Deque<Image> effectStack = new ArrayDeque<>();
     
     // path + movement
     private final List<Point> path;
@@ -70,6 +74,7 @@ public class AnimatedEntity extends Entity {
                 slowTimer -= dt;
                 if (slowTimer <= 0) {
                     speedModifier = 1.0;
+                    effectStack.remove(SNOWFLAKE);
                 }
             }
 
@@ -149,6 +154,9 @@ public class AnimatedEntity extends Entity {
     public void applySlow(double factor, double duration) {
         if (slowTimer <= 0) {
             speedModifier = factor;
+            if (SNOWFLAKE != null && !effectStack.contains(SNOWFLAKE)) {
+                effectStack.addLast(SNOWFLAKE);
+            }
         }
         slowTimer = duration;
     }
@@ -180,12 +188,13 @@ public class AnimatedEntity extends Entity {
         gc.setFill(javafx.scene.paint.Color.web("#33cc33"));
         gc.fillRoundRect(barX, barY, filledWidth, barHeight, barHeight, barHeight);
 
-        double iconSize = 10;
-        double iconX = drawX + (spriteWidth * 0.8) - iconSize;
-        double iconY = drawY + (spriteHeight * 0.75) - iconSize;
-
-        if (speedModifier < 1.0 && SNOWFLAKE != null) {
-            gc.drawImage(SNOWFLAKE, iconX + 10, iconY, iconSize, iconSize);
+        double iconSize = 15;
+        double stackX = barX;
+        double stackY = barY - iconSize - 2;
+        List<Image> icons = new ArrayList<>(effectStack);
+        for (Image icon : icons) {
+            gc.drawImage(icon, stackX, stackY, iconSize, iconSize);
+            stackX += iconSize + 2;
         }
     }
 

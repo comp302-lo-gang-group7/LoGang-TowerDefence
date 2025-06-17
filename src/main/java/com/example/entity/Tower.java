@@ -31,6 +31,10 @@ public abstract class Tower extends Entity
 		this.range = range;
 	}
 
+	public void setAttackCooldown(double cooldown) {
+		this.attackCooldown = cooldown;
+	}
+
 	@Override
 	public void update( double dt )
 	{

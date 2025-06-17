@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -7,20 +7,15 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Rectangle?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.controllers.HowToPlayController"
-           prefWidth="800.0" prefHeight="600.0">
+<StackPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controllers.HowToPlayController">
 
    <!-- Background with grass image -->
    <StackPane>
-      <ImageView fitWidth="800" fitHeight="600" preserveRatio="false">
+      <ImageView fitHeight="600" fitWidth="800" preserveRatio="false">
          <image>
             <Image url="@../assets/home_page_grass.png" />
          </image>
@@ -31,68 +26,52 @@
    <BorderPane>
       <!-- Header bar -->
       <top>
-         <StackPane fx:id="headerBar" onMousePressed="#onHeaderBarPressed" onMouseDragged="#onHeaderBarDragged">
-            <Rectangle width="800" height="60"
-                     style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
-               <effect>
-                  <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
-               </effect>
-            </Rectangle>
+         <StackPane fx:id="headerBar" onMouseDragged="#onHeaderBarDragged" onMousePressed="#onHeaderBarPressed">
 
-            <Text fill="#e8f4d9" text="How To Play"
-                 style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;">
+            <Text fill="#e8f4d9" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 32px; -fx-font-weight: bold;" text="How To Play">
                <effect>
                   <DropShadow color="#00000080" height="5" radius="2" width="5" />
                </effect>
             </Text>
+            <ImageView fitHeight="68.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_CENTER">
+               <image>
+                  <Image url="@../assets/ui/borderbanner.png" />
+               </image>
+            </ImageView>
          </StackPane>
       </top>
 
       <!-- Main content -->
       <center>
          <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
-            <VBox spacing="16" maxWidth="700" style="-fx-padding: 20 20 20 20;">
+            <VBox maxWidth="700" spacing="16" style="-fx-padding: 20 20 20 20;">
                <!-- Game Objective Section -->
-               <Label text="GAME OBJECTIVE" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="Defend your territory by strategically placing towers to prevent enemies from reaching your base. Defeat waves of incoming enemies by using different tower types, each with unique abilities and strengths."
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="GAME OBJECTIVE" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="Defend your territory by strategically placing towers to prevent enemies from reaching your base. Defeat waves of incoming enemies by using different tower types, each with unique abilities and strengths." wrappingWidth="640" />
 
                <!-- Basic Controls Section -->
-               <Label text="BASIC CONTROLS" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="• Left-Click: Select towers, place towers, upgrade towers&#10;• Right-Click: Cancel selection&#10;• Mouse Over: View tower range and information"
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="BASIC CONTROLS" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="• Left-Click: Select towers, place towers, upgrade towers&#10;• Right-Click: Cancel selection&#10;• Mouse Over: View tower range and information" wrappingWidth="640" />
 
                <!-- Game Resources Section -->
-               <Label text="GAME RESOURCES" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="• Gold: Used to build and upgrade towers. Earned by defeating enemies.&#10;• Lives: You start with a limited number of lives. Each enemy that reaches your base takes away one life. When all lives are lost, the game ends."
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="GAME RESOURCES" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="• Gold: Used to build and upgrade towers. Earned by defeating enemies.&#10;• Lives: You start with a limited number of lives. Each enemy that reaches your base takes away one life. When all lives are lost, the game ends." wrappingWidth="640" />
 
                <!-- Towers Section -->
-               <Label text="TOWERS" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="• Archer Tower: Basic tower with balanced attack speed and damage.&#10;• Cannon Tower: Deals area damage but has a slower attack speed.&#10;• Ice Tower: Slows down enemies within its range.&#10;• Magic Tower: High damage against single targets, ignores armor.&#10;&#10;Each tower can be upgraded to increase its damage, range, or special abilities."
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="TOWERS" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="• Archer Tower: Basic tower with balanced attack speed and damage.&#10;• Cannon Tower: Deals area damage but has a slower attack speed.&#10;• Ice Tower: Slows down enemies within its range.&#10;• Magic Tower: High damage against single targets, ignores armor.&#10;&#10;Each tower can be upgraded to increase its damage, range, or special abilities." wrappingWidth="640" />
 
                <!-- Enemies Section -->
-               <Label text="ENEMIES" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="• Goblins: Fast but weak enemies.&#10;• Orcs: Medium health and speed.&#10;• Trolls: Slow but high health.&#10;• Boss Enemies: Appear at the end of certain waves, extremely tough.&#10;&#10;Some enemies may have special abilities like armor or resistance to certain tower types."
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="ENEMIES" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="• Goblins: Fast but weak enemies.&#10;• Orcs: Medium health and speed.&#10;• Trolls: Slow but high health.&#10;• Boss Enemies: Appear at the end of certain waves, extremely tough.&#10;&#10;Some enemies may have special abilities like armor or resistance to certain tower types." wrappingWidth="640" />
 
                <!-- Wave System Section -->
-               <Label text="WAVE SYSTEM" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="Enemies come in waves. Each wave gets progressively harder with stronger and more numerous enemies. Between waves, you have time to build or upgrade your defenses."
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="WAVE SYSTEM" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="Enemies come in waves. Each wave gets progressively harder with stronger and more numerous enemies. Between waves, you have time to build or upgrade your defenses." wrappingWidth="640" />
 
                <!-- Strategy Tips Section -->
-               <Label text="STRATEGY TIPS" textFill="#f2f3f1" style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" />
-               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;"
-                     text="• Place towers at choke points where enemies must pass.&#10;• Mix different tower types to counter various enemies.&#10;• Slow enemies with Ice Towers, then damage them with other towers.&#10;• Focus on upgrading key towers rather than building many basic towers.&#10;• Save some gold for emergency towers during tough waves."
-                     wrappingWidth="640" />
+               <Label style="-fx-font-family: 'Segoe UI'; -fx-font-weight: bold; -fx-font-size: 18px;" text="STRATEGY TIPS" textFill="#f2f3f1" />
+               <Text fill="#e7e6e1" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14px;" text="• Place towers at choke points where enemies must pass.&#10;• Mix different tower types to counter various enemies.&#10;• Slow enemies with Ice Towers, then damage them with other towers.&#10;• Focus on upgrading key towers rather than building many basic towers.&#10;• Save some gold for emergency towers during tough waves." wrappingWidth="640" />
             </VBox>
          </ScrollPane>
       </center>
@@ -100,14 +79,12 @@
       <!-- Bottom bar with back button -->
       <bottom>
          <StackPane>
-            <Rectangle width="800" height="80"
-                     style="-fx-fill: #5d7542; -fx-arc-width: 0; -fx-arc-height: 0;">
-               <effect>
-                  <DropShadow color="#00000080" height="10" radius="4.5" width="10" />
-               </effect>
-            </Rectangle>
-            <Button fx:id="homeBtn" text="Back to Home" prefWidth="200" prefHeight="40"
-                   onAction="#goToHomePage" />
+            <ImageView fitHeight="84.0" fitWidth="800.0" pickOnBounds="true" StackPane.alignment="BOTTOM_CENTER">
+               <image>
+                  <Image url="@../assets/ui/borderbanner.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="homeBtn" onAction="#goToHomePage" prefHeight="40" prefWidth="200" text="Back to Home" />
          </StackPane>
       </bottom>
    </BorderPane>

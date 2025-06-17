@@ -6,9 +6,11 @@ import com.example.main.Main;
 import com.example.storage_manager.CampaignStorageManager;
 import com.example.storage_manager.LevelStorageManager;
 import com.example.storage_manager.MapStorageManager;
+import com.example.utils.MapEditorUtils;
 import com.example.storage_manager.ProgressStorageManager;
 import com.example.storage_manager.ProgressStorageManager.LevelProgress;
 import com.example.map.TileView;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -47,37 +49,17 @@ public class CampaignController extends Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        setupButtonEffects(backBtn);
         levels = CampaignStorageManager.loadCampaign();
         progress = ProgressStorageManager.loadProgress();
 
         // load background maps
         int tileSize = 64;
-        int bottomHeight = renderMap("campaign-bottom", bottomMap, tileSize);
-        int topHeight = renderMap("campaign-top", topMap, tileSize);
-        topMap.setLayoutY(bottomHeight);
-        mapContainer.setPrefWidth(bottomMap.getPrefWidth());
-        mapContainer.setPrefHeight(bottomHeight + topHeight);
-
-        boolean allComplete = true;
-        for (CampaignLevel l : levels) {
-            if (!progress.containsKey(l.levelFile)) {
-                allComplete = false;
-                break;
-            }
-        }
-        if (!allComplete) {
-            topMap.setVisible(false);
-            scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        } else {
-            scrollPane.setOnScroll(ev -> {
-                if (ev.getDeltaY() < 0) {
-                    scrollPane.setVvalue(1.0);
-                } else {
-                    scrollPane.setVvalue(0.0);
-                }
-                ev.consume();
-            });
-        }
+        int topHeight = renderMap("campaign/campaign-top", topMap, tileSize);
+        int bottomHeight = renderMap("campaign/campaign-bottom", bottomMap, tileSize);
+        bottomMap.setLayoutY(topHeight);
+        mapContainer.setPrefWidth(topMap.getPrefWidth());
+        mapContainer.setPrefHeight(topHeight + bottomHeight);
 
         for (int i = 0; i < levels.size(); i++) {
             CampaignLevel lvl = levels.get(i);
@@ -97,12 +79,53 @@ public class CampaignController extends Controller implements Initializable {
 
             btn.setOnAction(e -> showLevelDialog(lvl, btn));
             mapContainer.getChildren().add(btn);
+
+            LevelProgress lp = progress.get(lvl.levelFile);
+            if (lp != null && lp.stars > 0) {
+                Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/ui/star.png"));
+                HBox stars = new HBox(2);
+                for (int s = 0; s < lp.stars; s++) {
+                    ImageView iv = new ImageView(starImg);
+                    iv.setFitWidth(12);
+                    iv.setFitHeight(12);
+                    stars.getChildren().add(iv);
+                }
+                stars.setLayoutX(btn.getLayoutX() + iconSize / 2.0 - lp.stars * 6);
+                stars.setLayoutY(btn.getLayoutY() - 14);
+                mapContainer.getChildren().add(stars);
+                Platform.runLater(() -> scrollPane.setVvalue(1.0));
+            }
         }
     }
 
     @FXML
     private void handleBack() {
         goToHomePage();
+    }
+
+
+    private void setupButtonEffects(Button button) {
+        button.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
+        button.setOnMouseEntered(e -> {
+            button.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE);
+            button.setScaleX(1.05);
+            button.setScaleY(1.05);
+        });
+        button.setOnMouseExited(e -> {
+            button.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
+            button.setScaleX(1.0);
+            button.setScaleY(1.0);
+        });
+        button.setOnMousePressed(e -> {
+            button.setStyle(MapEditorUtils.BUTTON_PRESSED_STYLE);
+        });
+        button.setOnMouseReleased(e -> {
+            if (button.isHover()) {
+                button.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE);
+            } else {
+                button.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
+            }
+        });
     }
 
     private void showLevelDialog(CampaignLevel lvl, Button sourceBtn) {
@@ -131,7 +154,7 @@ public class CampaignController extends Controller implements Initializable {
         LevelProgress lp = progress.get(lvl.levelFile);
         HBox starBox = new HBox(4);
         if (lp != null && lp.stars > 0) {
-            Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/buttons/Star_Button.png"));
+            Image starImg = new Image(getClass().getResourceAsStream("/com/example/assets/ui/star.png"));
             for (int s = 0; s < lp.stars; s++) {
                 ImageView iv = new ImageView(starImg);
                 iv.setFitWidth(20);
@@ -160,17 +183,19 @@ public class CampaignController extends Controller implements Initializable {
         }
 
         Button start = new Button("Start");
+        setupButtonEffects(start);
         start.setOnAction(ev -> {
             dialog.close();
             try {
                 LevelConfig lconfig = LevelStorageManager.loadLevel(lvl.levelFile);
-                Main.getViewManager().switchToGameScreen(lconfig);
+                Main.getViewManager().switchToGameScreen(lconfig, lvl.levelFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         });
 
         Button close = new Button("Close");
+        setupButtonEffects(close);
         close.setOnAction(ev -> dialog.close());
 
         root.getChildren().addAll(name, desc, starBox, info, start, close);

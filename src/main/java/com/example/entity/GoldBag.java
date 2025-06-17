@@ -13,13 +13,16 @@ public class GoldBag extends Entity {
 
     private static final int FRAME_WIDTH = 64;
     private static final int FRAME_HEIGHT = 64;
-    private static final double SCALE = 0.7;
-    private static final double SWITCH_INTERVAL = 1.0;
+    private static final double SCALE = 0.55;
 
     private final int amount;
     private double timer = 1000.0;
-    private double animTimer = 0.0;
-    private int frameIndex = 0;
+
+    private static final WritableImage STATIC_FRAME = new WritableImage(
+            SPRITE_SHEET.getPixelReader(),
+            0, 0, // Only use frame 0
+            FRAME_WIDTH, FRAME_HEIGHT
+    );
 
     public GoldBag(double x, double y, int amount) {
         super(x, y, 1);
@@ -28,12 +31,6 @@ public class GoldBag extends Entity {
 
     @Override
     public void update(double dt) {
-        animTimer += dt;
-        if (animTimer >= SWITCH_INTERVAL) {
-            animTimer = 0;
-            frameIndex = (frameIndex + 1) % 2; // toggle between 0 and 1
-        }
-
         timer -= dt;
         if (timer <= 0) {
             GameManager.getInstance().removeEntity(this);
@@ -42,19 +39,12 @@ public class GoldBag extends Entity {
 
     @Override
     public void render(GraphicsContext gc) {
-        // Extract current frame from spritesheet
-        WritableImage frame = new WritableImage(
-                SPRITE_SHEET.getPixelReader(),
-                frameIndex * FRAME_WIDTH, 0,
-                FRAME_WIDTH, FRAME_HEIGHT
-        );
-
         double drawWidth = FRAME_WIDTH * SCALE;
         double drawHeight = FRAME_HEIGHT * SCALE;
         double drawX = x - drawWidth / 2;
         double drawY = y - drawHeight / 2;
 
-        gc.drawImage(frame, drawX, drawY, drawWidth, drawHeight);
+        gc.drawImage(STATIC_FRAME, drawX, drawY, drawWidth, drawHeight);
     }
 
     @Override

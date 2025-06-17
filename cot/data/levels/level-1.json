@@ -1,5 +1,5 @@
 {
-  "mapName": "level-1",
+  "mapName": "levels/level-1",
   "startingGold": 1000,
   "lives": 20,
   "waves": [

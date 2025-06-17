@@ -2,9 +2,7 @@ package com.example.entity;
 
 import com.example.controllers.GameScreenController;
 import com.example.game.GameManager;
-import com.example.ui.ImageLoader;
 import com.example.utils.Point;
-import com.example.entity.Goblin;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
@@ -24,7 +22,6 @@ public class Warrior extends AnimatedEntity {
     private static final Image THUNDER_ICON = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/effects/thunder.png"))
     );
-    private static final Image SNOWFLAKE = ImageLoader.getImage("/com/example/assets/effects/snowflake.png");
 
     private static final double GOBLIN_SPEED = 50;
 
@@ -50,10 +47,16 @@ public class Warrior extends AnimatedEntity {
         }
 
         if (close) {
+            if (!speedBoost && !effectStack.contains(THUNDER_ICON)) {
+                effectStack.addLast(THUNDER_ICON);
+            }
             speedBoost = true;
             double boosted = (baseSpeed + GOBLIN_SPEED) / 2.0;
             super.update(dt * boosted / baseSpeed);
         } else {
+            if (speedBoost) {
+                effectStack.remove(THUNDER_ICON);
+            }
             speedBoost = false;
             super.update(dt);
         }
@@ -62,30 +65,6 @@ public class Warrior extends AnimatedEntity {
     @Override
     public void render(GraphicsContext gc) {
         super.render(gc);
-
-        double spriteWidth = getSpriteWidth();
-        double spriteHeight = getSpriteHeight();
-        double drawX = getX() - spriteWidth / 2;
-        double drawY = getY() - spriteHeight / 2;
-
-        double iconSize = 10;
-        double baseIconY = drawY + spriteHeight * 0.75 - iconSize;
-        double baseIconX = drawX + spriteWidth - iconSize;
-
-        int iconOffset = 0;
-
-        // Draw thunder icon if boosting
-        if (speedBoost) {
-            double iconX = baseIconX - iconOffset;
-            gc.drawImage(THUNDER_ICON, iconX, baseIconY, iconSize, iconSize);
-            iconOffset += iconSize + 2; // add spacing
-        }
-
-        // Draw snowflake icon if slowed
-        if (getSpeedModifier() < 1.0) {
-            double iconX = baseIconX - iconOffset;
-            gc.drawImage(SNOWFLAKE, iconX, baseIconY, iconSize, iconSize);
-        }
     }
 
 

@@ -4,34 +4,55 @@
     "description": "Goblins gather in the distant woods—prepare for their approach.",
     "levelFile": "level-1",
     "col": 4,
-    "row": 8
+    "row": 17
   },
   {
     "name": "Midtown Skirmish",
-    "description": "Hold the line along the jungle's edge as enemy forces advance.",
+    "description": "Hold the line along the Town's edge as enemy forces advance.",
     "levelFile": "level-2",
     "col": 8,
-    "row": 6
+    "row": 15
   },
   {
     "name": "Snakehead Road",
     "description": "Enemies stalk the winding path—guard every step.",
     "levelFile": "level-3",
     "col": 11,
-    "row": 5
+    "row": 14
   },
   {
     "name": "Jungle Skirmish",
     "description": "Clashes erupt deep within the undergrowth—stay sharp.",
     "levelFile": "level-4",
     "col": 12,
-    "row": 3
+    "row": 12
   },
   {
     "name": "Guerilla Forest",
     "description": "Ambushes await beneath the canopy—defend with precision.",
     "levelFile": "level-5",
     "col": 8,
+    "row": 11
+  },
+  {
+    "name": "Mountain Pass",
+    "description": "The enemy strikes swiftly through narrow terrain—hold your ground.",
+    "levelFile": "level-6",
+    "col": 7,
+    "row": 6
+  },
+  {
+    "name": "Ruined Outpost",
+    "description": "Defend what's left of a fallen bastion—resources are scarce.",
+    "levelFile": "level-7",
+    "col": 8,
+    "row": 4
+  },
+  {
+    "name": "Last Stand",
+    "description": "This is it—the enemy’s full force descends. You must not fall.",
+    "levelFile": "level-8",
+    "col": 7,
     "row": 2
   }
 ]
