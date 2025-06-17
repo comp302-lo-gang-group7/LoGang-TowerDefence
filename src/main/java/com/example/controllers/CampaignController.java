@@ -54,8 +54,8 @@ public class CampaignController extends Controller implements Initializable {
 
         // load background maps
         int tileSize = 64;
-        int bottomHeight = renderMap("campaign-bottom", bottomMap, tileSize);
-        int topHeight = renderMap("campaign-top", topMap, tileSize);
+        int bottomHeight = renderMap("campaign/campaign-bottom", bottomMap, tileSize);
+        int topHeight = renderMap("campaign/campaign-top", topMap, tileSize);
         topMap.setLayoutY(bottomHeight);
         mapContainer.setPrefWidth(bottomMap.getPrefWidth());
         mapContainer.setPrefHeight(bottomHeight + topHeight);

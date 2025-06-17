@@ -41,18 +41,21 @@ public class TileModel {
 			{
 				tower = new ArcherTower(x, y, hpValue, damage, cost, upgradeLevel);
 				tower.setRange(range);
+				tower.setAttackCooldown(upgradeLevel >= 2 ? 0.25 : 0.5);
 				break;
 			}
 			case MAGE_TOWER:
 			{
 				tower = new MageTower(x, y, hpValue, damage, cost, upgradeLevel);
 				tower.setRange(range);
+				tower.setAttackCooldown(0.5);
 				break;
 			}
 			case ARTILLERY_TOWER:
 			{
 				tower = new ArtilleryTower(x, y, hpValue, damage, cost, upgradeLevel);
 				tower.setRange(range);
+				tower.setAttackCooldown(0.5);
 				break;
 			}
 			default:

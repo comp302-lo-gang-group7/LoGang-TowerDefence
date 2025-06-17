@@ -4,6 +4,10 @@ import com.example.game.GameManager;
 import com.example.ui.ImageLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.paint.Color;
 
 public class Projectile extends Entity
 {
@@ -29,15 +33,20 @@ public class Projectile extends Entity
 		{
 			case ArcherTower _:
 				image = ImageLoader.getImage("/com/example/assets/effects/arrow.png");
-				scaleFactor = 0.2;
+				scaleFactor = 0.15;
 				break;
-			case MageTower _:
-				image = ImageLoader.getImage("/com/example/assets/effects/spell.png");
-				scaleFactor = 0.3;
+			case MageTower m:
+				Image base = ImageLoader.getImage("/com/example/assets/effects/spell.png");
+				if (m.upgradeLevel >= 2) {
+					image = tintImage(base, Color.CYAN);
+				} else {
+					image = base;
+				}
+				scaleFactor = 0.25;
 				break;
 			case ArtilleryTower _:
 				image = ImageLoader.getImage("/com/example/assets/effects/bomb.png");
-				scaleFactor = 0.2;
+				scaleFactor = 0.15;
 				break;
 			default:
 				image = null;
@@ -102,7 +111,6 @@ public class Projectile extends Entity
 		}
 	}
 
-	@Override
 	public void render( GraphicsContext gc )
 	{
 		gc.save();
@@ -111,5 +119,28 @@ public class Projectile extends Entity
 		gc.scale(scaleFactor, scaleFactor);
 		gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
 		gc.restore();
+	}
+
+	private static Image tintImage(Image src, Color tint) {
+		int w = (int) src.getWidth();
+		int h = (int) src.getHeight();
+		WritableImage out = new WritableImage(w, h);
+		PixelReader pr = src.getPixelReader();
+		PixelWriter pw = out.getPixelWriter();
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				int argb = pr.getArgb(x, y);
+				int a = (argb >> 24) & 0xFF;
+				int r = (argb >> 16) & 0xFF;
+				int g = (argb >> 8) & 0xFF;
+				int b = argb & 0xFF;
+				r = (int) Math.min(255, r * tint.getRed());
+				g = (int) Math.min(255, g * tint.getGreen());
+				b = (int) Math.min(255, b * tint.getBlue());
+				int outArgb = (a << 24) | (r << 16) | (g << 8) | b;
+				pw.setArgb(x, y, outArgb);
+			}
+		}
+		return out;
 	}
 }
