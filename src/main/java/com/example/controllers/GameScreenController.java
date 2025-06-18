@@ -205,22 +205,78 @@ public class GameScreenController extends Controller {
 	}
 
 	private void showBuildMenu(int tileX, int tileY, double sx, double sy) {
-		List<Option> opts = new ArrayList<>();
-		opts.add(new Option("Archer", () -> constructTower(tileX, tileY, TileEnum.ARCHERY_TOWER), "/com/example/assets/buttons/Archer_Tower_Button.png"));
-		opts.add(new Option("Mage", () -> constructTower(tileX, tileY, TileEnum.MAGE_TOWER), "/com/example/assets/buttons/Spell_Tower_Button.png"));
-		opts.add(new Option("Artillery", () -> constructTower(tileX, tileY, TileEnum.ARTILLERY_TOWER), "/com/example/assets/buttons/Bomb_Tower_Button.png"));
-		showRadialMenu(tileX, tileY, opts);
+    List<Option> opts = new ArrayList<>();
+    
+    // Check if player can afford each tower type
+    boolean canAffordArcher = playerState.getGold() >= 100;
+    boolean canAffordMage = playerState.getGold() >= 120;
+    boolean canAffordArtillery = playerState.getGold() >= 140;
+    
+    opts.add(new Option("Archer", () -> constructTower(tileX, tileY, TileEnum.ARCHERY_TOWER), 
+            "/com/example/assets/buttons/Archer_Tower_Button.png", canAffordArcher));
+    opts.add(new Option("Mage", () -> constructTower(tileX, tileY, TileEnum.MAGE_TOWER), 
+            "/com/example/assets/buttons/Spell_Tower_Button.png", canAffordMage));
+    opts.add(new Option("Artillery", () -> constructTower(tileX, tileY, TileEnum.ARTILLERY_TOWER), 
+            "/com/example/assets/buttons/Bomb_Tower_Button.png", canAffordArtillery));
+            
+    showRadialMenu(tileX, tileY, opts);
+	
+}
+
+	private void sellTower(int x, int y) {
+		Tile tile = tiles[y][x];
+		TileView newView = renderer.createTileView(TileEnum.EMPTY_TOWER_TILE);
+		newView.setLayoutX(x * TILE_SIZE);
+		newView.setLayoutY(y * TILE_SIZE);
+
+		int cost = tile.model.getTower().goldCost;
+		playerState.addGold(cost);
+
+		towerLayer.getChildren().remove(tile.view);
+		towerLayer.getChildren().add(newView);
+
+		tile.view = newView;
+		tile.model.removeTower();
+		if (tile.levelLabel != null) {
+			towerLayer.getChildren().remove(tile.levelLabel);
+			tile.levelLabel = null;
+		}
+		hideTowerRadius();
+		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
+		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
+		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
+
 	private void showTowerMenu(int tileX, int tileY, double sx, double sy) {
-		List<Option> opts = new ArrayList<>();
-		Tile tile = tiles[tileY][tileX];
-		if (tile.model.getTower().upgradeLevel < 2) {
-			opts.add(new Option("Upgrade", () -> upgradeTower(tileX, tileY), "/com/example/assets/buttons/Star_Button.png"));
+    List<Option> opts = new ArrayList<>();
+    Tile tile = tiles[tileY][tileX];
+    if (tile.model.getTower().upgradeLevel < 2) {
+        // Check if player can afford the upgrade
+        boolean canAffordUpgrade = playerState.getGold() >= tile.model.getTower().goldCost;
+        opts.add(new Option("Upgrade", () -> upgradeTower(tileX, tileY), 
+                "/com/example/assets/buttons/Star_Button.png", canAffordUpgrade));
+    }
+    opts.add(new Option("Sell", () -> sellTower(tileX, tileY), 
+            "/com/example/assets/buttons/Bin_Button.png", true)); // Selling is always available
+    showRadialMenu(tileX, tileY, opts);
+}
+
+	// Option class for radial menu actions
+	private static class Option {
+		final String label;
+		final Runnable action;
+		final String iconPath;
+		final boolean enabled;
+
+		Option(String label, Runnable action, String iconPath, boolean enabled) {
+			this.label = label;
+			this.action = action;
+			this.iconPath = iconPath;
+			this.enabled = enabled;
 		}
-		opts.add(new Option("Sell", () -> sellTower(tileX, tileY), "/com/example/assets/buttons/Bin_Button.png"));
-		showRadialMenu(tileX, tileY, opts);
 	}
+	
 
 	private void showRadialMenu(int tileX, int tileY, List<Option> options) {
 		contextMenu.getContent().clear();
@@ -274,18 +330,41 @@ public class GameScreenController extends Controller {
 			btn.setGraphic(view);
 			btn.setText(null);
 
-			btn.setStyle(
-					"-fx-background-color: transparent;" +
-							"-fx-padding: 0;" +
-							"-fx-border-color: transparent;"
-			);
+			// Apply different styles based on whether the option is enabled
+			if (opt.enabled) {
+				btn.setStyle(
+						"-fx-background-color: transparent;" +
+								"-fx-padding: 0;" +
+								"-fx-border-color: transparent;"
+				);
+			} else {
+				// Gray out the button when disabled
+				btn.setStyle(
+						"-fx-background-color: transparent;" +
+								"-fx-padding: 0;" +
+								"-fx-border-color: transparent;" +
+								"-fx-opacity: 0.5;"  // Make it transparent/gray
+				);
+				// Also make the image view gray
+				view.setOpacity(0.5);
+				
+				// Optional: add a tooltip explaining why it's disabled
+				Tooltip tooltip = new Tooltip("Not enough gold");
+				Tooltip.install(btn, tooltip);
+			}
 
 			btn.setLayoutX(bx);
 			btn.setLayoutY(by);
-			btn.setOnAction(evt -> {
-				opt.action.run();
-				contextMenu.hide();
-			});
+			
+			// Only enable the action if the option is enabled
+			if (opt.enabled) {
+				btn.setOnAction(evt -> {
+					opt.action.run();
+					contextMenu.hide();
+				});
+			} else {
+				btn.setDisable(true); // Make it non-clickable
+			}
 
 			container.getChildren().add(btn);
 		}
@@ -353,11 +432,10 @@ public class GameScreenController extends Controller {
 			case ARTILLERY_TOWER -> cost = 140;
 			default -> cost = 100;
 		}
-		if (playerState.getGold() < cost) {
-			showInsufficientFunds(x, y);
-			return;
-		}
-
+		
+		// We don't need to check funds here anymore since disabled buttons 
+		// prevent this method from being called when funds are insufficient
+		
 		playerState.spendGold(cost);
 		AudioManager.playSoundEffect("/com/example/assets/audio/tower-construction-sound.mp3");
 
@@ -383,50 +461,12 @@ public class GameScreenController extends Controller {
 		newView.setOnMouseExited(e -> hideTowerRadius());
 	}
 
-	/** Show a temporary tooltip around the specified tile */
-	private void showInsufficientFunds(int x, int y) {
-		double localX = x * TILE_SIZE + TILE_SIZE / 2.0;
-		double localY = y * TILE_SIZE + TILE_SIZE / 2.0;
-		Point2D screen = towerLayer.localToScreen(localX, localY);
-		Tooltip tip = new Tooltip("Not enough gold!");
-		tip.show(towerLayer.getScene().getWindow(), screen.getX(), screen.getY());
-		PauseTransition delay = new PauseTransition(Duration.seconds(1.5));
-		delay.setOnFinished(e -> tip.hide());
-		delay.play();
-	}
-
-	private void sellTower(int x, int y) {
-		Tile tile = tiles[y][x];
-		TileView newView = renderer.createTileView(TileEnum.EMPTY_TOWER_TILE);
-		newView.setLayoutX(x * TILE_SIZE);
-		newView.setLayoutY(y * TILE_SIZE);
-
-		int cost = tile.model.getTower().goldCost;
-		playerState.addGold(cost);
-
-		towerLayer.getChildren().remove(tile.view);
-		towerLayer.getChildren().add(newView);
-
-		tile.view = newView;
-		tile.model.removeTower();
-		if (tile.levelLabel != null) {
-			towerLayer.getChildren().remove(tile.levelLabel);
-			tile.levelLabel = null;
-		}
-		hideTowerRadius();
-		newView.setOnMouseClicked(e -> onTowerTileClicked(newView, x, y, e));
-		newView.setOnMouseEntered(e -> showTowerRadius(x, y));
-		newView.setOnMouseExited(e -> hideTowerRadius());
-	}
-
 	private void upgradeTower(int x, int y) {
 		Tile tile = tiles[y][x];
 		int cost = tile.model.getTower().goldCost;
-		if (playerState.getGold() < cost) {
-			showInsufficientFunds(x, y);
-			return;
-		}
-
+		
+		// No need to check funds here anymore
+		
 		playerState.spendGold(cost);
 
 		TileEnum type = tile.model.getType();
@@ -485,17 +525,7 @@ public class GameScreenController extends Controller {
 	}
 	
 	// helper for radial menu
-	private static class Option {
-		final String label;
-		final Runnable action;
-		final String iconPath;
-
-		Option(String label, Runnable action, String iconPath) {
-			this.label = label;
-			this.action = action;
-			this.iconPath = iconPath;
-		}
-	}
+	// (Removed duplicate Option class definition)
 
 	private void setupButtonIcons() {
 		Image speedUpIcon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/buttons/Skip_Button.png")));
