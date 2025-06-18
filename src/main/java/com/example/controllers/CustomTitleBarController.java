@@ -7,44 +7,60 @@ import com.example.main.Main;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button; // Added this import for Button
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+/**
+ * Controller for managing a custom title bar in the application.
+ * Provides functionality for window dragging, minimizing, and closing.
+ */
 public class CustomTitleBarController implements Initializable {
     
+    /**
+     * The title bar HBox used for dragging the window.
+     */
     @FXML
     private HBox titleBar;
     
+    /**
+     * Button for minimizing the window.
+     */
     @FXML
     private Button minimizeBtn;
     
+    /**
+     * Button for closing the window.
+     */
     @FXML
     private Button closeBtn;
     
+    /**
+     * Initializes the controller and sets up the draggable window functionality.
+     *
+     * @param location  The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resources The resources used to localize the root object, or null if not applicable.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Make the window draggable by the title bar
         setupDraggableWindow();
     }
     
+    /**
+     * Sets up the functionality to make the window draggable using the title bar.
+     */
     private void setupDraggableWindow() {
         titleBar.setOnMousePressed(event -> {
-            // Store initial mouse position
             Main.setXOffset(event.getSceneX());
             Main.setYOffset(event.getSceneY());
         });
         
         titleBar.setOnMouseDragged(event -> {
-            // Get the stage from the title bar
             Stage stage = (Stage) titleBar.getScene().getWindow();
-            
-            // Move the window by the difference between current mouse position and initial position
             stage.setX(event.getScreenX() - Main.getXOffset());
             stage.setY(event.getScreenY() - Main.getYOffset());
         });
         
-        // Add hover effects for buttons
         titleBar.getChildren().filtered(node -> node instanceof Button).forEach(button -> {
             button.setOnMouseEntered(e -> {
                 if (button == minimizeBtn) {
@@ -68,12 +84,18 @@ public class CustomTitleBarController implements Initializable {
         });
     }
     
+    /**
+     * Minimizes the application window.
+     */
     @FXML
     private void minimizeWindow() {
         Stage stage = (Stage) titleBar.getScene().getWindow();
         stage.setIconified(true);
     }
     
+    /**
+     * Closes the application window.
+     */
     @FXML
     private void closeWindow() {
         Stage stage = (Stage) titleBar.getScene().getWindow();

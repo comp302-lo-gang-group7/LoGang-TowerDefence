@@ -9,20 +9,30 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 
+/**
+ * Controller class for the Create Game page. Handles button interactions and applies consistent styling.
+ */
 public class CreateGameController extends Controller implements Initializable {
 
     @FXML private Button defaultGameBtn;
     @FXML private Button customGameBtn;
     @FXML private Button backBtn;
 
+    /**
+     * Initializes the controller and sets up button styles.
+     *
+     * @param location The location used to resolve relative paths for the root object, or null if not known.
+     * @param resources The resources used to localize the root object, or null if not applicable.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Apply consistent wooden button styling to match the home page
         setupButtonStyles();
     }
     
+    /**
+     * Configures the styles for all buttons on the page.
+     */
     private void setupButtonStyles() {
-        // Style for normal state - rich wood texture
         String normalStyle = "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
                             "-fx-background-radius: 8; " +
                             "-fx-text-fill: #e8d9b5; " +
@@ -35,7 +45,6 @@ public class CreateGameController extends Controller implements Initializable {
                             "-fx-border-radius: 8; " +
                             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 1);";
         
-        // Style for hover state - slightly lighter brown
         String hoverStyle = "-fx-background-color: linear-gradient(#94704c, #705236); " +
                            "-fx-border-color: linear-gradient(#c6965f, #b88d5a); " +
                            "-fx-background-radius: 8; " +
@@ -48,7 +57,6 @@ public class CreateGameController extends Controller implements Initializable {
                            "-fx-border-radius: 8; " +
                            "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 6, 0.0, 0, 2);";
         
-        // Style for pressed state - darker brown
         String pressedStyle = "-fx-background-color: linear-gradient(#5d4228, #4e3822); " +
                              "-fx-border-color: #7d5a3c; " +
                              "-fx-background-radius: 8; " +
@@ -61,17 +69,22 @@ public class CreateGameController extends Controller implements Initializable {
                              "-fx-border-radius: 8; " +
                              "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
         
-        // Apply styles to all buttons
         setupButtonStyle(defaultGameBtn, normalStyle, hoverStyle, pressedStyle);
         setupButtonStyle(customGameBtn, normalStyle, hoverStyle, pressedStyle);
         setupButtonStyle(backBtn, normalStyle, hoverStyle, pressedStyle);
     }
     
+    /**
+     * Applies the specified styles to a button and sets up event listeners for hover and press actions.
+     *
+     * @param button The button to style.
+     * @param normalStyle The style to apply when the button is in its normal state.
+     * @param hoverStyle The style to apply when the button is hovered over.
+     * @param pressedStyle The style to apply when the button is pressed.
+     */
     private void setupButtonStyle(Button button, String normalStyle, String hoverStyle, String pressedStyle) {
-        // Set initial style
         button.setStyle(normalStyle);
         
-        // Add hover/exit listeners
         button.setOnMouseEntered(e -> {
             button.setStyle(hoverStyle);
             button.setScaleX(1.05);
@@ -84,7 +97,6 @@ public class CreateGameController extends Controller implements Initializable {
             button.setScaleY(1.0);
         });
         
-        // Add pressed/released listeners
         button.setOnMousePressed(e -> {
             button.setStyle(pressedStyle);
         });
@@ -102,16 +114,25 @@ public class CreateGameController extends Controller implements Initializable {
         });
     }
 
+    /**
+     * Navigates to the default game configuration page.
+     */
     @FXML
     public void goToDefaultGamePage() {
         Main.getViewManager().switchTo("/com/example/fxml/game_config_page.fxml");
     }
 
+    /**
+     * Navigates to the custom game configuration page.
+     */
     @FXML
     public void goToCustomGamePage() {
         Main.getViewManager().switchTo("/com/example/fxml/custom_game_page.fxml");
     }
 
+    /**
+     * Navigates to the home page.
+     */
     @FXML
     public void goToHomePage() {
         Main.getViewManager().switchTo("/com/example/fxml/home_page.fxml");

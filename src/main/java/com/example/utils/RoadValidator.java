@@ -7,9 +7,7 @@ import java.util.List;
 import javafx.geometry.Point2D;
 
 /**
- * Utility class for validating road connections in a tile-based map.
- * This class provides methods to identify disconnected road tiles and validate
- * connections between tiles based on their types and orientations.
+ * Provides utility methods for validating road connections and identifying isolated tiles in a tile-based map.
  */
 public class RoadValidator {
     private static final int UP = 0;
@@ -18,12 +16,10 @@ public class RoadValidator {
     private static final int LEFT = 3;
 
     /**
-     * Identifies and returns a list of road tiles that are disconnected from
-     * their adjacent tiles in the given map.
+     * Finds road tiles that are disconnected from their adjacent tiles.
      *
      * @param mapTileViews A 2D array of {@link TileView} representing the map.
-     * @return A list of {@link Point2D} objects representing the coordinates of
-     *         disconnected road tiles.
+     * @return A list of {@link Point2D} objects representing the coordinates of disconnected road tiles.
      */
     public static List<Point2D> findDisconnectedRoads(TileView[][] mapTileViews) {
         List<Point2D> disconnectedRoads = new ArrayList<>();
@@ -75,12 +71,10 @@ public class RoadValidator {
     }
 
     /**
-     * Identifies and returns a list of tower tiles that are not adjacent to any path tiles.
-     * Tower tiles must be placed next to a path for gameplay purposes.
+     * Finds tower tiles that are not adjacent to any path tiles.
      *
      * @param mapTileViews A 2D array of {@link TileView} representing the map.
-     * @return A list of {@link Point2D} objects representing the coordinates of
-     *         isolated tower tiles.
+     * @return A list of {@link Point2D} objects representing the coordinates of isolated tower tiles.
      */
     public static List<Point2D> findIsolatedTowerTiles(TileView[][] mapTileViews) {
         List<Point2D> isolatedTowerTiles = new ArrayList<>();
@@ -94,7 +88,6 @@ public class RoadValidator {
                 if (tileType == TileEnum.EMPTY_TOWER_TILE) {
                     boolean hasAdjacentPath = false;
                     
-                    // Check all four directions
                     if (row > 0 && isRoadTile(mapTileViews[row-1][col].getType())) {
                         hasAdjacentPath = true;
                     } else if (col < cols-1 && isRoadTile(mapTileViews[row][col+1].getType())) {
@@ -116,12 +109,11 @@ public class RoadValidator {
     }
 
     /**
-     * Determines if a tile can connect in the specified direction.
+     * Checks if a tile can connect in a specified direction.
      *
-     * @param tileType  The type of the tile.
+     * @param tileType The type of the tile.
      * @param direction The direction to check (UP, RIGHT, DOWN, LEFT).
-     * @return {@code true} if the tile can connect in the specified direction,
-     *         {@code false} otherwise.
+     * @return {@code true} if the tile can connect in the specified direction, {@code false} otherwise.
      */
     private static boolean hasConnectionIn(TileEnum tileType, int direction) {
         String tileName = tileType.name();
@@ -160,11 +152,10 @@ public class RoadValidator {
     }
 
     /**
-     * Validates if a connection between two tiles is valid in the specified
-     * direction.
+     * Validates if a connection between two tiles is valid in a specified direction.
      *
      * @param sourceTile The type of the source tile.
-     * @param direction  The direction of the connection (UP, RIGHT, DOWN, LEFT).
+     * @param direction The direction of the connection (UP, RIGHT, DOWN, LEFT).
      * @param targetTile The type of the target tile.
      * @return {@code true} if the connection is valid, {@code false} otherwise.
      */
@@ -196,19 +187,18 @@ public class RoadValidator {
     }
 
     /**
-     * Finds start and end points in the map:
-     * - Start points are any path tiles on the edge of the map.
-     * - End points are the bottom two castle tiles.
+     * Finds start and end points in the map.
+     * Start points are path tiles on the edge of the map.
+     * End points are the bottom two castle tiles.
      *
-     * @param map The tile map.
-     * @return A list containing all start and end points.
+     * @param map A 2D array of {@link TileView} representing the map.
+     * @return A list of {@link Point2D} objects representing start and end points.
      */
     public static List<Point2D> findStartAndEndPoints(TileView[][] map) {
         List<Point2D> endpoints = new ArrayList<>();
         int rows = map.length;
         int cols = map[0].length;
 
-        // Start points: any path tile on the edge of the map
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 TileEnum tile = map[row][col].getType();
@@ -222,7 +212,6 @@ public class RoadValidator {
             }
         }
 
-        // End points: bottom two castle tiles
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 TileEnum tile = map[row][col].getType();

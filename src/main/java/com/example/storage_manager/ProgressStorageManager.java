@@ -11,15 +11,32 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Utility to persist star ratings for completed maps. */
+/**
+ * Manages the storage and retrieval of progress data for completed maps.
+ */
 public class ProgressStorageManager {
     private static final Path PROGRESS_FILE = Paths.get("cot", "data", "progress.json");
+
+    /**
+     * Represents the progress of a level, including star rating and completion time.
+     */
     public static class LevelProgress {
+        /**
+         * The number of stars earned for the level.
+         */
         public int stars;
+
+        /**
+         * The time taken to complete the level, in milliseconds.
+         */
         public long time;
     }
 
-    /** Load progress file into a map of mapName -> stars. */
+    /**
+     * Loads the progress data from the storage file.
+     *
+     * @return A map where the keys are map names and the values are {@link LevelProgress} objects.
+     */
     public static Map<String, LevelProgress> loadProgress() {
         ObjectMapper mapper = new ObjectMapper();
         if (Files.exists(PROGRESS_FILE)) {
@@ -28,7 +45,6 @@ public class ProgressStorageManager {
                 if (content.isEmpty()) {
                     return new HashMap<>();
                 }
-                // Support legacy format of Map<String,Integer>
                 JsonNode node = mapper.readTree(content);
                 Map<String, LevelProgress> result = new HashMap<>();
                 if (node.isObject()) {
@@ -53,9 +69,11 @@ public class ProgressStorageManager {
         return new HashMap<>();
     }
 
-
-
-    /** Write the provided progress map to disk. */
+    /**
+     * Saves the provided progress data to the storage file.
+     *
+     * @param progress A map where the keys are map names and the values are {@link LevelProgress} objects.
+     */
     public static void saveProgress(Map<String, LevelProgress> progress) {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -66,9 +84,12 @@ public class ProgressStorageManager {
         }
     }
 
-
     /**
-     * Update the rating/time for a map if new values improve the existing ones.
+     * Updates the progress for a specific map, improving the star rating or completion time if applicable.
+     *
+     * @param mapName The name of the map to update.
+     * @param stars   The new star rating for the map.
+     * @param time    The new completion time for the map, in milliseconds.
      */
     public static void recordProgress(String mapName, int stars, long time) {
         if (mapName == null) return;
@@ -84,5 +105,4 @@ public class ProgressStorageManager {
         data.put(mapName, existing);
         saveProgress(data);
     }
-
 }

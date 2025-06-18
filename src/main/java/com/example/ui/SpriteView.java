@@ -6,24 +6,29 @@ import javafx.beans.value.ChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-
-// Deprecated
-public class SpriteView
-{
+/**
+ * Represents a view for displaying sprites using an {@link ImageView}.
+ * Provides functionality to bind sprite properties and update the displayed image dynamically.
+ */
+public class SpriteView {
 	private final ImageView imageView = new ImageView();
 
-	// Processes Sprite changing the Image.
 	private final ChangeListener<Image> imageChangeListener =
 			( _, _, newImage ) -> imageView.setImage(newImage);
 
-	public SpriteView()
-	{
+	/**
+	 * Constructs a new {@code SpriteView}.
+	 */
+	public SpriteView() {
 	}
 
-	public void setSpriteProvider( SpriteProvider provider )
-	{
-		if ( provider == null )
-		{
+	/**
+	 * Sets the sprite provider for this view. Binds the sprite's properties to the {@link ImageView}.
+	 *
+	 * @param provider the {@link SpriteProvider} to set, or {@code null} to clear the current sprite.
+	 */
+	public void setSpriteProvider(SpriteProvider provider) {
+		if (provider == null) {
 			imageView.setImage(null);
 			return;
 		}
@@ -37,10 +42,15 @@ public class SpriteView
 		imageView.yProperty().bind(provider.getSprite().yProperty());
 	}
 
-	public void replaceSpriteProvider ( SpriteProvider newProvider, SpriteProvider oldProvider )
-	{
-		if ( oldProvider != null )
-		{
+	/**
+	 * Replaces the current sprite provider with a new one. Unbinds properties from the old provider
+	 * and binds properties from the new provider.
+	 *
+	 * @param newProvider the new {@link SpriteProvider} to set.
+	 * @param oldProvider the old {@link SpriteProvider} to remove bindings from, or {@code null} if none.
+	 */
+	public void replaceSpriteProvider(SpriteProvider newProvider, SpriteProvider oldProvider) {
+		if (oldProvider != null) {
 			oldProvider.getSprite().imageProperty().removeListener(imageChangeListener);
 			imageView.xProperty().unbind();
 			imageView.yProperty().unbind();
@@ -48,8 +58,12 @@ public class SpriteView
 		setSpriteProvider(newProvider);
 	}
 
-	public ImageView getImageView()
-	{
+	/**
+	 * Returns the {@link ImageView} used to display the sprite.
+	 *
+	 * @return the {@link ImageView} instance.
+	 */
+	public ImageView getImageView() {
 		return imageView;
 	}
 }

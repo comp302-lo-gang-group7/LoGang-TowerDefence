@@ -29,10 +29,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * This is a controller for the settings page. It handles game preferences and options.
+ * Controller for the settings page. Handles user preferences and game options.
  */
 public class SettingsController extends Controller implements Initializable {
-    
+
     @FXML private Slider musicVolumeSlider;
     @FXML private Slider sfxVolumeSlider;
     @FXML private Label musicVolumeLabel;
@@ -46,6 +46,10 @@ public class SettingsController extends Controller implements Initializable {
     private double xOffset = 0;
     private double yOffset = 0;
 
+    /**
+     * Handles mouse press events on the header bar to prepare for window dragging.
+     * @param event The mouse event triggered by pressing the header bar.
+     */
     @FXML
     private void onHeaderBarPressed(MouseEvent event) {
         Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
@@ -53,6 +57,10 @@ public class SettingsController extends Controller implements Initializable {
         yOffset = event.getSceneY();
     }
 
+    /**
+     * Handles mouse drag events on the header bar to move the window.
+     * @param event The mouse event triggered by dragging the header bar.
+     */
     @FXML
     private void onHeaderBarDragged(MouseEvent event) {
         Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
@@ -60,36 +68,39 @@ public class SettingsController extends Controller implements Initializable {
         stage.setY(event.getScreenY() - yOffset);
     }
 
+    /**
+     * Initializes the settings page by setting up UI components and loading saved settings.
+     * @param location The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resources The resources used to localize the root object, or null if not applicable.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Set up the ComboBoxes
         setupComboBoxes();
-        
-        // Set up slider listeners to update labels
         setupSliders();
-        
         loadSavedSettings();
-        
-        // Add wooden styling to all buttons
         applyButtonStyle(saveBtn);
         applyButtonStyle(resetBtn);
         applyButtonStyle(homeBtn);
     }
-    
+
+    /**
+     * Configures the difficulty and game speed combo boxes with options and styles.
+     */
     private void setupComboBoxes() {
-        // Configure difficulty combo box
         difficultyCombo.getItems().addAll("Easy", "Normal", "Hard", "Expert");
         difficultyCombo.setValue("Normal");
         styleComboBox(difficultyCombo);
-        
-        // Configure game speed combo box
+
         gameSpeedCombo.getItems().addAll("Slow", "Normal", "Fast", "Turbo");
         gameSpeedCombo.setValue("Normal");
         styleComboBox(gameSpeedCombo);
     }
-    
+
+    /**
+     * Applies custom styling to a combo box.
+     * @param comboBox The combo box to style.
+     */
     private void styleComboBox(ComboBox<String> comboBox) {
-        // Set custom cell factory for items in dropdown
         comboBox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> param) {
@@ -97,7 +108,6 @@ public class SettingsController extends Controller implements Initializable {
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-                        
                         if (item != null && !empty) {
                             setText(item);
                             setTextFill(Color.web("#e8d9b5"));
@@ -109,13 +119,11 @@ public class SettingsController extends Controller implements Initializable {
                 };
             }
         });
-        
-        // Set custom button cell (what's shown when closed)
+
         comboBox.setButtonCell(new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                
                 if (item != null && !empty) {
                     setText(item);
                     setTextFill(Color.web("#e8d9b5"));
@@ -126,21 +134,26 @@ public class SettingsController extends Controller implements Initializable {
             }
         });
     }
-    
+
+    /**
+     * Sets up listeners for sliders to update their corresponding labels.
+     */
     private void setupSliders() {
-        // Format music volume slider
         musicVolumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int value = newVal.intValue();
             musicVolumeLabel.setText(value + "%");
         });
-        
-        // Format sound effects slider
+
         sfxVolumeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int value = newVal.intValue();
             sfxVolumeLabel.setText(value + "%");
         });
     }
-    
+
+    /**
+     * Applies custom styling and hover effects to a button.
+     * @param button The button to style.
+     */
     private void applyButtonStyle(Button button) {
         String buttonCss = 
             "-fx-background-color: linear-gradient(#7d5a3c, #5d4228); " +
@@ -154,7 +167,7 @@ public class SettingsController extends Controller implements Initializable {
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 5, 0.0, 0, 2);";
-        
+
         String hoverCss = 
             "-fx-background-color: linear-gradient(#94704c, #705236); " +
             "-fx-background-radius: 8; " +
@@ -167,7 +180,7 @@ public class SettingsController extends Controller implements Initializable {
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
             "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.7), 6, 0.0, 0, 2);";
-        
+
         String pressedCss = 
             "-fx-background-color: linear-gradient(#5d4228, #4e3822); " +
             "-fx-background-radius: 8; " +
@@ -175,35 +188,32 @@ public class SettingsController extends Controller implements Initializable {
             "-fx-font-size: 14px; " +
             "-fx-font-weight: bold; " +
             "-fx-font-family: 'Segoe UI'; " +
-            "-fx-padding: 9 15 7 15; " + // Offset padding to simulate pressed effect
+            "-fx-padding: 9 15 7 15; " +
             "-fx-border-color: #7d5a3c; " +
             "-fx-border-width: 2; " +
             "-fx-border-radius: 8; " +
             "-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.4), 4, 0.0, 0, 1);";
-        
-        // Set initial style
+
         button.setStyle(buttonCss);
-        
-        // Add hover/exit listeners
+
         button.setOnMouseEntered(e -> {
             button.setStyle(hoverCss);
             button.setScaleX(1.05);
             button.setScaleY(1.05);
         });
-        
+
         button.setOnMouseExited(e -> {
             button.setStyle(buttonCss);
             button.setScaleX(1.0);
             button.setScaleY(1.0);
         });
-        
-        // Add pressed/released listeners
+
         button.setOnMousePressed(e -> {
             button.setStyle(pressedCss);
             button.setScaleX(1.02);
             button.setScaleY(1.02);
         });
-        
+
         button.setOnMouseReleased(e -> {
             if (button.isHover()) {
                 button.setStyle(hoverCss);
@@ -217,6 +227,9 @@ public class SettingsController extends Controller implements Initializable {
         });
     }
 
+    /**
+     * Saves the current settings to persistent storage.
+     */
     @FXML
     public void saveSettings() {
         Settings settings = new Settings();
@@ -224,8 +237,6 @@ public class SettingsController extends Controller implements Initializable {
         settings.sfxVolume = (int) sfxVolumeSlider.getValue();
         settings.difficulty = difficultyCombo.getValue();
         settings.gameSpeed = gameSpeedCombo.getValue();
-        
-        // Set default values for removed checkboxes
         settings.showHints = true;
         settings.autoSave = true;
         settings.fullscreen = false;
@@ -236,6 +247,9 @@ public class SettingsController extends Controller implements Initializable {
         showMessage("Settings saved successfully!");
     }
 
+    /**
+     * Loads saved settings and applies them to the UI components.
+     */
     private void loadSavedSettings() {
         Settings settings = SettingsManager.load();
         musicVolumeSlider.setValue(settings.musicVolume);
@@ -245,10 +259,12 @@ public class SettingsController extends Controller implements Initializable {
         difficultyCombo.setValue(settings.difficulty);
         gameSpeedCombo.setValue(settings.gameSpeed);
     }
-    
+
+    /**
+     * Resets all settings to their default values.
+     */
     @FXML
     public void resetSettings() {
-        // Reset all settings to default
         musicVolumeSlider.setValue(75);
         sfxVolumeSlider.setValue(100);
         difficultyCombo.setValue("Normal");
@@ -265,6 +281,10 @@ public class SettingsController extends Controller implements Initializable {
         showMessage("Settings reset to defaults.");
     }
 
+    /**
+     * Displays a message to the user in a dialog box.
+     * @param message The message to display.
+     */
     private void showMessage(String message) {
         DialogUtil.showWoodenAlert("Settings", message);
     }

@@ -1,27 +1,22 @@
 package com.example.map;
 
 /**
- * Represents a loaded game map and computes a pixel-level heat map used for
- * pathfinding. The expanded grid marks traversable areas, spawn points and the
- * castle goal.
+ * Represents a game map used for pathfinding, including an expanded grid
+ * that marks traversable areas, spawn points, obstacles, and castle goals.
  */
 public class GameMap {
 	private final int width, height;
 	private int[][] expandedGrid;
 
-	private static final int TILE_SIZE = 64; // TODO: Make dynamic
-	// peak weight at path center (half tile)
-	private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
-	private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;     // 64
-	private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
+	private static final int TILE_SIZE = 64;
+	private static final int PEAK_WEIGHT  = TILE_SIZE / 2;
+	private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;
+	private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;
 
 	/**
-	 * Builds a heat-map grid for pathfinding:
-	 * - Path tiles: weights taper from center (max PEAK_WEIGHT) to 1 at edges.
-	 * - Castle tiles: weights grow downward from top (1) to max at lower-center.
-	 * - Obstacles: -1
-	 * - Spawn: any positive weight border pixel is set to PEAK_WEIGHT
-	 * - Goal: each castle tile's lower-center pixel set to PEAK_WEIGHT
+	 * Constructs a GameMap instance and initializes the expanded grid based on the provided tile views.
+	 * 
+	 * @param tileViews A 2D array of TileView objects representing the game map layout.
 	 */
 	public GameMap(TileView[][] tileViews) {
 		this.height = tileViews.length;
@@ -30,7 +25,6 @@ public class GameMap {
 		int pixelH = height * TILE_SIZE;
 		expandedGrid = new int[pixelH][pixelW];
 
-		// 1) Compute base heat values
 		for (int ty = 0; ty < height; ty++) {
 			for (int tx = 0; tx < width; tx++) {
 				TileEnum type = tileViews[ty][tx].getType();
@@ -40,26 +34,19 @@ public class GameMap {
 				if (TileEnum.PATH_TILES.contains(type)) {
 					int mid = TILE_SIZE / 2;
 
-					// 1) Draw the center row at peak weight
 					for (int dx = 0; dx < TILE_SIZE; dx++) {
 						expandedGrid[originY + mid][originX + dx] = PEAK_WEIGHT;
 					}
 
-					// 2) Draw the center column at peak weight
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
 						expandedGrid[originY + dy][originX + mid] = PEAK_WEIGHT;
 					}
 
-					// 3) Add diagonals
 					for (int d = 0; d < TILE_SIZE; d++) {
-						// Top-left to bottom-right diagonal
 						expandedGrid[originY + d][originX + d] = PEAK_WEIGHT;
-
-						// Top-right to bottom-left diagonal
 						expandedGrid[originY + d][originX + (TILE_SIZE - 1 - d)] = PEAK_WEIGHT;
 					}
 
-					// 4) Fill the rest with minimal weight
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
 						for (int dx = 0; dx < TILE_SIZE; dx++) {
 							int y = originY + dy, x = originX + dx;
@@ -74,16 +61,13 @@ public class GameMap {
 							int y = originY + dy;
 							int x = originX + dx;
 							if (dy < TILE_SIZE / 2) {
-								// Upper half of tile: block movement
 								expandedGrid[y][x] = -1;
 							} else {
-								// Bottom half: goal weight
 								expandedGrid[y][x] = GOAL_WEIGHT;
 							}
 						}
 					}
 				} else {
-					// obstacle
 					for (int dy = 0; dy < TILE_SIZE; dy++) {
 						for (int dx = 0; dx < TILE_SIZE; dx++) {
 							expandedGrid[originY + dy][originX + dx] = -1;
@@ -93,7 +77,6 @@ public class GameMap {
 			}
 		}
 
-		// 2) Mark spawn points on any border pixel that has positive weight
 		for (int x = 0; x < pixelW; x++) {
 			if (expandedGrid[0][x] > 0) {
 				expandedGrid[0][x] = SPAWN_WEIGHT;
@@ -111,9 +94,7 @@ public class GameMap {
 			};
 		}
 
-		// 3) Mark entire bottom-half of the combined 2×2 castle area at GOAL_WEIGHT
 		int minCx = width, minCy = height, maxCx = -1, maxCy = -1;
-		// 3a) Find the bounding box of all 4 castle tiles
 		for (int ty = 0; ty < height; ty++) {
 			for (int tx = 0; tx < width; tx++) {
 				if (TileEnum.CASTLE_TILES.contains(tileViews[ty][tx].getType())) {
@@ -127,9 +108,8 @@ public class GameMap {
 		if (minCx <= maxCx && minCy <= maxCy) {
 			int castleX = minCx * TILE_SIZE;
 			int castleY = minCy * TILE_SIZE;
-			int castleW = (maxCx - minCx + 1) * TILE_SIZE;  // should be 128
-			int castleH = (maxCy - minCy + 1) * TILE_SIZE;  // should be 128
-			// 3b) Flood the bottom half of that 128×128 region
+			int castleW = (maxCx - minCx + 1) * TILE_SIZE;
+			int castleH = (maxCy - minCy + 1) * TILE_SIZE;
 			for (int dy = castleH/2; dy < castleH; dy++) {
 				for (int dx = 0; dx < castleW; dx++) {
 					expandedGrid[castleY + dy][castleX + dx] = GOAL_WEIGHT;
@@ -138,18 +118,28 @@ public class GameMap {
 		}
 	}
 
+	/**
+	 * Retrieves the width of the game map in tiles.
+	 * 
+	 * @return The width of the game map in tiles.
+	 */
 	public int getWidth() {
 		return width;
 	}
 
+	/**
+	 * Retrieves the height of the game map in tiles.
+	 * 
+	 * @return The height of the game map in tiles.
+	 */
 	public int getHeight() {
 		return height;
 	}
 
-        /**
-         * Debug helper to print the expanded grid weights to stdout.
-         */
-        public void printExpandedGrid() {
+	/**
+	 * Prints the expanded grid weights to the standard output for debugging purposes.
+	 */
+	public void printExpandedGrid() {
 		if (expandedGrid == null) {
 			System.out.println("Expanded grid is not initialized.");
 			return;
@@ -164,7 +154,11 @@ public class GameMap {
 		}
 	}
 
-
+	/**
+	 * Retrieves the expanded grid used for pathfinding.
+	 * 
+	 * @return A 2D array representing the expanded grid with weights for pathfinding.
+	 */
 	public int[][] getExpandedGrid() {
 		return expandedGrid;
 	}

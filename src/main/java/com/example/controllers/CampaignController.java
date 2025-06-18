@@ -36,7 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-/** Controller for the campaign map screen. */
+/**
+ * Controller for managing the campaign map screen.
+ */
 public class CampaignController extends Controller implements Initializable {
     @FXML private ScrollPane scrollPane;
     @FXML private Pane mapContainer;
@@ -47,13 +49,18 @@ public class CampaignController extends Controller implements Initializable {
     private List<CampaignLevel> levels;
     private Map<String, LevelProgress> progress;
 
+    /**
+     * Initializes the campaign map screen.
+     *
+     * @param url The location used to resolve relative paths for the root object, or null if the location is not known.
+     * @param rb The resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         setupButtonEffects(backBtn);
         levels = CampaignStorageManager.loadCampaign();
         progress = ProgressStorageManager.loadProgress();
 
-        // load background maps
         int tileSize = 64;
         int topHeight = renderMap("campaign/campaign-top", topMap, tileSize);
         int bottomHeight = renderMap("campaign/campaign-bottom", bottomMap, tileSize);
@@ -98,12 +105,19 @@ public class CampaignController extends Controller implements Initializable {
         }
     }
 
+    /**
+     * Handles the back button action to navigate to the home page.
+     */
     @FXML
     private void handleBack() {
         goToHomePage();
     }
 
-
+    /**
+     * Sets up hover and click effects for a button.
+     *
+     * @param button The button to apply effects to.
+     */
     private void setupButtonEffects(Button button) {
         button.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE);
         button.setOnMouseEntered(e -> {
@@ -128,6 +142,12 @@ public class CampaignController extends Controller implements Initializable {
         });
     }
 
+    /**
+     * Displays a dialog with level details and options to start the level.
+     *
+     * @param lvl The campaign level to display details for.
+     * @param sourceBtn The button that triggered the dialog.
+     */
     private void showLevelDialog(CampaignLevel lvl, Button sourceBtn) {
         Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -212,6 +232,14 @@ public class CampaignController extends Controller implements Initializable {
         dialog.showAndWait();
     }
 
+    /**
+     * Renders a map onto a target pane.
+     *
+     * @param mapName The name of the map to render.
+     * @param target The pane to render the map onto.
+     * @param tileSize The size of each tile in the map.
+     * @return The height of the rendered map in pixels.
+     */
     private int renderMap(String mapName, Pane target, int tileSize) {
         try {
             TileView[][] tiles = MapStorageManager.loadMap(mapName);

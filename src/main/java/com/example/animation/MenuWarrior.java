@@ -8,6 +8,9 @@ import javafx.scene.image.WritableImage;
 
 import java.util.List;
 
+/**
+ * Represents a warrior character in the menu that animates and moves along a predefined path.
+ */
 public class MenuWarrior {
     private static final Image SPRITE_SHEET = ImageLoader.getImage("/com/example/assets/enemies/Warrior_Blue.png");
     private static final int FRAMES = 6;
@@ -24,6 +27,12 @@ public class MenuWarrior {
     private int waypointIndex = 0;
     private double x, y;
 
+    /**
+     * Constructs a MenuWarrior with a specified path and movement speed.
+     *
+     * @param path  The list of points representing the path the warrior will follow.
+     * @param speed The speed at which the warrior moves along the path.
+     */
     public MenuWarrior(List<Point> path, double speed) {
         this.path = path;
         this.speed = speed;
@@ -41,15 +50,18 @@ public class MenuWarrior {
         }
     }
 
+    /**
+     * Updates the animation frame and position of the warrior based on the elapsed time.
+     *
+     * @param dt The time elapsed since the last update, in seconds.
+     */
     public void update(double dt) {
-        // Animation
         frameTimer += dt;
         if (frameTimer >= FRAME_SECONDS) {
             frameTimer -= FRAME_SECONDS;
             currentFrame = (currentFrame + 1) % FRAMES;
         }
 
-        // Movement
         if (waypointIndex >= path.size()) return;
 
         double remaining = speed * dt;
@@ -79,6 +91,11 @@ public class MenuWarrior {
         }
     }
 
+    /**
+     * Renders the warrior on the provided graphics context.
+     *
+     * @param gc The graphics context used for rendering the warrior.
+     */
     public void render(GraphicsContext gc) {
         Image img = frames[currentFrame];
         double drawX = x;
@@ -89,7 +106,7 @@ public class MenuWarrior {
 
         boolean movingLeft = isMovingLeft();
         if (movingLeft) {
-            gc.scale(-1, 1); // flip horizontally
+            gc.scale(-1, 1);
         }
 
         double offsetX = img.getWidth() / 2;
@@ -99,6 +116,11 @@ public class MenuWarrior {
         gc.restore();
     }
 
+    /**
+     * Determines whether the warrior is moving left based on its current and previous waypoints.
+     *
+     * @return True if the warrior is moving left, false otherwise.
+     */
     private boolean isMovingLeft() {
         if (waypointIndex <= 0 || waypointIndex >= path.size()) return false;
         Point prev = path.get(waypointIndex - 1);
@@ -106,20 +128,32 @@ public class MenuWarrior {
         return next.x() < prev.x();
     }
 
+    /**
+     * Checks if the warrior has reached the final waypoint in its path.
+     *
+     * @return True if the warrior has reached the goal, false otherwise.
+     */
     public boolean hasReachedGoal() {
         return waypointIndex >= path.size();
     }
 
+    /**
+     * Scales an image to the specified width and height.
+     *
+     * @param src          The source image to be scaled.
+     * @param targetWidth  The desired width of the scaled image.
+     * @param targetHeight The desired height of the scaled image.
+     * @return The scaled image.
+     */
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
         GraphicsContext gc = tempCanvas.getGraphicsContext2D();
-        gc.clearRect(0, 0, targetWidth, targetHeight); // ensure it's transparent
+        gc.clearRect(0, 0, targetWidth, targetHeight);
         gc.drawImage(src, 0, 0, targetWidth, targetHeight);
 
         javafx.scene.SnapshotParameters params = new javafx.scene.SnapshotParameters();
-        params.setFill(javafx.scene.paint.Color.TRANSPARENT); // <=== KEY LINE
+        params.setFill(javafx.scene.paint.Color.TRANSPARENT);
 
         return tempCanvas.snapshot(params, null);
     }
-
 }

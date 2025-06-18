@@ -3,35 +3,26 @@ package com.example.utils;
 import java.util.*;
 
 /**
- * Utility for computing paths over the expanded grid produced by
- * {@link com.example.map.GameMap}. Implements a Dijkstra style search with
- * small random noise to vary routes.
+ * Utility class for pathfinding operations on a grid. Provides methods to find paths, spawn points, and goal points.
  */
 public class PathFinder {
     private static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1 };
     private static final int[] DY = { -1, -1, 0, 1, 1, 1, 0, -1 };
 
     private static final int TILE_SIZE    = 64;
-    private static final int PEAK_WEIGHT  = TILE_SIZE / 2;       // 32
-    private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;     // 64
-    private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;     // 96
+    private static final int PEAK_WEIGHT  = TILE_SIZE / 2;
+    private static final int SPAWN_WEIGHT = PEAK_WEIGHT * 2;
+    private static final int GOAL_WEIGHT  = PEAK_WEIGHT * 3;
 
     private static final Random random = new Random();
+
     /**
-     * requires:
-     *   – grid is non-null, rectangular (all rows same length), and contains only integer weights;
-     *   – start and goal are non-null and lie within the bounds of grid;
-     *   – positive weights denote traversable tiles, zero or negative weights denote obstacles.
+     * Finds a path from the start point to the goal point on the given grid using a Dijkstra-style algorithm.
      *
-     * modifies:
-     *   – internal priority queue, distance and predecessor arrays, and the static Random seed;
-     *
-     * effects:
-     *   – Runs a Dijkstra/A*‐style search (with small random noise) from start to goal over 4-connected neighbors.
-     *   – Returns a (possibly empty) List<Point> “trimmed” to at most 20–100 visits of GOAL_WEIGHT tiles:
-     *       • if goal is reachable, the returned list begins at start, follows a valid 4-connected path through
-     *         only positive-weight tiles, and ends at the goal or earlier if too many GOAL_WEIGHT tiles appear;
-     *       • if goal is unreachable, returns an empty list (prev[goal] == null).
+     * @param grid The grid representing the map, where positive weights denote traversable tiles and zero or negative weights denote obstacles.
+     * @param start The starting point of the path.
+     * @param goal The goal point of the path.
+     * @return A list of points representing the path from start to goal, trimmed to limit excessive goal-weight tiles. Returns an empty list if the goal is unreachable.
      */
     public static List<Point> findPath(int[][] grid, Point start, Point goal) {
         int h = grid.length, w = grid[0].length;
@@ -54,7 +45,6 @@ public class PathFinder {
             int cx = (int) cur.x(), cy = (int) cur.y();
             double baseCost = dist[cy][cx];
 
-            // Randomize neighbor directions
             int[] dirs = {0, 1, 2, 3, 4, 5, 6, 7};
             shuffleArray(dirs);
 
@@ -65,11 +55,10 @@ public class PathFinder {
                 int weight = grid[ny][nx];
                 if (weight <= 0) continue;
 
-                // Add slight noise to encourage variation in paths
-                double noise = random.nextDouble() * 5; // tweak range as needed
+                double noise = random.nextDouble() * 5;
                 double stepCost = (GOAL_WEIGHT - weight) + noise;
                 if (Math.abs(DX[dir]) + Math.abs(DY[dir]) == 2) {
-                    stepCost *= 1.4; // approx sqrt(2) for diagonals
+                    stepCost *= 1.4;
                 }
                 double nd = baseCost + stepCost;
 
@@ -81,7 +70,6 @@ public class PathFinder {
             }
         }
 
-        // Reconstruct path
         List<Point> fullPath = new ArrayList<>();
         if (prev[(int)goal.y()][(int)goal.x()] != null || start.equals(goal)) {
             for (Point at = goal; at != null; at = prev[(int)at.y()][(int)at.x()]) {
@@ -90,8 +78,7 @@ public class PathFinder {
             Collections.reverse(fullPath);
         }
 
-        // Trim after a certain number of goal-weight steps
-        int maxGoalSteps = 20 + random.nextInt(81); // 20–100
+        int maxGoalSteps = 20 + random.nextInt(81);
         List<Point> trimmed = new ArrayList<>();
         int goalCount = 0;
         for (Point p : fullPath) {
@@ -105,7 +92,11 @@ public class PathFinder {
         return trimmed;
     }
 
-    /** Shuffle an int array in-place using Fisher-Yates. */
+    /**
+     * Shuffles an integer array in-place using the Fisher-Yates algorithm.
+     *
+     * @param arr The array to shuffle.
+     */
     private static void shuffleArray(int[] arr) {
         for (int i = arr.length - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
@@ -116,7 +107,11 @@ public class PathFinder {
     }
 
     /**
-     * Choose a random spawn location marked by the {@code SPAWN_WEIGHT} on the grid edges.
+     * Finds a random spawn point on the edges of the grid marked by {@code SPAWN_WEIGHT}.
+     *
+     * @param grid The grid representing the map.
+     * @return A random spawn point on the grid edges.
+     * @throws IllegalStateException If no spawn point is found.
      */
     public static Point findRandomSpawnPoint(int[][] grid) {
         List<Point> candidates = new ArrayList<>();
@@ -135,7 +130,13 @@ public class PathFinder {
         return candidates.get(random.nextInt(candidates.size()));
     }
 
-    /** Locate the castle goal within the grid. */
+    /**
+     * Finds the castle goal point within the grid marked by {@code GOAL_WEIGHT}.
+     *
+     * @param grid The grid representing the map.
+     * @return The castle goal point.
+     * @throws IllegalStateException If no castle point is found.
+     */
     public static Point findCastlePoint(int[][] grid) {
         int h = grid.length, w = grid[0].length;
         for (int y = 0; y < h; y++) {
