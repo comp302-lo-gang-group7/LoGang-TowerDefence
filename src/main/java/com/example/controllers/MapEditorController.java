@@ -425,24 +425,24 @@ public class MapEditorController implements Initializable {
 private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
     // Add a subtle pulsing animation to the isolated tower tiles for better visibility
     List<TileView> highlightedTiles = new ArrayList<>();
-    
+
     for (Point2D p : isolatedTowerTiles) {
         int col = (int) p.getX();
         int row = (int) p.getY();
-        
+
         TileView tileView = mapTileViews[row][col];
-        
+
         // Store reference to highlighted tiles
         highlightedTiles.add(tileView);
-        
+
         // Get the parent pane of the TileView
         Pane cell = (Pane) tileView.getParent();
-                
+
         // Add a yellow pulsing glow effect to distinguish from road errors
         DropShadow errorEffect = new DropShadow();
         errorEffect.setColor(Color.RED);
         tileView.setEffect(errorEffect);
-        
+
         // Add subtle animation for better visibility
         FadeTransition fade = new FadeTransition(Duration.millis(800), tileView);
         fade.setFromValue(0.7);
@@ -451,7 +451,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
         fade.setAutoReverse(true);
         fade.play();
     }
-    
+
     // Remove highlights after 5 seconds
     PauseTransition pause = new PauseTransition(Duration.seconds(5));
     pause.setOnFinished(e -> {
@@ -459,7 +459,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
             // Remove effect from tile
             tile.setEffect(null);
             tile.setOpacity(1.0);
-            
+
             // Reset the parent cell's border
             Pane cell = (Pane) tile.getParent();
             cell.setStyle("-fx-border-color: #666; -fx-border-width: 1;");
@@ -494,8 +494,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
             highlightDisconnectedRoads(disconnectedRoads);
             return;
         }
-        
-        // NEW: Check for tower tiles not adjacent to paths
+
         List<Point2D> isolatedTowerTiles = RoadValidator.findIsolatedTowerTiles(mapTileViews);
         if (!isolatedTowerTiles.isEmpty()) {
             MapEditorUtils.showInfoAlert(
