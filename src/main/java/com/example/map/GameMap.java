@@ -1,5 +1,10 @@
 package com.example.map;
 
+/**
+ * Represents a loaded game map and computes a pixel-level heat map used for
+ * pathfinding. The expanded grid marks traversable areas, spawn points and the
+ * castle goal.
+ */
 public class GameMap {
 	private final int width, height;
 	private int[][] expandedGrid;
@@ -141,7 +146,10 @@ public class GameMap {
 		return height;
 	}
 
-	public void printExpandedGrid() {
+        /**
+         * Debug helper to print the expanded grid weights to stdout.
+         */
+        public void printExpandedGrid() {
 		if (expandedGrid == null) {
 			System.out.println("Expanded grid is not initialized.");
 			return;

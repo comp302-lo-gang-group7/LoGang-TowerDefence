@@ -10,6 +10,11 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
+/**
+ * Transient entity spawned by towers to deliver damage to a target.
+ * Handles simple linear movement and impact resolution once the
+ * projectile reaches its destination.
+ */
 public class Projectile extends Entity
 {
 
@@ -27,8 +32,16 @@ public class Projectile extends Entity
 	private Tower parent;
 	private double scaleFactor;
 
-	public Projectile( Tower parent, double x1, double y1, AnimatedEntity target )
-	{
+        /**
+         * Create a projectile fired from the specified tower toward an enemy.
+         *
+         * @param parent tower that spawned the projectile
+         * @param x1 starting x position in pixels
+         * @param y1 starting y position in pixels
+         * @param target entity the projectile should track
+         */
+        public Projectile( Tower parent, double x1, double y1, AnimatedEntity target )
+        {
 		super(0, 0, 0);
 		switch ( parent )
 		{
@@ -80,8 +93,15 @@ public class Projectile extends Entity
 		spin = 0;
 	}
 
-	@Override
-	public void update(double dt) {
+        /**
+         * Move the projectile towards its target and apply damage when it
+         * reaches the destination. Artillery projectiles deal area damage while
+         * others hit a single enemy.
+         *
+         * @param dt time step in seconds
+         */
+        @Override
+        public void update(double dt) {
 		if ( active )
 		{
 			if ( Math.abs(x - x2) + Math.abs(y - y2) > 1 )
@@ -128,17 +148,25 @@ public class Projectile extends Entity
 		}
 	}
 
-	public void render( GraphicsContext gc )
-	{
-		gc.save();
-		gc.translate(x, y);
-		gc.rotate(angle + spin);
-		gc.scale(scaleFactor, scaleFactor);
-		gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
-		gc.restore();
-	}
+        /**
+         * Draws this projectile with its current rotation and scaling.
+         *
+         * @param gc graphics context used for rendering
+         */
+        public void render( GraphicsContext gc )
+        {
+                gc.save();
+                gc.translate(x, y);
+                gc.rotate(angle + spin);
+                gc.scale(scaleFactor, scaleFactor);
+                gc.drawImage(image, -image.getWidth() / 2, -image.getHeight() / 2);
+                gc.restore();
+        }
 
-	private static Image tintImage(Image src, Color tint) {
+        /**
+         * Returns a tinted copy of the source image used for spell upgrades.
+         */
+        private static Image tintImage(Image src, Color tint) {
 		int w = (int) src.getWidth();
 		int h = (int) src.getHeight();
 		WritableImage out = new WritableImage(w, h);

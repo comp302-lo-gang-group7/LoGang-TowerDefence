@@ -2,6 +2,11 @@ package com.example.utils;
 
 import java.util.*;
 
+/**
+ * Utility for computing paths over the expanded grid produced by
+ * {@link com.example.map.GameMap}. Implements a Dijkstra style search with
+ * small random noise to vary routes.
+ */
 public class PathFinder {
     private static final int[] DX = { 0, 1, 1, 1, 0, -1, -1, -1 };
     private static final int[] DY = { -1, -1, 0, 1, 1, 1, 0, -1 };
@@ -100,7 +105,7 @@ public class PathFinder {
         return trimmed;
     }
 
-    // Shuffles an int array (Fisher-Yates)
+    /** Shuffle an int array in-place using Fisher-Yates. */
     private static void shuffleArray(int[] arr) {
         for (int i = arr.length - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
@@ -110,6 +115,9 @@ public class PathFinder {
         }
     }
 
+    /**
+     * Choose a random spawn location marked by the {@code SPAWN_WEIGHT} on the grid edges.
+     */
     public static Point findRandomSpawnPoint(int[][] grid) {
         List<Point> candidates = new ArrayList<>();
         int h = grid.length, w = grid[0].length;
@@ -127,6 +135,7 @@ public class PathFinder {
         return candidates.get(random.nextInt(candidates.size()));
     }
 
+    /** Locate the castle goal within the grid. */
     public static Point findCastlePoint(int[][] grid) {
         int h = grid.length, w = grid[0].length;
         for (int y = 0; y < h; y++) {

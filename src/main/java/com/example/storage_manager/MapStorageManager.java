@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Handles reading and writing of user created maps to disk. Maps are stored as
+ * JSON describing the tile grid.
+ */
 public class MapStorageManager {
 
     private static final int TILE_SIZE = 64;
@@ -97,6 +101,12 @@ public class MapStorageManager {
         return map;
     }
 
+    /**
+     * Delete the specified map file if it exists.
+     *
+     * @param mapName name of the map without extension
+     * @return true if the file was removed
+     */
     public static boolean deleteMap(String mapName) {
         Path file = MAP_DIRECTORY.resolve(mapName + ".json");
         try {

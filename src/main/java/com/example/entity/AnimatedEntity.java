@@ -11,6 +11,11 @@ import javafx.scene.image.WritableImage;
 
 import java.util.List;
 
+/**
+ * Base class for any animated enemy travelling along a precomputed path.
+ * Handles sprite animation and path traversal logic while allowing subclasses
+ * to apply custom behaviour such as damage modifiers.
+ */
 public class AnimatedEntity extends Entity {
     private final Image[] frames;
     private final double frameDuration;
@@ -32,6 +37,18 @@ public class AnimatedEntity extends Entity {
     private final double speed;
     private int waypointIndex = 0;  // Start at first waypoint
 
+    /**
+     * Creates a new animated entity using the provided sprite sheet and path.
+     *
+     * @param spriteSheet  sprite sheet containing sequential animation frames
+     * @param frameCount   number of frames in the sheet
+     * @param frameSize    width/height of a single frame in the sheet
+     * @param frameDuration seconds each frame should display
+     * @param path         ordered list of pixel coordinates this entity should follow
+     * @param speed        base movement speed in pixels per second
+     * @param hp           starting hit points
+     * @param scaleFactor  factor to scale each frame when rendered
+     */
     public AnimatedEntity(Image spriteSheet,
                           int frameCount,
                           int frameSize,
@@ -59,6 +76,12 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+    /**
+     * Advance animation frames and move along the precomputed path according
+     * to the elapsed time.
+     *
+     * @param dt time delta in seconds scaled by the game speed multiplier
+     */
     @Override
     public void update(double dt) {
         // 1) animation
@@ -140,6 +163,11 @@ public class AnimatedEntity extends Entity {
         return prevIndex + Math.min(1.0, distFromPrev / segmentLength);
     }
 
+    /**
+     * Predicts a future waypoint along the path used by projectile targeting.
+     *
+     * @return the predicted future position on the path
+     */
     public Point getFuturePosition()
     {
         int futureSteps = ( int ) (0.75 * speed);
@@ -151,6 +179,12 @@ public class AnimatedEntity extends Entity {
         }
     }
 
+    /**
+     * Applies a temporary slow effect to this entity.
+     *
+     * @param factor   speed multiplier while slowed
+     * @param duration duration of the slow effect in seconds
+     */
     public void applySlow(double factor, double duration) {
         if (slowTimer <= 0) {
             speedModifier = factor;
@@ -161,6 +195,12 @@ public class AnimatedEntity extends Entity {
         slowTimer = duration;
     }
 
+    /**
+     * Draws the entity's current animation frame and associated status effects
+     * at its world position.
+     *
+     * @param gc graphics context to draw to
+     */
     @Override
     public void render(GraphicsContext gc) {
         // 1. Draw the sprite centered on entity position
@@ -241,6 +281,15 @@ public class AnimatedEntity extends Entity {
     }
 
 
+    /**
+     * Utility used by the constructor to scale sprite sheet frames to the
+     * desired on-screen size.
+     *
+     * @param src          original image
+     * @param targetWidth  width in pixels of the scaled result
+     * @param targetHeight height in pixels of the scaled result
+     * @return scaled image preserving transparency
+     */
     private Image scaleImage(Image src, double targetWidth, double targetHeight) {
         javafx.scene.canvas.Canvas tempCanvas = new javafx.scene.canvas.Canvas(targetWidth, targetHeight);
         GraphicsContext gc = tempCanvas.getGraphicsContext2D();
