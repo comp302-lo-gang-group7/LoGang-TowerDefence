@@ -15,10 +15,29 @@ public class LevelConfig {
 
     public LevelConfig() {}
 
+    /**
+     * Represents the configuration for a level in the game, including map details,
+     * starting resources, player lives, and wave information.
+     */
     public LevelConfig(String mapName, int startingGold, int lives, List<Wave> waves) {
+        /**
+         * The name of the map associated with this level.
+         */
         this.mapName = mapName;
+
+        /**
+         * The amount of gold the player starts with in this level.
+         */
         this.startingGold = startingGold;
+
+        /**
+         * The number of lives the player has at the beginning of this level.
+         */
         this.lives = lives;
+
+        /**
+         * The list of waves that define enemy spawns for this level.
+         */
         this.waves = waves;
     }
 

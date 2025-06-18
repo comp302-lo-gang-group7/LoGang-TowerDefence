@@ -16,17 +16,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Provides functionality for saving, loading, deleting, and listing user-created maps.
+ * Maps are stored as JSON files describing the tile grid.
+ */
 public class MapStorageManager {
 
     private static final int TILE_SIZE = 64;
     private static final Path MAP_DIRECTORY = Paths.get("cot", "data", "maps");
-
-    // reuse a single renderer so grass-stitching logic lives in one place
     private static final TileRenderer RENDERER =
             new TileRenderer("/com/example/assets/tiles/Tileset-64x64.png", TILE_SIZE);
 
     /**
-     * Saves the given map as a JSON file to cot/data/maps.
+     * Saves the given map as a JSON file to the specified directory.
+     *
+     * @param mapTiles a 2D array of TileView objects representing the map tiles
+     * @param rows the number of rows in the map
+     * @param cols the number of columns in the map
+     * @param mapName the name of the map file to save (without extension)
+     * @throws UncheckedIOException if an error occurs during saving
      */
     public static void saveMap(TileView[][] mapTiles, int rows, int cols, String mapName) {
         ObjectMapper mapper = new ObjectMapper();
@@ -57,11 +65,11 @@ public class MapStorageManager {
     }
 
     /**
-     * Loads a map JSON file from cot/data/maps, returning a TileView[][]
-     * where each TileView is produced by your TileRenderer (so you get
-     * grass-underlay, seams-fixing, etc.).
-     * @requires: mapName.json exists in the cot/data/maps folder
-     * @effects: returns a TileVew[][] map, with each tile as specified in the .json
+     * Loads a map from a JSON file and returns a 2D array of TileView objects.
+     *
+     * @param mapName the name of the map file to load (without extension)
+     * @return a 2D array of TileView objects representing the map tiles
+     * @throws IOException if the map file does not exist or cannot be read
      */
     public static TileView[][] loadMap(String mapName) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -84,7 +92,6 @@ public class MapStorageManager {
                 int flatIndex = rowNode.get(c).asInt();
                 TileEnum type = TileEnum.fromFlatIndex(flatIndex);
 
-                // **use the renderer** instead of manual slicing
                 TileView tv = RENDERER.createTileView(type);
                 tv.setFitWidth(TILE_SIZE);
                 tv.setFitHeight(TILE_SIZE);
@@ -97,6 +104,13 @@ public class MapStorageManager {
         return map;
     }
 
+    /**
+     * Deletes the specified map file if it exists.
+     *
+     * @param mapName the name of the map file to delete (without extension)
+     * @return true if the file was successfully deleted, false otherwise
+     * @throws UncheckedIOException if an error occurs during deletion
+     */
     public static boolean deleteMap(String mapName) {
         Path file = MAP_DIRECTORY.resolve(mapName + ".json");
         try {
@@ -107,8 +121,10 @@ public class MapStorageManager {
     }
 
     /**
-     * Returns a list of all available map names (without the .json extension)
-     * found in the maps directory.
+     * Returns a list of all available map names in the maps directory.
+     *
+     * @return a list of map names (without the .json extension)
+     * @throws UncheckedIOException if an error occurs while listing map files
      */
     public static List<String> listAvailableMaps() {
         try {
@@ -126,8 +142,12 @@ public class MapStorageManager {
         }
     }
 
-    public static Path getMapDirectory()
-    {
+    /**
+     * Returns the path to the directory where map files are stored.
+     *
+     * @return the path to the map directory
+     */
+    public static Path getMapDirectory() {
         return MAP_DIRECTORY;
     }
 }

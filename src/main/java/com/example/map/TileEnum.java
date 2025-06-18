@@ -1,14 +1,10 @@
 package com.example.map;
 
-
 import java.util.Set;
 
 /**
- * Enum used to create tiles.
- * Each enum constant holds:
- * - row index from tileset
- * - column index from tileset
- * - flattened array position (e.g., index in a 1D tile array)
+ * Represents different types of tiles in the game map.
+ * Each tile is defined by its row, column, and flattened array position.
  */
 public enum TileEnum {
     TOP_LEFT_PATH_CORNER(0, 0, 0),
@@ -51,12 +47,13 @@ public enum TileEnum {
     BARRACKS(7, 2, 30),
     WOOD_LOGS(7, 3, 31);
 
-
     private final int row;
     private final int col;
     private final int flatIndex;
 
-    // Walkable path enums
+    /**
+     * A set of tiles that represent walkable paths.
+     */
     public static final Set<TileEnum> PATH_TILES = Set.of(
             TileEnum.TOP_LEFT_PATH_CORNER,
             TileEnum.DOWN_CURVING_PATH,
@@ -74,7 +71,9 @@ public enum TileEnum {
             TileEnum.HORIZONTAL_RIGHT_PATH_END
     );
 
-    // Castle tile enums
+    /**
+     * A set of tiles that represent parts of the castle.
+     */
     public static final Set<TileEnum> CASTLE_TILES = Set.of(
             TileEnum.CASTLE_TOP_LEFT,
             TileEnum.CASTLE_TOP_RIGHT,
@@ -82,16 +81,47 @@ public enum TileEnum {
             TileEnum.CASTLE_BOTTOM_RIGHT
     );
 
+    /**
+     * Constructs a tile with the specified row, column, and flattened index.
+     *
+     * @param row the row index of the tile
+     * @param col the column index of the tile
+     * @param flatIndex the flattened array position of the tile
+     */
     TileEnum(int row, int col, int flatIndex) {
         this.row = row;
         this.col = col;
         this.flatIndex = flatIndex;
     }
 
+    /**
+     * Gets the row index of the tile.
+     *
+     * @return the row index
+     */
     public int getRow() { return row; }
+
+    /**
+     * Gets the column index of the tile.
+     *
+     * @return the column index
+     */
     public int getCol() { return col; }
+
+    /**
+     * Gets the flattened array position of the tile.
+     *
+     * @return the flattened index
+     */
     public int getFlatIndex() { return flatIndex; }
 
+    /**
+     * Retrieves a tile based on its flattened index.
+     *
+     * @param index the flattened index of the tile
+     * @return the corresponding tile
+     * @throws IllegalArgumentException if no tile matches the given index
+     */
     public static TileEnum fromFlatIndex(int index) {
         for (TileEnum tile : values()) {
             if (tile.flatIndex == index) return tile;
@@ -99,6 +129,14 @@ public enum TileEnum {
         throw new IllegalArgumentException("Invalid flat index: " + index);
     }
 
+    /**
+     * Retrieves a tile based on its row and column indices.
+     *
+     * @param row the row index of the tile
+     * @param col the column index of the tile
+     * @return the corresponding tile
+     * @throws IllegalArgumentException if no tile matches the given row and column
+     */
     public static TileEnum fromRowCol(int row, int col) {
         for (TileEnum tile : values()) {
             if (tile.row == row && tile.col == col) return tile;
@@ -106,4 +144,3 @@ public enum TileEnum {
         throw new IllegalArgumentException("No tile found for row: " + row + ", col: " + col);
     }
 }
-

@@ -10,10 +10,18 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
-/** Utility methods for reading the campaign configuration. */
+/**
+ * Manages the storage and retrieval of campaign configuration data.
+ */
 public class CampaignStorageManager {
     private static final Path CAMPAIGN_FILE = Paths.get("cot", "data", "campaign.json");
 
+    /**
+     * Loads the campaign configuration from a JSON file.
+     *
+     * @return a list of {@link CampaignLevel} objects representing the campaign configuration.
+     *         Returns an empty list if the file does not exist or an error occurs during reading.
+     */
     public static List<CampaignLevel> loadCampaign() {
         ObjectMapper mapper = new ObjectMapper();
         if (Files.exists(CAMPAIGN_FILE)) {

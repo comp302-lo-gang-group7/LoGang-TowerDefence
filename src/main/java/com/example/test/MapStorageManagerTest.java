@@ -1,4 +1,5 @@
 package com.example.test;
+
 import com.example.map.TileEnum;
 import com.example.map.TileView;
 import com.example.storage_manager.MapStorageManager;
@@ -11,21 +12,35 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MapStorageManagerTest
-{
+/**
+ * Test class for {@link MapStorageManager}.
+ * Contains unit tests for loading maps and handling various scenarios.
+ */
+public class MapStorageManagerTest {
+
 	@TempDir
 	private Path tempMap;
 
-	private TileView[][] loadTestMap(String jsonMap) throws IOException
-	{
+	/**
+	 * Loads a test map from a JSON string and returns the corresponding {@link TileView} array.
+	 *
+	 * @param jsonMap The JSON string representing the map.
+	 * @return A 2D array of {@link TileView} objects representing the loaded map.
+	 * @throws IOException If an I/O error occurs during map loading.
+	 */
+	private TileView[][] loadTestMap(String jsonMap) throws IOException {
 		Path testMap = tempMap.resolve("testMap.json");
 		Files.write(testMap, jsonMap.getBytes());
 		return MapStorageManager.loadMap(testMap.toAbsolutePath().toString().replace(".json", ""));
 	}
 
+	/**
+	 * Tests loading a valid map and verifies its structure and tile types.
+	 *
+	 * @throws IOException If an I/O error occurs during map loading.
+	 */
 	@Test
-	public void loadMap_validMap() throws IOException
-	{
+	public void loadMap_validMap() throws IOException {
 		TileView[][] loadedMap = loadTestMap("{\"rows\":2, \"cols\":2, \"tiles\": [ [0,1], [1,0] ]}");
 
 		assertEquals(2, loadedMap.length);
@@ -36,25 +51,33 @@ public class MapStorageManagerTest
 		assertEquals(TileEnum.fromFlatIndex(0), loadedMap[1][1].getType());
 	}
 
+	/**
+	 * Tests loading a map that does not exist and verifies that an {@link IOException} is thrown.
+	 */
 	@Test
-	public void loadMap_mapNotExist()
-	{
+	public void loadMap_mapNotExist() {
 		assertThrows(
 				IOException.class,
 				() -> MapStorageManager.loadMap("this_map_does_not_exist"));
 	}
 
+	/**
+	 * Tests loading an empty map and verifies that the resulting map has no tiles.
+	 *
+	 * @throws IOException If an I/O error occurs during map loading.
+	 */
 	@Test
-	public void loadMap_emptyMap() throws IOException
-	{
+	public void loadMap_emptyMap() throws IOException {
 		TileView[][] loadedMap = loadTestMap("{\"rows\":0, \"cols\":0, \"tiles\": []}");
 
 		assertEquals(0, loadedMap.length);
 	}
 
+	/**
+	 * Tests loading a map with an invalid tile type and verifies that an {@link IllegalArgumentException} is thrown.
+	 */
 	@Test
-	public void loadMap_invalidTileType()
-	{
+	public void loadMap_invalidTileType() {
 		assertThrows(IllegalArgumentException.class, () ->
 				loadTestMap("{\"rows\":1, \"cols\":1, \"tiles\": [ [1984] ]}"));
 	}

@@ -13,13 +13,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller for the game over overlay. Provides a button to return to the main menu.
+ * Controller for managing the game over screen.
+ * Provides functionality for exiting the game and returning to the main menu.
  */
 public class GameOverController implements Initializable {
     @FXML private StackPane gameOverRoot;
     @FXML private Button exitBtn;
-    
-    // Button styling constants
+
     private static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
                                                      "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                                                      "-fx-font-size: 14px; -fx-font-weight: bold; " +
@@ -38,17 +38,26 @@ public class GameOverController implements Initializable {
                                                       "-fx-border-color: #8a673c; -fx-border-width: 2; " +
                                                       "-fx-border-radius: 5; -fx-background-radius: 5;";
 
+    /**
+     * Initializes the game over controller.
+     * Sets up button effects for the exit button.
+     *
+     * @param location The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resources The resources used to localize the root object, or null if not applicable.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Apply styling to exit button
         setupButtonEffects(exitBtn);
     }
 
+    /**
+     * Configures visual effects for a button, including hover and click animations.
+     *
+     * @param button The button to apply the effects to.
+     */
     private void setupButtonEffects(Button button) {
-        // Apply initial style
         button.setStyle(BUTTON_NORMAL_STYLE);
         
-        // Hover effect
         button.setOnMouseEntered(e -> {
             button.setStyle(BUTTON_HOVER_STYLE);
             button.setScaleX(1.05);
@@ -61,7 +70,6 @@ public class GameOverController implements Initializable {
             button.setScaleY(1.0);
         });
         
-        // Click effect
         button.setOnMousePressed(e -> {
             button.setStyle(BUTTON_PRESSED_STYLE);
             animateButtonClick(button);
@@ -80,16 +88,25 @@ public class GameOverController implements Initializable {
         });
     }
 
+    /**
+     * Animates a button click by temporarily scaling it down.
+     *
+     * @param button The button to animate.
+     */
     private void animateButtonClick(Button button) {
         button.setScaleX(0.95);
         button.setScaleY(0.95);
     }
 
+    /**
+     * Handles the exit button action.
+     * Stops the game loop, removes the game over overlay, and switches to the main menu.
+     *
+     * @param e The action event triggered by the button click.
+     */
     @FXML
     public void handleExit(ActionEvent e) {
-        // Ensure the game loop is stopped before leaving the game screen
         GameManager.getInstance().stop();
-        // Remove this overlay in case the scene is reused
         if (gameOverRoot.getParent() instanceof Pane parent) {
             parent.getChildren().remove(gameOverRoot);
         }

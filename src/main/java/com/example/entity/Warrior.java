@@ -9,6 +9,9 @@ import javafx.scene.image.Image;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a Warrior entity in the game, capable of interacting with Goblins and receiving speed boosts.
+ */
 public class Warrior extends AnimatedEntity {
     private static final Image SPRITE_SHEET = new Image(
             Objects.requireNonNull(Warrior.class.getResourceAsStream("/com/example/assets/enemies/Warrior_Blue.png"))
@@ -28,14 +31,23 @@ public class Warrior extends AnimatedEntity {
     private final double baseSpeed;
     private boolean speedBoost = false;
 
-    public Warrior(List<Point> path,
-                   double speed,
-                   int hp)
-    {
+    /**
+     * Constructs a Warrior entity.
+     *
+     * @param path The path the Warrior follows.
+     * @param speed The base speed of the Warrior.
+     * @param hp The health points of the Warrior.
+     */
+    public Warrior(List<Point> path, double speed, int hp) {
         super(SPRITE_SHEET, FRAMES, FRAME_SIZE, FRAME_SECONDS, path, speed, hp, SCALE_FACTOR);
         this.baseSpeed = speed;
     }
 
+    /**
+     * Updates the Warrior's state, including speed boosts when near Goblins.
+     *
+     * @param dt The time step for the update.
+     */
     @Override
     public void update(double dt) {
         GameManager gm = GameManager.getInstance();
@@ -62,12 +74,23 @@ public class Warrior extends AnimatedEntity {
         }
     }
 
+    /**
+     * Renders the Warrior on the game screen.
+     *
+     * @param gc The graphics context used for rendering.
+     */
     @Override
     public void render(GraphicsContext gc) {
         super.render(gc);
     }
 
-
+    /**
+     * Modifies the damage received by the Warrior based on the attacking tower type.
+     *
+     * @param source The tower attacking the Warrior.
+     * @param base The base damage dealt by the tower.
+     * @return The modified damage value.
+     */
     @Override
     public int modifyDamage(Tower source, int base) {
         if (source instanceof ArcherTower) {

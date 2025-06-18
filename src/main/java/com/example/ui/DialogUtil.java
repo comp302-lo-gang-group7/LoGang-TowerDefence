@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
-
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -20,6 +19,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+/**
+ * Utility class for creating and displaying custom dialog windows with a wooden theme.
+ */
 public class DialogUtil {
 
     private static final String TITLE_BAR_STYLE = "-fx-background-color: #5d4228; -fx-border-color: #8a673c; -fx-border-width: 0 0 1 0;";
@@ -27,6 +29,12 @@ public class DialogUtil {
             "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; -fx-font-size: 14px; -fx-font-weight: bold; " +
             "-fx-border-color: #8a673c; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;";
 
+    /**
+     * Displays a custom alert dialog with a wooden theme.
+     *
+     * @param title   The title of the dialog window.
+     * @param content The content message to display in the dialog.
+     */
     public static void showWoodenAlert(String title, String content) {
         Stage dialogStage = new Stage();
         dialogStage.initModality(Modality.APPLICATION_MODAL);
@@ -63,7 +71,6 @@ public class DialogUtil {
         Scene dialogScene = new Scene(root, 400, 200);
         dialogScene.setFill(Color.web("#5d4228"));
 
-        // Custom cursor if desired
         try {
             Image cursorImage = new Image(DialogUtil.class.getResourceAsStream("/com/example/assets/ui/01.png"));
             ImageCursor customCursor = new ImageCursor(cursorImage, cursorImage.getWidth() / 2, cursorImage.getHeight() / 2);
@@ -77,6 +84,13 @@ public class DialogUtil {
         dialogStage.showAndWait();
     }
 
+    /**
+     * Creates a draggable title bar for the dialog window.
+     *
+     * @param stage The stage associated with the dialog window.
+     * @param title The title text to display in the title bar.
+     * @return A {@link HBox} representing the title bar.
+     */
     private static HBox createTitleBar(Stage stage, String title) {
         HBox titleBar = new HBox();
         titleBar.setAlignment(Pos.CENTER_RIGHT);
@@ -99,6 +113,12 @@ public class DialogUtil {
         return titleBar;
     }
 
+    /**
+     * Enables dragging functionality for the dialog window using the title bar.
+     *
+     * @param titleBar The {@link HBox} representing the title bar.
+     * @param stage    The stage associated with the dialog window.
+     */
     private static void setupDraggableStage(HBox titleBar, Stage stage) {
         final double[] offset = new double[2];
         titleBar.setOnMousePressed(e -> {

@@ -20,6 +20,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Central orchestrator for game logic. Manages entity updates, wave spawning
+ * and user state while running a fixed AnimationTimer loop. This singleton is
+ * initialised by {@link GameScreenController} when a level begins.
+ */
 public class GameManager {
     private final Canvas canvas;
     private final GraphicsContext gc;
@@ -45,6 +50,14 @@ public class GameManager {
     // Debug flag - set to true to see path visualization
     private static final boolean DEBUG_PATH = false;
 
+    /**
+     * Create or replace the singleton instance used by the running game.
+     *
+     * @param canvas   drawing surface for entities
+     * @param entities list that stores active entities
+     * @param model    underlying game model
+     * @param state    player state for this session
+     */
     public static void initialize(Canvas canvas, List<Entity> entities, GameModel model, PlayerState state) {
         if (instance != null) {
             instance.stop();
@@ -68,7 +81,11 @@ public class GameManager {
         setWavesFromGroups(converted);
     }
 
-    /** Configure waves using the new grouped format. */
+    /**
+     * Replace the current wave list with the provided grouped configuration.
+     * Resets wave counters and sets an initial delay before the first group
+     * spawns.
+     */
     public void setWavesFromGroups(List<Wave> newWaves) {
         this.waves.clear();
         if (newWaves != null) this.waves.addAll(newWaves);
@@ -93,6 +110,9 @@ public class GameManager {
         this.playerState = state;
     }
 
+    /**
+     * Spawn all enemies described by an {@link EntityGroup}.
+     */
     private void spawnGroup(EntityGroup cfg) {
         AudioManager.playSoundEffect("/com/example/assets/audio/wave-starting.mp3");
         int goblins = cfg.goblins;
@@ -115,6 +135,7 @@ public class GameManager {
                 .orElse(null);
     }
 
+    /** Start the main game loop using an {@link AnimationTimer}. */
     public void start() {
         gameLoop = new AnimationTimer() {
             @Override
@@ -243,10 +264,16 @@ public class GameManager {
         }
     }
 
+    /** Convenience overload spawning a default goblin. */
     public void spawnGoblin() {
         spawnGoblin(50, 100);
     }
 
+    /**
+     * Spawn a goblin enemy with the given speed and hit points.
+     * Pathfinding is performed each spawn so that goblins can appear from
+     * random map edges.
+     */
     public void spawnGoblin(double speed, int hp) {
         int[][] grid = gameModel.getMap().getExpandedGrid();
         Point start = PathFinder.findRandomSpawnPoint(grid);
@@ -259,10 +286,14 @@ public class GameManager {
         enemies.add(goblin);
     }
 
+    /** Spawn a default warrior enemy. */
     public void spawnWarrior() {
         spawnWarrior(40, 100);
     }
 
+    /**
+     * Spawn a warrior enemy with custom speed and health.
+     */
     public void spawnWarrior(double speed, int hp) {
         int[][] grid = gameModel.getMap().getExpandedGrid();
         Point start = PathFinder.findRandomSpawnPoint(grid);
@@ -307,12 +338,17 @@ public class GameManager {
         }
     }
 
+    /** Spawn a gold bag at the given location awarding a random amount of gold. */
     private void spawnGoldBag(double x, double y) {
         int amount = 2 + rng.nextInt(LEVEL1_ARCHER_COST / 2 - 1);
         GoldBag bag = new GoldBag(x, y, amount);
         this.delayedAdd.add(bag);
     }
 
+    /**
+     * Pass a click through the entity list allowing interactive objects to
+     * respond, e.g. gold bags. Returns whether anything consumed the event.
+     */
     public boolean handleClick(double x, double y) {
         for (int i = entities.size() - 1; i >= 0; i--) {
             Entity e = entities.get(i);
@@ -324,8 +360,12 @@ public class GameManager {
         return false;
     }
 
-	public void spawnEffect( Tower parent, double x, double y )
-	{
+        /**
+         * Spawn a short-lived visual effect at the specified world location.
+         * The type of effect depends on which tower generated it.
+         */
+        public void spawnEffect( Tower parent, double x, double y )
+        {
 		if ( parent != null )
 		{
 			Image spriteSheet;
@@ -361,6 +401,12 @@ public class GameManager {
 		}
 	}
 
+    /**
+     * Finds the highest progress enemy within a tower's attack radius.
+     *
+     * @param tower tower from which to measure distance
+     * @return enemy to target or {@code null} if none in range
+     */
     public AnimatedEntity nearestEnemy(Tower tower) {
         double range = tower.getRange() * GameScreenController.TILE_SIZE;
         double towerCenterX = (tower.getX() + 0.5) * GameScreenController.TILE_SIZE;

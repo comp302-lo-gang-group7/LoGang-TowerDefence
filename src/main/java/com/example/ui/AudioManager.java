@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Simple utility for playing background music and sound effects.
+ * Manages audio playback for background music and sound effects.
  */
 public class AudioManager {
     private static MediaPlayer backgroundPlayer;
@@ -24,7 +24,9 @@ public class AudioManager {
         reloadSettings();
     }
 
-    /** Reload volume settings from {@link SettingsManager}. */
+    /**
+     * Reloads audio settings from the {@link SettingsManager}.
+     */
     public static void reloadSettings() {
         Settings s = SettingsManager.load();
         musicVolume = s.musicVolume;
@@ -34,6 +36,13 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Retrieves an {@link AudioClip} from the specified file path.
+     * If the clip is not already cached, it is loaded and cached.
+     *
+     * @param path the relative path to the audio file
+     * @return the {@link AudioClip} object, or {@code null} if the file cannot be found
+     */
     private static AudioClip getClip(String path) {
         return clipCache.computeIfAbsent(path, p -> {
             URL url = AudioManager.class.getResource(p);
@@ -41,7 +50,12 @@ public class AudioManager {
         });
     }
 
-    /** Play a sound effect once respecting SFX volume. */
+    /**
+     * Plays a sound effect from the specified file path.
+     * The playback respects the current sound effects volume setting.
+     *
+     * @param path the relative path to the sound effect file
+     */
     public static void playSoundEffect(String path) {
         AudioClip clip = getClip(path);
         if (clip != null) {
@@ -51,7 +65,10 @@ public class AudioManager {
     }
 
     /**
-     * Play one clip chosen randomly from the supplied paths.
+     * Plays a random sound effect from the provided file paths.
+     * The playback respects the current sound effects volume setting.
+     *
+     * @param paths an array of relative paths to sound effect files
      */
     public static void playRandomSoundEffect(String... paths) {
         if (paths == null || paths.length == 0) return;
@@ -60,8 +77,12 @@ public class AudioManager {
     }
 
     /**
-     * Start playing background music, replacing any currently playing track.
-     * If {@code loop} is true, the track will repeat indefinitely.
+     * Starts playing background music from the specified file path.
+     * If a track is already playing, it is stopped and replaced.
+     * The playback respects the current music volume setting.
+     *
+     * @param path the relative path to the background music file
+     * @param loop {@code true} to loop the track indefinitely, {@code false} to play it once
      */
     public static void playBackgroundMusic(String path, boolean loop) {
         stopBackgroundMusic();
@@ -74,7 +95,9 @@ public class AudioManager {
         backgroundPlayer.play();
     }
 
-    /** Stop and dispose the currently playing background music, if any. */
+    /**
+     * Stops and disposes of the currently playing background music, if any.
+     */
     public static void stopBackgroundMusic() {
         if (backgroundPlayer != null) {
             backgroundPlayer.stop();

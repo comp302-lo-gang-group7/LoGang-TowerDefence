@@ -27,9 +27,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the custom game configuration screen.
+ * Handles user interactions for setting up waves, selecting maps, and starting the game.
+ */
 public class CustomGameController extends Controller implements Initializable {
 
-    // Button styling constants
     private static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
                                                      "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                                                      "-fx-font-size: 14px; -fx-font-weight: bold; " +
@@ -48,10 +51,19 @@ public class CustomGameController extends Controller implements Initializable {
                                                       "-fx-border-color: #8a673c; -fx-border-width: 2; " +
                                                       "-fx-border-radius: 5; -fx-background-radius: 5;";
 
+    /**
+     * Represents a row in the wave configuration section.
+     * Contains input fields for specifying the number of goblins and warriors in a wave.
+     */
     private static class WaveRow {
         HBox root;
         TextField goblinsField;
         TextField warriorsField;
+
+        /**
+         * Constructs a WaveRow with the specified wave index.
+         * @param index The index of the wave.
+         */
         WaveRow(int index) {
             Text label = new Text("Wave " + index + ":");
             label.setFill(Color.web("#e8d9b5"));
@@ -81,7 +93,7 @@ public class CustomGameController extends Controller implements Initializable {
 
     @FXML private ListView<String> savedMapsListView;
     @FXML private TextField goldInput;
-    @FXML private ScrollPane wavesScrollPane; // Add this new field
+    @FXML private ScrollPane wavesScrollPane;
     @FXML private VBox wavesBox;
     @FXML private Button homeBtn;
     @FXML private Button startBtn;
@@ -91,12 +103,15 @@ public class CustomGameController extends Controller implements Initializable {
     private final ObservableList<String> savedMaps = FXCollections.observableArrayList();
     private final List<WaveRow> waveRows = new ArrayList<>();
 
+    /**
+     * Initializes the controller and sets up the UI components.
+     * @param location The location used to resolve relative paths for the root object, or null if the location is not known.
+     * @param resources The resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Set up custom cursor
         try {
             Image customCursorImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/example/assets/ui/01.png")));
-            // Replace ImageCursor with standard cursor approach
             savedMapsListView.setCursor(Cursor.DEFAULT);
             goldInput.setCursor(Cursor.DEFAULT);
             wavesBox.setCursor(Cursor.DEFAULT);
@@ -104,12 +119,7 @@ public class CustomGameController extends Controller implements Initializable {
             System.err.println("Could not load custom cursor: " + e.getMessage());
         }
 
-        // Remove the problematic code that's causing the NullPointerException
-        // wavesBox.getParent().setStyle("-fx-background: #6b4c2e; -fx-background-color: #6b4c2e;");
-        
-        // Make the ScrollPane's content area match the theme
         wavesBox.setStyle("-fx-background-color: #6b4c2e; -fx-padding: 10;");
-
         goldInput.setText("1000");
         savedMaps.setAll(MapStorageManager.listAvailableMaps());
         savedMapsListView.setItems(savedMaps);
@@ -127,6 +137,9 @@ public class CustomGameController extends Controller implements Initializable {
         addWave();
     }
 
+    /**
+     * Sets up the custom styling and behavior for the saved maps list view.
+     */
     private void setupCustomListView() {
         savedMapsListView.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -139,7 +152,6 @@ public class CustomGameController extends Controller implements Initializable {
                     setText(item);
                     setStyle("-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; -fx-font-size: 14px;");
                     
-                    // Add hover effect
                     setOnMouseEntered(e -> {
                         if (!isSelected()) {
                             setStyle("-fx-background-color: #604631; -fx-text-fill: #f5ead9; -fx-font-family: 'Segoe UI'; -fx-font-size: 14px;");
@@ -155,17 +167,18 @@ public class CustomGameController extends Controller implements Initializable {
             }
         });
         
-        // Add selection style
         savedMapsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             savedMapsListView.refresh();
         });
     }
 
+    /**
+     * Sets up hover and click effects for a button.
+     * @param button The button to apply effects to.
+     */
     private void setupButtonEffects(Button button) {
-        // Apply initial style
         button.setStyle(BUTTON_NORMAL_STYLE);
         
-        // Hover effect
         button.setOnMouseEntered(e -> {
             button.setStyle(BUTTON_HOVER_STYLE);
             button.setScaleX(1.05);
@@ -178,7 +191,6 @@ public class CustomGameController extends Controller implements Initializable {
             button.setScaleY(1.0);
         });
         
-        // Click effect
         button.setOnMousePressed(e -> {
             button.setStyle(BUTTON_PRESSED_STYLE);
             animateButtonClick(button);
@@ -197,11 +209,18 @@ public class CustomGameController extends Controller implements Initializable {
         });
     }
 
+    /**
+     * Animates a button click by scaling it down slightly.
+     * @param button The button to animate.
+     */
     private void animateButtonClick(Button button) {
         button.setScaleX(0.95);
         button.setScaleY(0.95);
     }
 
+    /**
+     * Adds a new wave row to the wave configuration section.
+     */
     @FXML
     public void addWave() {
         if (waveRows.size() >= 10) return;
@@ -210,6 +229,9 @@ public class CustomGameController extends Controller implements Initializable {
         wavesBox.getChildren().add(row.root);
     }
 
+    /**
+     * Removes the last wave row from the wave configuration section.
+     */
     @FXML
     public void removeWave() {
         if (waveRows.size() <= 1) return;
@@ -217,6 +239,9 @@ public class CustomGameController extends Controller implements Initializable {
         wavesBox.getChildren().remove(row.root);
     }
 
+    /**
+     * Starts the game with the selected map, gold amount, and wave configuration.
+     */
     @FXML
     public void startGame() {
         String mapName = savedMapsListView.getSelectionModel().getSelectedItem();
@@ -234,6 +259,9 @@ public class CustomGameController extends Controller implements Initializable {
         Main.getViewManager().switchToGameScreen(mapName, gold, waves);
     }
     
+    /**
+     * Navigates to the home page.
+     */
     @FXML
     public void goToHomePage() {
         Main.getViewManager().resizeWindow(800, 600);

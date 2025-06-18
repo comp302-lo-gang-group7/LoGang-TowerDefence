@@ -10,10 +10,19 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test class for the {@link SettingsManager}.
+ * Provides tests for loading and saving settings, as well as backup and restore functionality.
+ */
 class SettingsManagerTest {
     private static final Path SETTINGS_FILE = Paths.get("cot", "data", "settings.json");
     private String originalContent;
 
+    /**
+     * Backs up the original content of the settings file before each test.
+     * 
+     * @throws IOException if an I/O error occurs while reading the settings file.
+     */
     @BeforeEach
     void backup() throws IOException {
         if (Files.exists(SETTINGS_FILE)) {
@@ -23,6 +32,11 @@ class SettingsManagerTest {
         }
     }
 
+    /**
+     * Restores the original content of the settings file after each test.
+     * 
+     * @throws IOException if an I/O error occurs while writing or deleting the settings file.
+     */
     @AfterEach
     void restore() throws IOException {
         if (originalContent != null) {
@@ -32,6 +46,10 @@ class SettingsManagerTest {
         }
     }
 
+    /**
+     * Tests the round-trip functionality of saving and loading settings.
+     * Ensures that the settings saved to the file are correctly loaded back.
+     */
     @Test
     void loadAndSaveRoundTrip() {
         SettingsManager.Settings settings = new SettingsManager.Settings();

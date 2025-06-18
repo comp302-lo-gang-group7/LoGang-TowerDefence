@@ -13,11 +13,13 @@ import javafx.scene.layout.StackPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the Pause Menu in the game. Handles button interactions and menu functionality.
+ */
 public class PauseMenuController implements Initializable {
     @FXML private StackPane pauseRoot;
     @FXML private Button resumeBtn, settingsBtn, exitBtn;
     
-    // Button styling constants
     private static final String BUTTON_NORMAL_STYLE = "-fx-background-color: linear-gradient(#6b4c2e, #4e331f); " +
                                                      "-fx-text-fill: #e8d9b5; -fx-font-family: 'Segoe UI'; " +
                                                      "-fx-font-size: 14px; -fx-font-weight: bold; " +
@@ -36,37 +38,39 @@ public class PauseMenuController implements Initializable {
                                                       "-fx-border-color: #8a673c; -fx-border-width: 2; " +
                                                       "-fx-border-radius: 5; -fx-background-radius: 5;";
 
+    /**
+     * Initializes the Pause Menu controller and applies button styling.
+     *
+     * @param location The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resources The resources used to localize the root object, or null if not applicable.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Apply styling to all buttons
         setupButtonEffects(resumeBtn);
-        // setupButtonEffects(settingsBtn);
         setupButtonEffects(exitBtn);
     }
 
+    /**
+     * Sets up visual effects for a button, including hover and click effects.
+     *
+     * @param button The button to apply effects to.
+     */
     private void setupButtonEffects(Button button) {
-        // Apply initial style
         button.setStyle(BUTTON_NORMAL_STYLE);
-        
-        // Hover effect
         button.setOnMouseEntered(e -> {
             button.setStyle(BUTTON_HOVER_STYLE);
             button.setScaleX(1.05);
             button.setScaleY(1.05);
         });
-        
         button.setOnMouseExited(e -> {
             button.setStyle(BUTTON_NORMAL_STYLE);
             button.setScaleX(1.0);
             button.setScaleY(1.0);
         });
-        
-        // Click effect
         button.setOnMousePressed(e -> {
             button.setStyle(BUTTON_PRESSED_STYLE);
             animateButtonClick(button);
         });
-        
         button.setOnMouseReleased(e -> {
             if (button.isHover()) {
                 button.setStyle(BUTTON_HOVER_STYLE);
@@ -80,22 +84,42 @@ public class PauseMenuController implements Initializable {
         });
     }
 
+    /**
+     * Animates the button click by scaling it down slightly.
+     *
+     * @param button The button to animate.
+     */
     private void animateButtonClick(Button button) {
         button.setScaleX(0.95);
         button.setScaleY(0.95);
     }
 
+    /**
+     * Handles the Resume button click event. Resumes the game and removes the pause menu.
+     *
+     * @param e The action event triggered by the button click.
+     */
     @FXML
     public void handleResume(ActionEvent e) {
         GameManager.getInstance().resume();
         ((Pane)pauseRoot.getParent()).getChildren().remove(pauseRoot);
     }
 
+    /**
+     * Handles the Settings button click event. Switches to the settings view.
+     *
+     * @param e The action event triggered by the button click.
+     */
     @FXML
     public void handleSettings(ActionEvent e) {
         Main.getViewManager().switchTo("/com/example/fxml/settings.fxml");
     }
 
+    /**
+     * Handles the Exit button click event. Stops the game and switches to the home page view.
+     *
+     * @param e The action event triggered by the button click.
+     */
     @FXML
     public void handleExit(ActionEvent e) {
         GameManager.getInstance().stop();
