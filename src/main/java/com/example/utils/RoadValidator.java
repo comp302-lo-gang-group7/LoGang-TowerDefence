@@ -196,6 +196,46 @@ public class RoadValidator {
     }
 
     /**
+     * Finds start and end points in the map:
+     * - Start points are any path tiles on the edge of the map.
+     * - End points are the bottom two castle tiles.
+     *
+     * @param map The tile map.
+     * @return A list containing all start and end points.
+     */
+    public static List<Point2D> findStartAndEndPoints(TileView[][] map) {
+        List<Point2D> endpoints = new ArrayList<>();
+        int rows = map.length;
+        int cols = map[0].length;
+
+        // Start points: any path tile on the edge of the map
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                TileEnum tile = map[row][col].getType();
+
+                if (TileEnum.PATH_TILES.contains(tile)) {
+                    boolean isEdge = (row == 0 || row == rows - 1 || col == 0 || col == cols - 1);
+                    if (isEdge) {
+                        endpoints.add(new Point2D(col, row));
+                    }
+                }
+            }
+        }
+
+        // End points: bottom two castle tiles
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                TileEnum tile = map[row][col].getType();
+                if (tile == TileEnum.CASTLE_BOTTOM_LEFT || tile == TileEnum.CASTLE_BOTTOM_RIGHT) {
+                    endpoints.add(new Point2D(col, row));
+                }
+            }
+        }
+
+        return endpoints;
+    }
+
+    /**
      * Checks if the given tile is a road tile.
      *
      * @param tileType The type of the tile.
