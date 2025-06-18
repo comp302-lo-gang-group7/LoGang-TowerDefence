@@ -159,6 +159,7 @@ public class MapEditorController implements Initializable {
         String first = maps.get(0);
         mapSelectionCombo.setValue(first);
         loadMapIntoGrid(first);
+        highlightImportantTiles();
     }
 
     // 6) Set initial mode
@@ -224,6 +225,35 @@ public class MapEditorController implements Initializable {
     }
 
 
+    private void highlightImportantTiles() {
+        // Clear existing effects
+        for (int r = 0; r < MAP_ROWS; r++) {
+            for (int c = 0; c < MAP_COLS; c++) {
+                mapTileViews[r][c].setEffect(null);
+            }
+        }
+
+        // Get all important points: edge path tiles + castle bottom tiles
+        List<Point2D> importantPoints = RoadValidator.findStartAndEndPoints(mapTileViews);
+
+        for (Point2D point : importantPoints) {
+            int col = (int) point.getX();
+            int row = (int) point.getY();
+            TileEnum type = mapTileViews[row][col].getType();
+
+            // Use different colors for clarity (optional)
+            DropShadow glow;
+            if (TileEnum.CASTLE_TILES.contains(type)) {
+                glow = new DropShadow(20, javafx.scene.paint.Color.RED); // End
+            } else {
+                glow = new DropShadow(20, javafx.scene.paint.Color.LIME); // Start
+            }
+
+            mapTileViews[row][col].setEffect(glow);
+        }
+    }
+
+
     private void setupMapSelectionComboBox() {
         // Allow typing a new map name
         mapSelectionCombo.setEditable(true);
@@ -284,6 +314,7 @@ public class MapEditorController implements Initializable {
     
             // Then load it
             loadMapIntoGrid(name);
+            highlightImportantTiles();
         });
         
         // Add a platform.runLater to style elements that might not be available immediately
@@ -330,6 +361,7 @@ public class MapEditorController implements Initializable {
                     // re-apply any drag/drop or click handlers you have
                     setupDragAndDrop(cell, tv, r, c);
                     detectGroupsFromLoaded();
+                    highlightImportantTiles();
                 }
             }
         } catch (IOException e) {
@@ -760,6 +792,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
         } else {
             resetTileToGrass(row, col);
         }
+        highlightImportantTiles();
     }
 
     private void setupDragAndDrop(Pane cell, TileView tileView, int row, int col) {
@@ -854,6 +887,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
                 placeSingleTile(row, col);
             }
         }
+        highlightImportantTiles();
     }
 
     private void placeGroupTile(int row, int col) {
@@ -942,6 +976,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
 
         // Reset the source tile to grass
         resetTileToGrass(dragSourceRow, dragSourceCol);
+        highlightImportantTiles();
     }
 
 
@@ -969,6 +1004,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
 
         if (isValidGroupMove(groupTiles, minRow, minCol, newAnchorRow, newAnchorCol)) {
             executeGroupMove(groupTiles, minRow, minCol, newAnchorRow, newAnchorCol);
+            highlightImportantTiles();
         }
     }
 
@@ -1136,6 +1172,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
                     resetTileToGrass(row, col);
                 }
             }
+            highlightImportantTiles();
         }
     }
 
@@ -1281,6 +1318,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
                 resetTileToGrass(r, c);
             }
         }
+        highlightImportantTiles();
     }
 
     private void showNewMapDialog() {
@@ -1357,7 +1395,7 @@ private void highlightIsolatedTowerTiles(List<Point2D> isolatedTowerTiles) {
         // Cancel button hover effect
         cancelButton.setOnMouseEntered(e -> cancelButton.setStyle(MapEditorUtils.BUTTON_HOVER_STYLE));
         cancelButton.setOnMouseExited(e -> cancelButton.setStyle(MapEditorUtils.BUTTON_NORMAL_STYLE));
-        
+
         // Cancel button click action
         cancelButton.setOnAction(e -> dialogStage.close());
         
